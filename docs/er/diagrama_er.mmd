@@ -1,132 +1,171 @@
+%% ============================================================
+%% DIAGRAMA ENTIDAD-RELACION (ER)
+%% Veterinaria "El Sabueso Feliz"
+%% Derivado del diagrama UML de clases v2
+%% Notacion: pata de gallo (crow's foot)
+%% ============================================================
 erDiagram
-    Empleado {
-        str idEmpleado PK
-        str nombre
-        str detalle
-        }
-    TipoEmpleado {
-        str idTipoEmpleado PK
-        str nombre
-        str detalle
-    }
-    Sucursal {
-        str idSucursal PK
-        str nombre
-        str detalle
-    }
-    TipoDocumento {
-        str idTipoDocumento PK
-        str nombre
-        str detalle
-    }
-    EducacionEmpleado{
-        str idEducacionEmpleado PK
-        str nombre
-        str detalle
-    }
-    Perro{
-        str idPerro PK
-        str idRaza FK
-        str idSexo FK
-        str nombre
-        str detalle
-    }
-    Raza{
-        str idRaza PK
-        str nombre
-        str detalle
-    }
-    Sexo{
-        str idSexo PK
-        str nombre
-        str detalle
-    }
-    HistorialVacunación{
-        str idHistorialVacunación PK
-        str nombre
-        str detalle
-    }
-    TipoVacuna{
-        str idTipoVacuna PK
-        str nombre
-        str detalle
-    }
-    Laboratorios{
-        str idLaboratorio PK
-        str nombre
-        str detalle
-    }
-    LaboratorioVacuna{
-        str idLaboratorioVacuna PK
-        str nombre
-        str detalle
-    }
-    Consulta{
-        str idConsulta PK
-        str nombre
-        str detalle
-    }
-    TipoConsulta{
-        str idTipoConsulta PK
-        str nombre
-        str detalle
-    }
-    Sintomas{
-        str idSintoma PK
-        str nombre
-        str detalle
-    }
-    SintomasConsulta{
-        str idSintoma PK
-        str nombre
-        str detalle
-    }
-    Diagnosticos{
-        str idDiagnosticos PK
-        str nombre
-        str detalle
-    }
-    DiagnosticosConsulta{
-        str idDiagnosticosConsulta PK
-        str nombre
-        str detalle
-    }
-    Medicamentos{
-        str idMedicamento PK
-        str nombre
-        str detalle
-    }
-    MedicamentosConsulta{
-        str idMedicamentoConsulta PK
-        str nombre
-        str detalle
+
+    SUCURSAL {
+        int id PK
+        string nombre
+        string direccion
+        string telefono
+        int supervisor_id FK "referencia a VETERINARIO, nullable"
+        int supervisor_suplente_id FK "referencia a VETERINARIO, nullable"
     }
 
+    EMPLEADO {
+        int id PK
+        string tipo_documento
+        string nro_documento
+        string nombres
+        string apellido
+        date fecha_nacimiento
+        date fecha_ingreso
+        int sucursal_id FK
+    }
 
+    VETERINARIO {
+        int empleado_id PK, FK "1 a 1 con EMPLEADO"
+        string matricula_habilitante
+    }
 
+    ESTUDIANTE {
+        int empleado_id PK, FK "1 a 1 con EMPLEADO"
+        string legajo
+    }
 
+    RAZA {
+        int id PK
+        string denominacion
+        decimal peso_min_hembra
+        decimal peso_max_hembra
+        decimal peso_min_macho
+        decimal peso_max_macho
+        decimal altura_media_hembra
+        decimal altura_media_macho
+        text cuidados_especiales
+    }
 
+    DUENO {
+        int id PK
+        string apellido
+        string nombres
+        string telefono
+    }
 
+    PERRO {
+        int id PK
+        string nro_historia_clinica "unico junto a sucursal_id"
+        int sucursal_id FK
+        int raza_id FK
+        int dueno_id FK
+        string nombre
+        date fecha_nacimiento
+        string sexo
+        decimal peso_actual
+        decimal altura_actual
+    }
 
+    VACUNA {
+        int id PK
+        string nombre
+    }
 
+    CALENDARIO_VACUNA {
+        int id PK
+        int perro_id FK
+        int vacuna_id FK
+        int empleado_id FK "nullable hasta aplicarse"
+        date fecha_programada
+        date fecha_aplicacion "nullable"
+        string laboratorio
+        string dosis
+    }
 
-    
-    TipoEmpleado ||--o{ Empleado : tiene
-    Sucursal ||--o{ Empleado : tiene
-    TipoDocumento ||--o{ Empleado : tiene
-    EducacionEmpleado ||--o{ Empleado : tiene
-    Consulta o{--|| Empleado : tiene
-    Perro ||--o{ Consulta : tiene
-    Raza ||--o{ Perro : tiene
-    Sexo ||--o{ Perro : tiene
-    HistorialVacunación ||--o{ Perro : tiene
-    TipoVacuna ||--o{ HistorialVacunación : tiene
-    LaboratorioVacuna ||--o{ HistorialVacunación : tiene
-    Laboratorios||--o{ LaboratorioVacuna : tiene
-    TipoConsulta ||--o{ Consulta : tiene
-    SintomasConsulta ||--o{ Consulta : tiene
-    Sintomas ||--o{ SintomasConsulta : tiene
-    DiagnosticosConsulta ||--o{ Consulta : tiene
-    Diagnosticos ||--o{ DiagnosticosConsulta : tiene
-    MedicamentosConsulta ||--o{ Consulta : tiene
-    Medicamentos ||--o{ MedicamentosConsulta : tiene
+    CONSULTA {
+        int id PK
+        int nro_orden "unico junto a perro_id"
+        int perro_id FK
+        int empleado_id FK
+        datetime fecha_entrada
+        bool internado
+        datetime fecha_salida "solo si internado=true"
+    }
+
+    SINTOMA {
+        int id PK
+        string nombre
+    }
+
+    DIAGNOSTICO {
+        int id PK
+        string nombre
+    }
+
+    CONSULTA_SINTOMA {
+        int id PK
+        int consulta_id FK
+        int sintoma_id FK
+    }
+
+    CONSULTA_DIAGNOSTICO {
+        int id PK
+        int consulta_id FK
+        int diagnostico_id FK
+    }
+
+    MEDICAMENTO {
+        int id PK
+        string nombre
+        string laboratorio
+    }
+
+    RECETA_MEDICAMENTO {
+        int id PK
+        int consulta_id FK
+        int medicamento_id FK
+        string dosis
+        string periodicidad
+    }
+
+    STOCK_MEDICAMENTO {
+        int id PK
+        int medicamento_id FK
+        int sucursal_id FK
+        date fecha_ultima_compra
+        int cantidad_existente
+        int cantidad_minima
+    }
+
+    %% -------------------- SUCURSAL / EMPLEADO --------------------
+    SUCURSAL       ||--o{ EMPLEADO             : "emplea"
+    SUCURSAL       |o--o| VETERINARIO          : "designa_supervisor"
+    SUCURSAL       |o--o| VETERINARIO          : "designa_supervisor_suplente"
+    EMPLEADO       ||--o| VETERINARIO          : "es_recibido"
+    EMPLEADO       ||--o| ESTUDIANTE           : "es_estudiante"
+
+    %% -------------------- PERRO --------------------
+    SUCURSAL       ||--o{ PERRO                : "registra"
+    RAZA           ||--o{ PERRO                : "clasifica"
+    DUENO          ||--o{ PERRO                : "posee"
+
+    %% -------------------- VACUNACION --------------------
+    PERRO          ||--o{ CALENDARIO_VACUNA    : "tiene_programada"
+    VACUNA         ||--o{ CALENDARIO_VACUNA    : "corresponde_a"
+    EMPLEADO       |o--o{ CALENDARIO_VACUNA    : "aplica"
+
+    %% -------------------- CONSULTAS --------------------
+    PERRO          ||--o{ CONSULTA             : "es_atendido_en"
+    EMPLEADO       ||--o{ CONSULTA             : "atiende"
+    CONSULTA       ||--o{ CONSULTA_SINTOMA     : "detecta"
+    SINTOMA        ||--o{ CONSULTA_SINTOMA     : "detectado_en"
+    CONSULTA       ||--o{ CONSULTA_DIAGNOSTICO : "determina"
+    DIAGNOSTICO    ||--o{ CONSULTA_DIAGNOSTICO : "determinado_en"
+
+    %% -------------------- MEDICAMENTOS --------------------
+    CONSULTA       ||--o{ RECETA_MEDICAMENTO   : "receta"
+    MEDICAMENTO    ||--o{ RECETA_MEDICAMENTO   : "es_recetado_como"
+    MEDICAMENTO    ||--o{ STOCK_MEDICAMENTO    : "tiene_stock"
+    SUCURSAL       ||--o{ STOCK_MEDICAMENTO    : "almacena"
