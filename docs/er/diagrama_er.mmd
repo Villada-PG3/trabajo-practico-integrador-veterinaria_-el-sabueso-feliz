@@ -1,0 +1,132 @@
+erDiagram
+    Empleado {
+        str idEmpleado PK
+        str nombre
+        str detalle
+        }
+    TipoEmpleado {
+        str idTipoEmpleado PK
+        str nombre
+        str detalle
+    }
+    Sucursal {
+        str idSucursal PK
+        str nombre
+        str detalle
+    }
+    TipoDocumento {
+        str idTipoDocumento PK
+        str nombre
+        str detalle
+    }
+    EducacionEmpleado{
+        str idEducacionEmpleado PK
+        str nombre
+        str detalle
+    }
+    Perro{
+        str idPerro PK
+        str idRaza FK
+        str idSexo FK
+        str nombre
+        str detalle
+    }
+    Raza{
+        str idRaza PK
+        str nombre
+        str detalle
+    }
+    Sexo{
+        str idSexo PK
+        str nombre
+        str detalle
+    }
+    HistorialVacunación{
+        str idHistorialVacunación PK
+        str nombre
+        str detalle
+    }
+    TipoVacuna{
+        str idTipoVacuna PK
+        str nombre
+        str detalle
+    }
+    Laboratorios{
+        str idLaboratorio PK
+        str nombre
+        str detalle
+    }
+    LaboratorioVacuna{
+        str idLaboratorioVacuna PK
+        str nombre
+        str detalle
+    }
+    Consulta{
+        str idConsulta PK
+        str nombre
+        str detalle
+    }
+    TipoConsulta{
+        str idTipoConsulta PK
+        str nombre
+        str detalle
+    }
+    Sintomas{
+        str idSintoma PK
+        str nombre
+        str detalle
+    }
+    SintomasConsulta{
+        str idSintoma PK
+        str nombre
+        str detalle
+    }
+    Diagnosticos{
+        str idDiagnosticos PK
+        str nombre
+        str detalle
+    }
+    DiagnosticosConsulta{
+        str idDiagnosticosConsulta PK
+        str nombre
+        str detalle
+    }
+    Medicamentos{
+        str idMedicamento PK
+        str nombre
+        str detalle
+    }
+    MedicamentosConsulta{
+        str idMedicamentoConsulta PK
+        str nombre
+        str detalle
+    }
+
+
+
+
+
+
+
+
+
+    
+    TipoEmpleado ||--o{ Empleado : tiene
+    Sucursal ||--o{ Empleado : tiene
+    TipoDocumento ||--o{ Empleado : tiene
+    EducacionEmpleado ||--o{ Empleado : tiene
+    Consulta o{--|| Empleado : tiene
+    Perro ||--o{ Consulta : tiene
+    Raza ||--o{ Perro : tiene
+    Sexo ||--o{ Perro : tiene
+    HistorialVacunación ||--o{ Perro : tiene
+    TipoVacuna ||--o{ HistorialVacunación : tiene
+    LaboratorioVacuna ||--o{ HistorialVacunación : tiene
+    Laboratorios||--o{ LaboratorioVacuna : tiene
+    TipoConsulta ||--o{ Consulta : tiene
+    SintomasConsulta ||--o{ Consulta : tiene
+    Sintomas ||--o{ SintomasConsulta : tiene
+    DiagnosticosConsulta ||--o{ Consulta : tiene
+    Diagnosticos ||--o{ DiagnosticosConsulta : tiene
+    MedicamentosConsulta ||--o{ Consulta : tiene
+    Medicamentos ||--o{ MedicamentosConsulta : tiene
