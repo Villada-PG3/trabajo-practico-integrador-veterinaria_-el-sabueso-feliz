@@ -1,0 +1,153 @@
+%% ============================================================
+%% DIAGRAMA UML DE CLASES - v2 (corregido)
+%% Veterinaria "El Sabueso Feliz"
+%% ============================================================
+classDiagram
+    direction TB
+
+    %% ---- Nucleo organizacional ----
+    class Sucursal {
+        +int id
+        +string nombre
+        +string direccion
+        +string telefono
+    }
+
+    class Empleado {
+        <<abstract>>
+        +int id
+        +string tipoDocumento
+        +string nroDocumento
+        +string nombres
+        +string apellido
+        +date fechaNacimiento
+        +date fechaIngreso
+    }
+
+    class Veterinario {
+        +string matriculaHabilitante
+    }
+
+    class Estudiante {
+        +string legajo
+    }
+
+    %% ---- Catalogo canino ----
+    class Raza {
+        +int id
+        +string denominacion
+        +decimal pesoMinHembra
+        +decimal pesoMaxHembra
+        +decimal pesoMinMacho
+        +decimal pesoMaxMacho
+        +decimal alturaMediaHembra
+        +decimal alturaMediaMacho
+        +text cuidadosEspeciales
+    }
+
+    class Perro {
+        +int id
+        +string nroHistoriaClinica
+        +string nombre
+        +date fechaNacimiento
+        +string sexo
+        +decimal pesoActual
+        +decimal alturaActual
+    }
+
+    class Dueno["Dueño"] {
+        +int id
+        +string apellido
+        +string nombres
+        +string telefono
+    }
+
+    %% ---- Vacunacion ----
+    class Vacuna {
+        +int id
+        +string nombre
+    }
+
+    class CalendarioVacuna {
+        +int id
+        +date fechaProgramada
+        +date fechaAplicacion
+        +string laboratorio
+        +string dosis
+    }
+
+    %% ---- Consultas clinicas ----
+    class Consulta {
+        +int id
+        +int nroOrden
+        +datetime fechaEntrada
+        +bool internado
+        +datetime fechaSalida
+    }
+
+    class Sintoma {
+        +int id
+        +string nombre
+    }
+
+    class Diagnostico {
+        +int id
+        +string nombre
+    }
+
+    %% ---- Medicamentos ----
+    class Medicamento {
+        +int id
+        +string nombre
+        +string laboratorio
+    }
+
+    class RecetaMedicamento {
+        +int id
+        +string dosis
+        +string periodicidad
+    }
+
+    class StockMedicamento {
+        +int id
+        +date fechaUltimaCompra
+        +int cantidadExistente
+        +int cantidadMinima
+    }
+
+    %% -------------------- HERENCIA --------------------
+    Empleado <|-- Veterinario
+    Empleado <|-- Estudiante
+
+    %% -------------------- SUCURSAL <-> EMPLEADO --------------------
+    Sucursal "1" --> "0..*" Empleado : trabaja actualmente en
+    Sucursal "1" --> "0..1" Veterinario : supervisor
+    Sucursal "1" --> "0..1" Veterinario : supervisor suplente
+
+    %% -------------------- SUCURSAL/RAZA <-> PERRO --------------------
+    Sucursal "1" --> "0..*" Perro : registrado en
+    Raza "1" --> "0..*" Perro : es de raza
+    Dueno "1" --> "0..*" Perro : es dueño de
+
+    %% -------------------- VACUNACION --------------------
+    Perro "1" --> "0..*" CalendarioVacuna : tiene programada
+    Vacuna "1" --> "0..*" CalendarioVacuna : corresponde a
+    Empleado "0..1" --> "0..*" CalendarioVacuna : aplica
+
+    %% -------------------- CONSULTAS --------------------
+    Perro "1" --> "0..*" Consulta : es atendido en
+    Empleado "1" --> "0..*" Consulta : atiende
+    Consulta "0..*" --> "0..*" Sintoma : detecta
+    Consulta "0..*" --> "1..*" Diagnostico : determina
+
+    %% -------------------- MEDICAMENTOS --------------------
+    Consulta "1" --> "0..*" RecetaMedicamento : receta
+    Medicamento "1" --> "0..*" RecetaMedicamento : es recetado en
+    Medicamento "1" --> "0..*" StockMedicamento : tiene stock en
+    Sucursal "1" --> "0..*" StockMedicamento : mantiene stock de
+
+    note for Empleado "Herencia total y disjunta:\ntodo Empleado ES Veterinario XOR Estudiante"
+    note for Veterinario "Restriccion: supervisor y supervisor_suplente\nde una Sucursal deben trabajar en esa\nmisma Sucursal (regla de negocio, no UML)"
+    note for Perro "nroHistoriaClinica unico solo\ndentro de cada Sucursal"
+    note for Consulta "nroOrden unico por Perro\n(y por transitividad, por Sucursal)"
+    note for StockMedicamento "Clave compuesta unica:\n(Medicamento, Sucursal)"
