@@ -2,19 +2,29 @@
 %% DIAGRAMA UML DE CLASES - v2 (corregido)
 %% Veterinaria "El Sabueso Feliz"
 %% ============================================================
+
 classDiagram
     direction TB
 
-    %% ---- Nucleo organizacional ----
+    %% ------------------------------------------------------------
+    %% NUCLEO ORGANIZACIONAL
+    %% ------------------------------------------------------------
+
     class Sucursal {
         +int id
         +string nombre
         +string direccion
         +string telefono
+
+        + asignarSupervisor(empleado : Empleado) : void
+        + asignarSupervisorSuplente(empleado : Empleado) : void
+        + cantidadEmpleados() : int
+        + supervisorAsignado() : bool
     }
 
     class Empleado {
         <<abstract>>
+
         +int id
         +string tipoDocumento
         +string nroDocumento
@@ -22,17 +32,35 @@ classDiagram
         +string apellido
         +date fechaNacimiento
         +date fechaIngreso
+
+        + calcularEdad() : int
+        + calcularAntiguedad() : int
+        + cambiarSucursal(nuevaSucursal : Sucursal) : void
+        + actualizarDatosPersonales(nombres : string, apellido : string) : void
+        + actualizarDocumento(tipoDocumento : string, nroDocumento : string) : void
+        + esSupervisorDe(sucursal : Sucursal) : bool
     }
 
     class Veterinario {
         +string matriculaHabilitante
+
+        + registrarMatricula(matricula : string) : void
+        + tieneMatriculaVigente() : bool
+        + aplicarVacuna(calendario : CalendarioVacuna, fechaAplicacion : date) : void
+        + atenderConsulta(consulta : Consulta) : void
     }
 
     class Estudiante {
         +string legajo
+
+        + registrarLegajo(legajo : string) : void
     }
 
-    %% ---- Catalogo canino ----
+
+    %% ------------------------------------------------------------
+    %% CATALOGO CANINO
+    %% ------------------------------------------------------------
+
     class Raza {
         +int id
         +string denominacion
@@ -43,6 +71,12 @@ classDiagram
         +decimal alturaMediaHembra
         +decimal alturaMediaMacho
         +text cuidadosEspeciales
+
+        + registrarRaza(denominacion : string) : void
+        + actualizarRangosPeso(pesoMinHembra : decimal, pesoMaxHembra : decimal, pesoMinMacho : decimal, pesoMaxMacho : decimal) : void
+        + actualizarAlturasMedias(alturaMediaHembra : decimal, alturaMediaMacho : decimal) : void
+        + actualizarCuidadosEspeciales(cuidados : text) : void
+        + pesoDentroDelRango(peso : decimal, sexo : string) : bool
     }
 
     class Perro {
@@ -53,19 +87,40 @@ classDiagram
         +string sexo
         +decimal pesoActual
         +decimal alturaActual
+        +date fechaActualizacion
+
+        + registrarPerro(nombre : string, fechaNacimiento : date, sexo : string, raza : Raza, duenio : Duenio) : void
+        + calcularEdad() : int
+        + actualizarPeso(nuevoPeso : float) : void
+        + actualizarAltura(nuevaAltura : float) : void
+        + registrarFechaActualizacion(fechaActualizacion : date) : void
+        + cambiarDuenio(nuevoDuenio : Duenio) : void
+        + cambiarSucursal(nuevaSucursal : Sucursal) : void
+        + obtenerHistoriaClinica() : string
     }
 
-    class Dueno["Dueño"] {
+    class Duenio["Dueño"] {
         +int id
         +string apellido
         +string nombres
         +string telefono
+
+        + registrarDuenio(apellido : string, nombres : string, telefono : string) : void
+        + actualizarDatosContacto(telefono : string) : void
+        + listarPerros() : List~Perro~
     }
 
-    %% ---- Vacunacion ----
+
+    %% ------------------------------------------------------------
+    %% VACUNACION
+    %% ------------------------------------------------------------
+
     class Vacuna {
         +int id
         +string nombre
+
+        + registrarVacuna(nombre : string) : void
+        + actualizarNombre(nombre : string) : void
     }
 
     class CalendarioVacuna {
@@ -74,38 +129,74 @@ classDiagram
         +date fechaAplicacion
         +string laboratorio
         +string dosis
+
+        + programarVacunacion(fecha : date) : void
+        + reprogramar(nuevaFecha : date) : void
+        + registrarAplicacion(fecha : date, laboratorio : string, dosis : string) : void
+        + vacunacionHecha() : bool
     }
 
-    %% ---- Consultas clinicas ----
+
+    %% ------------------------------------------------------------
+    %% CONSULTAS CLINICAS
+    %% ------------------------------------------------------------
+
     class Consulta {
         +int id
         +int nroOrden
         +datetime fechaEntrada
         +bool internado
         +datetime fechaSalida
+
+        + registrarConsulta(perro : Perro, veterinario : Empleado, fechaEntrada : datetime, internado : bool) : void
+        + asignarNroOrden(nro : int) : void
+        + estaInternado() : bool
+        + calcularDiasInternado() : int
+        + registrarSalida(fecha : datetime) : void
+        + registrarSintoma(sintoma : Sintoma) : void
+        + registrarDiagnostico(diagnostico : Diagnostico) : void
+        + recetarMedicamento(medicamento : Medicamento, dosis : string, periodicidad : string) : void
     }
 
     class Sintoma {
         +int id
         +string nombre
+
+        + registrarSintoma(nombre : string) : void
+        + actualizarNombre(nombre : string) : void
     }
 
     class Diagnostico {
         +int id
         +string nombre
+
+        + registrarDiagnostico(nombre : string) : void
+        + actualizarNombre(nombre : string) : void
     }
 
-    %% ---- Medicamentos ----
+
+    %% ------------------------------------------------------------
+    %% MEDICAMENTOS
+    %% ------------------------------------------------------------
+
     class Medicamento {
         +int id
         +string nombre
         +string laboratorio
+
+        + registrarMedicamento(nombre : string, laboratorio : string) : void
+        + actualizarLaboratorio(laboratorio : string) : void
     }
 
     class RecetaMedicamento {
         +int id
         +string dosis
         +string periodicidad
+
+        + registrarReceta(medicamento : Medicamento, dosis : string, periodicidad : string) : void
+        + actualizarDosis(nuevaDosis : decimal) : void
+        + actualizarPeriodicidad(nuevaPeriodicidad : int) : void
+        + obtenerPeriodicidad() : int
     }
 
     class StockMedicamento {
@@ -113,41 +204,81 @@ classDiagram
         +date fechaUltimaCompra
         +int cantidadExistente
         +int cantidadMinima
+
+        + registrarActualizacionStock(cantidad : int) : void
+        + registrarSalidaStock(cantidad : int) : void
+        + registrarCompra(fecha : date, cantidad : int) : void
+        + stockBajoMinimo() : bool
+        + unidadesActuales() : int
+        + actualizarCantidadMinima(cantidad : int) : void
     }
 
-    %% -------------------- HERENCIA --------------------
+
+    %% ------------------------------------------------------------
+    %% HERENCIA
+    %% ------------------------------------------------------------
+
     Empleado <|-- Veterinario
     Empleado <|-- Estudiante
 
-    %% -------------------- SUCURSAL <-> EMPLEADO --------------------
+
+    %% ------------------------------------------------------------
+    %% SUCURSAL <-> EMPLEADO
+    %% ------------------------------------------------------------
+
     Sucursal "1" --> "0..*" Empleado : trabaja actualmente en
     Sucursal "1" --> "0..1" Veterinario : supervisor
     Sucursal "1" --> "0..1" Veterinario : supervisor suplente
 
-    %% -------------------- SUCURSAL/RAZA <-> PERRO --------------------
+
+    %% ------------------------------------------------------------
+    %% SUCURSAL / RAZA / DUENIO <-> PERRO
+    %% ------------------------------------------------------------
+
     Sucursal "1" --> "0..*" Perro : registrado en
     Raza "1" --> "0..*" Perro : es de raza
-    Dueno "1" --> "0..*" Perro : es dueño de
+    Duenio "1" --> "0..*" Perro : es dueño de
 
-    %% -------------------- VACUNACION --------------------
+
+    %% ------------------------------------------------------------
+    %% VACUNACION
+    %% ------------------------------------------------------------
+
     Perro "1" --> "0..*" CalendarioVacuna : tiene programada
     Vacuna "1" --> "0..*" CalendarioVacuna : corresponde a
     Empleado "0..1" --> "0..*" CalendarioVacuna : aplica
 
-    %% -------------------- CONSULTAS --------------------
+
+    %% ------------------------------------------------------------
+    %% CONSULTAS
+    %% ------------------------------------------------------------
+
     Perro "1" --> "0..*" Consulta : es atendido en
     Empleado "1" --> "0..*" Consulta : atiende
     Consulta "0..*" --> "0..*" Sintoma : detecta
     Consulta "0..*" --> "1..*" Diagnostico : determina
 
-    %% -------------------- MEDICAMENTOS --------------------
+
+    %% ------------------------------------------------------------
+    %% MEDICAMENTOS
+    %% ------------------------------------------------------------
+
     Consulta "1" --> "0..*" RecetaMedicamento : receta
     Medicamento "1" --> "0..*" RecetaMedicamento : es recetado en
     Medicamento "1" --> "0..*" StockMedicamento : tiene stock en
     Sucursal "1" --> "0..*" StockMedicamento : mantiene stock de
 
+
+    %% ------------------------------------------------------------
+    %% REGLAS DE NEGOCIO / NOTAS
+    %% ------------------------------------------------------------
+
     note for Empleado "Herencia total y disjunta:\ntodo Empleado ES Veterinario XOR Estudiante"
+
     note for Veterinario "Restriccion: supervisor y supervisor_suplente\nde una Sucursal deben trabajar en esa\nmisma Sucursal (regla de negocio, no UML)"
+
     note for Perro "nroHistoriaClinica unico solo\ndentro de cada Sucursal"
+
     note for Consulta "nroOrden unico por Perro\n(y por transitividad, por Sucursal)"
+
     note for StockMedicamento "Clave compuesta unica:\n(Medicamento, Sucursal)"
