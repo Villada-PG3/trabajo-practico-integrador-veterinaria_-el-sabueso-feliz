@@ -159,7 +159,7 @@ erDiagram
     %% -------------------- CONSULTAS --------------------
     PERRO          ||--o{ CONSULTA             : "es_atendido_en"
     EMPLEADO       ||--o{ CONSULTA             : "atiende"
-    CONSULTA       ||--o{ CONSULTA_SINTOMA     : "detecta"
+    CONSULTA       ||--|{ CONSULTA_SINTOMA     : "detecta"
     SINTOMA        ||--o{ CONSULTA_SINTOMA     : "detectado_en"
     CONSULTA       ||--o{ CONSULTA_DIAGNOSTICO : "determina"
     DIAGNOSTICO    ||--o{ CONSULTA_DIAGNOSTICO : "determinado_en"
