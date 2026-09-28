@@ -140,32 +140,32 @@ erDiagram
     }
 
     %% -------------------- SUCURSAL / EMPLEADO --------------------
-    SUCURSAL       ||--o{ EMPLEADO             : "emplea"
-    SUCURSAL       |o--o| VETERINARIO          : "designa_supervisor"
-    SUCURSAL       |o--o| VETERINARIO          : "designa_supervisor_suplente"
-    EMPLEADO       ||--o| VETERINARIO          : "es_recibido"
-    EMPLEADO       ||--o| ESTUDIANTE           : "es_estudiante"
+    SUCURSAL              |o--o| VETERINARIO          : "designa_supervisor"
+    SUCURSAL              |o--o| VETERINARIO          : "designa_supervisor_suplente"
+    SUCURSAL              ||--o{ EMPLEADO             : "emplea"
+    EMPLEADO              ||--o| VETERINARIO          : "es_recibido"
+    EMPLEADO              ||--o| ESTUDIANTE           : "es_estudiante"
 
     %% -------------------- PERRO --------------------
-    SUCURSAL       ||--o{ PERRO                : "registra"
-    RAZA           ||--o{ PERRO                : "clasifica"
-    DUENO          ||--o{ PERRO                : "posee"
+    SUCURSAL              ||--o{ PERRO                : "registra"
+    PERRO                 ||--o{ RAZA                 : "clasifica"
+    PERRO                 o{--|| DUENO                : "posee"
 
     %% -------------------- VACUNACION --------------------
-    PERRO          ||--o{ CALENDARIO_VACUNA    : "tiene_programada"
-    VACUNA         ||--o{ CALENDARIO_VACUNA    : "corresponde_a"
-    EMPLEADO       |o--o{ CALENDARIO_VACUNA    : "aplica"
+    PERRO                 ||--o{ CALENDARIO_VACUNA    : "tiene_programada"
+    CALENDARIO_VACUNA     o{--|o EMPLEADO             : "aplica"
+    CALENDARIO_VACUNA     o{--|| VACUNA               : "corresponde_a"
 
     %% -------------------- CONSULTAS --------------------
-    PERRO          ||--o{ CONSULTA             : "es_atendido_en"
-    EMPLEADO       ||--o{ CONSULTA             : "atiende"
-    CONSULTA       ||--|{ CONSULTA_SINTOMA     : "detecta"
-    SINTOMA        ||--o{ CONSULTA_SINTOMA     : "detectado_en"
-    CONSULTA       ||--o{ CONSULTA_DIAGNOSTICO : "determina"
-    DIAGNOSTICO    ||--o{ CONSULTA_DIAGNOSTICO : "determinado_en"
+    PERRO                 ||--o{ CONSULTA             : "es_atendido_en"
+    EMPLEADO              ||--o{ CONSULTA             : "atiende"
+    CONSULTA              ||--|{ CONSULTA_SINTOMA     : "detecta"
+    CONSULTA_SINTOMA      o{--|| SINTOMA              : "detectado_en"
+    CONSULTA              ||--o{ CONSULTA_DIAGNOSTICO : "determina"
+    CONSULTA_DIAGNOSTICO  o{--|| DIAGNOSTICO          : "determinado_en"
 
     %% -------------------- MEDICAMENTOS --------------------
-    CONSULTA       ||--o{ RECETA_MEDICAMENTO   : "receta"
-    MEDICAMENTO    ||--o{ RECETA_MEDICAMENTO   : "es_recetado_como"
-    MEDICAMENTO    ||--o{ STOCK_MEDICAMENTO    : "tiene_stock"
-    SUCURSAL       ||--o{ STOCK_MEDICAMENTO    : "almacena"
+    CONSULTA              ||--o{ RECETA_MEDICAMENTO   : "receta"
+    MEDICAMENTO           ||--o{ RECETA_MEDICAMENTO   : "es_recetado_como"
+    MEDICAMENTO           ||--o{ STOCK_MEDICAMENTO    : "tiene_stock"
+    SUCURSAL              ||--o{ STOCK_MEDICAMENTO    : "almacena"
