@@ -118,9 +118,11 @@ classDiagram
     class Vacuna {
         +int id
         +string nombre
+        +text descripcion
 
-        + registrarVacuna(nombre : string) : void
+        + registrarVacuna(nombre : string, descripcion : text) : void
         + actualizarNombre(nombre : string) : void
+        + actualizarDescripcion(descripcion : text) : void
     }
 
     class CalendarioVacuna {
@@ -161,17 +163,20 @@ classDiagram
     class Sintoma {
         +int id
         +string nombre
+        +text descripcion
 
-        + registrarSintoma(nombre : string) : void
+        + registrarSintoma(nombre : string, descripcion : text) : void
         + actualizarNombre(nombre : string) : void
     }
 
     class Diagnostico {
         +int id
         +string nombre
+        +text descripcion
 
-        + registrarDiagnostico(nombre : string) : void
+        + registrarDiagnostico(nombre : string, descripcion : text) : void
         + actualizarNombre(nombre : string) : void
+        + actualizarDescripcion(descripcion : text) : void
     }
 
 
