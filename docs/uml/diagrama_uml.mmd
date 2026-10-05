@@ -223,7 +223,7 @@ classDiagram
     %% HERENCIA
     %% ------------------------------------------------------------
 
-    Empleado <|-- Veterinario
+    Veterinario --|> Empleado
     Empleado <|-- Estudiante
 
 
@@ -249,17 +249,17 @@ classDiagram
     %% VACUNACION
     %% ------------------------------------------------------------
 
-    Perro "1" --> "0..*" CalendarioVacuna : tiene programada
-    Vacuna "1" --> "0..*" CalendarioVacuna : corresponde a
     Empleado "0..1" --> "0..*" CalendarioVacuna : aplica
+    Perro "1" --> "0..*" CalendarioVacuna : tiene programada
+    CalendarioVacuna "0..*" <-- "1" Vacuna : corresponde a
 
 
     %% ------------------------------------------------------------
     %% CONSULTAS
     %% ------------------------------------------------------------
 
-    Perro "1" --> "0..*" Consulta : es atendido en
     Empleado "1" --> "0..*" Consulta : atiende
+    Perro "1" --> "0..*" Consulta : es atendido en
     Consulta "0..*" --> "0..*" Sintoma : detecta
     Consulta "0..*" --> "1..*" Diagnostico : determina
 
@@ -269,7 +269,7 @@ classDiagram
     %% ------------------------------------------------------------
 
     Consulta "1" --> "0..*" RecetaMedicamento : receta
-    Medicamento "1" --> "0..*" RecetaMedicamento : es recetado en
+    RecetaMedicamento "0..*" <-- "1" Medicamento : es recetado en
     Medicamento "1" --> "0..*" StockMedicamento : tiene stock en
     Sucursal "1" --> "0..*" StockMedicamento : mantiene stock de
 
@@ -278,12 +278,12 @@ classDiagram
     %% REGLAS DE NEGOCIO / NOTAS
     %% ------------------------------------------------------------
 
+    note for Consulta "nroOrden unico por Perro\n(y por transitividad, por Sucursal)"
+
     note for Empleado "Herencia total y disjunta:\ntodo Empleado ES Veterinario XOR Estudiante"
 
     note for Veterinario "Restriccion: supervisor y supervisor_suplente\nde una Sucursal deben trabajar en esa\nmisma Sucursal (regla de negocio, no UML)"
 
     note for Perro "nroHistoriaClinica unico solo\ndentro de cada Sucursal"
-
-    note for Consulta "nroOrden unico por Perro\n(y por transitividad, por Sucursal)"
 
     note for StockMedicamento "Clave compuesta unica:\n(Medicamento, Sucursal)"
