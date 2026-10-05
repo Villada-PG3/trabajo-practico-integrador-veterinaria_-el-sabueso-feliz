@@ -30,10 +30,10 @@ cd trabajo-practico-integrador-veterinaria_-el-sabueso-feliz
 
 ### 2. Crear el entorno virtual
 
-Creá un entorno virtual llamado `venv`:
+Creá un entorno virtual llamado `.venv`:
 
 ```bash
-python -m venv venv
+python -m venv .venv
 ```
 
 ---
@@ -45,25 +45,25 @@ python -m venv venv
 En CMD:
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 En PowerShell:
 
 ```bash
-venv\Scripts\Activate.ps1
+.venv\Scripts\Activate.ps1
 ```
 
 #### Linux / macOS
 
 ```bash
-source venv/bin/activate
+source .venv/bin/activate
 ```
 
 Una vez activado, deberías ver algo parecido a:
 
 ```text
-(venv) C:\proyecto>
+(.venv) C:\proyecto>
 ```
 
 ---
@@ -180,7 +180,7 @@ pip install -r requirements.txt
 Cada vez que trabajes en el proyecto, activá primero el entorno virtual:
 
 ```bash
-venv\Scripts\activate
+.venv\Scripts\activate
 ```
 
 y después ejecutá:
