@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# DEBUG = False
+# ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
 
 # Application definition
 
@@ -37,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "mi_app",
+    "sabueso_feliz",
 ]
 
 MIDDLEWARE = [
@@ -55,7 +58,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "sabueso_feliz" /'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

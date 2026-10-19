@@ -50,18 +50,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Estudiantes',
             fields=[
-                ('empleado_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='mi_app.empleado')),
+                ('empleado_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sabueso_feliz.empleado')),
                 ('legajo', models.CharField(max_length=20)),
             ],
-            bases=('mi_app.empleado',),
+            bases=('sabueso_feliz.empleado',),
         ),
         migrations.CreateModel(
             name='Veterinario',
             fields=[
-                ('empleado_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='mi_app.empleado')),
+                ('empleado_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sabueso_feliz.empleado')),
                 ('matriculaHabilitante', models.CharField(max_length=20)),
             ],
-            bases=('mi_app.empleado',),
+            bases=('sabueso_feliz.empleado',),
         ),
         migrations.CreateModel(
             name='Perro',
@@ -73,9 +73,9 @@ class Migration(migrations.Migration):
                 ('sexo', models.CharField(max_length=10)),
                 ('peso', models.FloatField()),
                 ('altura', models.FloatField()),
-                ('duenio', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mi_app.empleado')),
-                ('raza', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mi_app.raza')),
-                ('sucursal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='mi_app.sucursal')),
+                ('duenio', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sabueso_feliz.empleado')),
+                ('raza', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sabueso_feliz.raza')),
+                ('sucursal', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='sabueso_feliz.sucursal')),
             ],
         ),
     ]

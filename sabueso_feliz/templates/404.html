@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Página no encontrada
+{% endblock %}
+
+{% block content %}
+
+<style>
+    .error-page {
+        min-height: 70vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .error-card {
+        width: 100%;
+        max-width: 700px;
+        background: white;
+        border-radius: 24px;
+        padding: 60px 40px;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.10);
+        border: 1px solid #eeeeee;
+    }
+
+    .error-icon {
+        width: 100px;
+        height: 100px;
+        margin: 0 auto 25px;
+        border-radius: 50%;
+        background: #f1f8f5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 50px;
+    }
+
+    .error-number {
+        font-size: 90px;
+        line-height: 1;
+        font-weight: 800;
+        color: #2e8b70;
+        margin: 0;
+        letter-spacing: -5px;
+    }
+
+    .error-title {
+        font-size: 32px;
+        color: #222;
+        margin: 15px 0 12px;
+    }
+
+    .error-text {
+        color: #666;
+        font-size: 17px;
+        line-height: 1.6;
+        max-width: 500px;
+        margin: 0 auto 30px;
+    }
+
+    .error-button {
+        display: inline-block;
+        padding: 14px 28px;
+        background: #2e8b70;
+        color: white;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .error-button:hover {
+        background: #246f5a;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 18px rgba(46, 139, 112, 0.25);
+    }
+
+    .error-paw {
+        margin-top: 30px;
+        color: #aaa;
+        font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+        .error-card {
+            padding: 40px 25px;
+        }
+
+        .error-number {
+            font-size: 70px;
+        }
+
+        .error-title {
+            font-size: 25px;
+        }
+    }
+</style>
+
+<div class="error-page">
+    <div class="error-card">
+
+        <div class="error-icon">
+            🐾
+        </div>
+
+        <h1 class="error-number">404</h1>
+
+        <h2 class="error-title">
+            ¡Ups! Esta página se escapó
+        </h2>
+
+        <p class="error-text">
+            Parece que el recurso que estás buscando no existe,
+            fue movido o decidió salir a dar una vuelta. 🐶
+        </p>
+
+        <a href="{% url 'sabueso_feliz:home' %}" class="error-button">
+            🏠 Volver al inicio
+        </a>
+
+        <div class="error-paw">
+            El Sabueso Feliz · Clínica Veterinaria
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

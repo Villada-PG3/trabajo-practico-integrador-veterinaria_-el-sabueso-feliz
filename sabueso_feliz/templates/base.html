@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            SABUESO FELIZ
+        {% endblock %}
+    </title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+    <header>
+        <nav>
+            <a href="{% url 'sabueso_feliz:home' %}">
+                Inicio
+            </a>
+
+            <a href="{% url 'sabueso_feliz:sucursales' %}">
+                Sucursales
+            </a>
+
+            <a href="{% url 'sabueso_feliz:empleados' %}">
+                Empleados
+            </a>
+
+            <a href="{% url 'sabueso_feliz:razas' %}">
+                Razas
+            </a>
+
+            <a href="{% url 'sabueso_feliz:pacientes' %}">
+                Pacientes
+            </a>
+
+            <a href="{% url 'sabueso_feliz:consultas' %}">
+                Consultas
+            </a>
+
+            <a href="{% url 'sabueso_feliz:vacunaciones' %}">
+                Vacunaciones
+            </a>
+
+            <a href="{% url 'sabueso_feliz:medicamentos' %}">
+                Medicamentos
+            </a>
+
+            <a href="{% url 'sabueso_feliz:compras' %}">
+                Compras
+            </a>
+
+            <a href="{% url 'sabueso_feliz:login' %}">
+                Iniciar sesión
+            </a>
+        </nav>
+    </header>
+
+
+    <main>
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer>
+        <p>SABUESO FELIZ</p>
+    </footer>
+
+</body>
+
+</html>
