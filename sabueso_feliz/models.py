@@ -36,20 +36,11 @@ class Empleado(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+
 class Veterinario(Empleado):
-    empleado_id = models.OneToOneField(
-        Empleado,
-        on_delete=models.CASCADE,
-        primary_key=True)
-    
     matriculaHabilitante = models.CharField(max_length=20)
     
 class Estudiantes(Empleado):
-    empleado_id = models.OneToOneField(
-        Empleado,
-        on_delete=models.CASCADE,
-        primary_key=True)
-    
     legajo = models.CharField(max_length=20)
 
 class Raza(models.Model):
