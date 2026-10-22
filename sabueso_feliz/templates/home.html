@@ -1,15 +1,132 @@
 {% extends 'base.html' %}
 
-
-{% block title %}
-    Inicio
-{% endblock %}
-
+{% block title %}Inicio · El Sabueso Feliz{% endblock %}
 
 {% block content %}
+{# Rutas: si el nombre no existe en tu urls.py, el enlace queda en "#" #}
+{% url 'consultas' as u_consultas %}
+{% url 'pacientes' as u_pacientes %}
+{% url 'vacunaciones' as u_vacunaciones %}
+{% url 'compras' as u_compras %}
+{% url 'medicamentos' as u_medicamentos %}
 
-    <h1>Bienvenido</h1>
+{# ── Encabezado ── #}
+<div class="page-head">
+  <div>
+    <h1 class="page-title">Buen día, administración</h1>
+    <p class="page-sub">{% now "l j \d\e F" %} · Resumen de Sucursal Centro</p>
+  </div>
+  <a href="{{ u_consultas|default:'#' }}" class="btn-sv">
+    <i class="bi bi-plus-lg" aria-hidden="true"></i> Nueva consulta
+  </a>
+</div>
 
-    <p>Esta es la página principal.</p>
+{# ── Indicadores (datos de ejemplo: reemplazalos por variables del contexto) ── #}
+<section class="stat-grid" aria-label="Indicadores">
+  <article class="stat-card">
+    <span class="stat-label">Consultas hoy</span>
+    <span class="stat-value">07</span>
+    <span class="stat-note">3 pendientes</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Vacunas próximas</span>
+    <span class="stat-value">12</span>
+    <span class="stat-note">4 esta semana</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Stock bajo</span>
+    <span class="stat-value">04</span>
+    <span class="stat-note is-danger">Revisar depósito</span>
+  </article>
+  <article class="stat-card">
+    <span class="stat-label">Pacientes</span>
+    <span class="stat-value">76</span>
+    <span class="stat-note">Sucursal Centro</span>
+  </article>
+</section>
 
+<div class="panel-grid">
+
+  {# ── Actividad de hoy ── #}
+  <section class="panel">
+    <div class="panel-head">
+      <h2 class="panel-title">Actividad de hoy</h2>
+      <a href="{{ u_consultas|default:'#' }}" class="btn-sv-soft">Ver todo</a>
+    </div>
+
+    <ul class="activity-list">
+      {# Repetí este <li> con {% verbatim %}{% for c in consultas %}{% endverbatim %} cuando tengas los datos #}
+      <li class="activity-item">
+        <time class="activity-time">09:15</time>
+        <div class="activity-body">
+          <strong>Toby</strong>
+          <span>Consulta · Fiebre</span>
+        </div>
+        <span class="badge-sv is-attending">En atención</span>
+      </li>
+      <li class="activity-item">
+        <time class="activity-time">10:30</time>
+        <div class="activity-body">
+          <strong>Luna</strong>
+          <span>Control y vacuna antirrábica</span>
+        </div>
+        <span class="badge-sv is-scheduled">Programada</span>
+      </li>
+      <li class="activity-item">
+        <time class="activity-time">11:10</time>
+        <div class="activity-body">
+          <strong>Mora</strong>
+          <span>Refuerzo parvovirus</span>
+        </div>
+        <span class="badge-sv is-pending">Pendiente</span>
+      </li>
+      <li class="activity-item">
+        <time class="activity-time">12:30</time>
+        <div class="activity-body">
+          <strong>Rocco</strong>
+          <span>Consulta clínica</span>
+        </div>
+        <span class="badge-sv is-scheduled">Programada</span>
+      </li>
+      <li class="activity-item">
+        <time class="activity-time">15:00</time>
+        <div class="activity-body">
+          <strong>Simón</strong>
+          <span>Control postoperatorio</span>
+        </div>
+        <span class="badge-sv is-scheduled">Programada</span>
+      </li>
+    </ul>
+  </section>
+
+  {# ── Columna derecha ── #}
+  <div class="side-stack">
+
+    <section class="panel">
+      <h2 class="panel-title">Acciones rápidas</h2>
+      <div class="quick-actions">
+        <a href="{{ u_pacientes|default:'#' }}" class="btn-sv-outline btn-block">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i> Registrar perro
+        </a>
+        <a href="{{ u_vacunaciones|default:'#' }}" class="btn-sv-outline btn-block">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i> Aplicar vacuna
+        </a>
+        <a href="{{ u_compras|default:'#' }}" class="btn-sv-outline btn-block">
+          <i class="bi bi-plus-lg" aria-hidden="true"></i> Nueva compra
+        </a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Atención necesaria</h2>
+      <span class="badge-sv is-alert">4 medicamentos bajo mínimo</span>
+      <ul class="alert-list">
+        <li>Meloxicam · 4 / mínimo 8</li>
+        <li>Cefalexina · 2 / mínimo 6</li>
+      </ul>
+      <a href="{{ u_medicamentos|default:'#' }}" class="link-brand">Abrir depósito →</a>
+    </section>
+
+  </div>
+</div>
 {% endblock %}
