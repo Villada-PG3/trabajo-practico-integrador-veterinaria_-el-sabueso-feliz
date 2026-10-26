@@ -3,130 +3,160 @@
 {% block title %}Inicio · El Sabueso Feliz{% endblock %}
 
 {% block content %}
-{# Rutas: si el nombre no existe en tu urls.py, el enlace queda en "#" #}
+
+{# Si el nombre de la ruta no existe, el enlace queda en "#" #}
 {% url 'consultas' as u_consultas %}
 {% url 'pacientes' as u_pacientes %}
 {% url 'vacunaciones' as u_vacunaciones %}
 {% url 'compras' as u_compras %}
 {% url 'medicamentos' as u_medicamentos %}
 
-{# ── Encabezado ── #}
-<div class="page-head">
-  <div>
-    <h1 class="page-title">Buen día, administración</h1>
-    <p class="page-sub">{% now "l j \d\e F" %} · Resumen de Sucursal Centro</p>
-  </div>
-  <a href="{{ u_consultas|default:'#' }}" class="btn-sv">
-    <i class="bi bi-plus-lg" aria-hidden="true"></i> Nueva consulta
-  </a>
+<!-- Encabezado -->
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Buen día, administración</h1>
+        <p class="text-muted mb-0">{% now "l j \d\e F" %} · Resumen de Sucursal Centro</p>
+    </div>
+    <a href="{{ u_consultas|default:'#' }}" class="btn btn-sabueso">
+        <i class="bi bi-plus-lg"></i> Nueva consulta
+    </a>
 </div>
 
-{# ── Indicadores (datos de ejemplo: reemplazalos por variables del contexto) ── #}
-<section class="stat-grid" aria-label="Indicadores">
-  <article class="stat-card">
-    <span class="stat-label">Consultas hoy</span>
-    <span class="stat-value">07</span>
-    <span class="stat-note">3 pendientes</span>
-  </article>
-  <article class="stat-card">
-    <span class="stat-label">Vacunas próximas</span>
-    <span class="stat-value">12</span>
-    <span class="stat-note">4 esta semana</span>
-  </article>
-  <article class="stat-card">
-    <span class="stat-label">Stock bajo</span>
-    <span class="stat-value">04</span>
-    <span class="stat-note is-danger">Revisar depósito</span>
-  </article>
-  <article class="stat-card">
-    <span class="stat-label">Pacientes</span>
-    <span class="stat-value">76</span>
-    <span class="stat-note">Sucursal Centro</span>
-  </article>
-</section>
+<!-- Indicadores (datos de ejemplo: después se reemplazan por variables de la vista) -->
+<div class="row g-3 mb-4">
 
-<div class="panel-grid">
-
-  {# ── Actividad de hoy ── #}
-  <section class="panel">
-    <div class="panel-head">
-      <h2 class="panel-title">Actividad de hoy</h2>
-      <a href="{{ u_consultas|default:'#' }}" class="btn-sv-soft">Ver todo</a>
+    <div class="col-6 col-xl-3">
+        <div class="tarjeta p-3">
+            <div class="etiqueta">Consultas hoy</div>
+            <div class="numero">07</div>
+            <small class="text-success fw-semibold">3 pendientes</small>
+        </div>
     </div>
 
-    <ul class="activity-list">
-      {# Repetí este <li> con {% verbatim %}{% for c in consultas %}{% endverbatim %} cuando tengas los datos #}
-      <li class="activity-item">
-        <time class="activity-time">09:15</time>
-        <div class="activity-body">
-          <strong>Toby</strong>
-          <span>Consulta · Fiebre</span>
+    <div class="col-6 col-xl-3">
+        <div class="tarjeta p-3">
+            <div class="etiqueta">Vacunas próximas</div>
+            <div class="numero">12</div>
+            <small class="text-success fw-semibold">4 esta semana</small>
         </div>
-        <span class="badge-sv is-attending">En atención</span>
-      </li>
-      <li class="activity-item">
-        <time class="activity-time">10:30</time>
-        <div class="activity-body">
-          <strong>Luna</strong>
-          <span>Control y vacuna antirrábica</span>
-        </div>
-        <span class="badge-sv is-scheduled">Programada</span>
-      </li>
-      <li class="activity-item">
-        <time class="activity-time">11:10</time>
-        <div class="activity-body">
-          <strong>Mora</strong>
-          <span>Refuerzo parvovirus</span>
-        </div>
-        <span class="badge-sv is-pending">Pendiente</span>
-      </li>
-      <li class="activity-item">
-        <time class="activity-time">12:30</time>
-        <div class="activity-body">
-          <strong>Rocco</strong>
-          <span>Consulta clínica</span>
-        </div>
-        <span class="badge-sv is-scheduled">Programada</span>
-      </li>
-      <li class="activity-item">
-        <time class="activity-time">15:00</time>
-        <div class="activity-body">
-          <strong>Simón</strong>
-          <span>Control postoperatorio</span>
-        </div>
-        <span class="badge-sv is-scheduled">Programada</span>
-      </li>
-    </ul>
-  </section>
+    </div>
 
-  {# ── Columna derecha ── #}
-  <div class="side-stack">
+    <div class="col-6 col-xl-3">
+        <div class="tarjeta p-3">
+            <div class="etiqueta">Stock bajo</div>
+            <div class="numero">04</div>
+            <small class="text-danger fw-semibold">Revisar depósito</small>
+        </div>
+    </div>
 
-    <section class="panel">
-      <h2 class="panel-title">Acciones rápidas</h2>
-      <div class="quick-actions">
-        <a href="{{ u_pacientes|default:'#' }}" class="btn-sv-outline btn-block">
-          <i class="bi bi-plus-lg" aria-hidden="true"></i> Registrar perro
-        </a>
-        <a href="{{ u_vacunaciones|default:'#' }}" class="btn-sv-outline btn-block">
-          <i class="bi bi-plus-lg" aria-hidden="true"></i> Aplicar vacuna
-        </a>
-        <a href="{{ u_compras|default:'#' }}" class="btn-sv-outline btn-block">
-          <i class="bi bi-plus-lg" aria-hidden="true"></i> Nueva compra
-        </a>
-      </div>
-    </section>
+    <div class="col-6 col-xl-3">
+        <div class="tarjeta p-3">
+            <div class="etiqueta">Pacientes</div>
+            <div class="numero">76</div>
+            <small class="text-success fw-semibold">Sucursal Centro</small>
+        </div>
+    </div>
 
-    <section class="panel">
-      <h2 class="panel-title">Atención necesaria</h2>
-      <span class="badge-sv is-alert">4 medicamentos bajo mínimo</span>
-      <ul class="alert-list">
-        <li>Meloxicam · 4 / mínimo 8</li>
-        <li>Cefalexina · 2 / mínimo 6</li>
-      </ul>
-      <a href="{{ u_medicamentos|default:'#' }}" class="link-brand">Abrir depósito →</a>
-    </section>
-
-  </div>
 </div>
+
+<div class="row g-3">
+
+    <!-- Actividad de hoy -->
+    <div class="col-xl-8">
+        <div class="tarjeta p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h5 fw-bold mb-0">Actividad de hoy</h2>
+                <a href="{{ u_consultas|default:'#' }}" class="btn btn-gris btn-sm">Ver todo</a>
+            </div>
+
+            <ul class="list-group list-group-flush">
+
+                {# Cuando tengas datos, repetí este <li> con un {% for %} #}
+                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
+                    <span class="hora">09:15</span>
+                    <div class="flex-grow-1">
+                        <strong>Toby</strong><br>
+                        <small class="text-muted">Consulta · Fiebre</small>
+                    </div>
+                    <span class="badge rounded-pill estado-atencion">En atención</span>
+                </li>
+
+                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
+                    <span class="hora">10:30</span>
+                    <div class="flex-grow-1">
+                        <strong>Luna</strong><br>
+                        <small class="text-muted">Control y vacuna antirrábica</small>
+                    </div>
+                    <span class="badge rounded-pill estado-programada">Programada</span>
+                </li>
+
+                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
+                    <span class="hora">11:10</span>
+                    <div class="flex-grow-1">
+                        <strong>Mora</strong><br>
+                        <small class="text-muted">Refuerzo parvovirus</small>
+                    </div>
+                    <span class="badge rounded-pill estado-pendiente">Pendiente</span>
+                </li>
+
+                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
+                    <span class="hora">12:30</span>
+                    <div class="flex-grow-1">
+                        <strong>Rocco</strong><br>
+                        <small class="text-muted">Consulta clínica</small>
+                    </div>
+                    <span class="badge rounded-pill estado-programada">Programada</span>
+                </li>
+
+                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
+                    <span class="hora">15:00</span>
+                    <div class="flex-grow-1">
+                        <strong>Simón</strong><br>
+                        <small class="text-muted">Control postoperatorio</small>
+                    </div>
+                    <span class="badge rounded-pill estado-programada">Programada</span>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <!-- Columna derecha -->
+    <div class="col-xl-4">
+
+        <!-- Acciones rápidas -->
+        <div class="tarjeta p-4 mb-3">
+            <h2 class="h5 fw-bold mb-3">Acciones rápidas</h2>
+            <div class="d-grid gap-2">
+                <a href="{{ u_pacientes|default:'#' }}" class="btn btn-claro">
+                    <i class="bi bi-plus-lg"></i> Registrar perro
+                </a>
+                <a href="{{ u_vacunaciones|default:'#' }}" class="btn btn-claro">
+                    <i class="bi bi-plus-lg"></i> Aplicar vacuna
+                </a>
+                <a href="{{ u_compras|default:'#' }}" class="btn btn-claro">
+                    <i class="bi bi-plus-lg"></i> Nueva compra
+                </a>
+            </div>
+        </div>
+
+        <!-- Atención necesaria -->
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Atención necesaria</h2>
+            <span class="badge rounded-pill estado-alerta">4 medicamentos bajo mínimo</span>
+
+            <ul class="list-unstyled my-3">
+                <li class="py-1">Meloxicam · 4 / mínimo 8</li>
+                <li class="py-1">Cefalexina · 2 / mínimo 6</li>
+            </ul>
+
+            <a href="{{ u_medicamentos|default:'#' }}" class="fw-bold text-success text-decoration-none">
+                Abrir depósito →
+            </a>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}
