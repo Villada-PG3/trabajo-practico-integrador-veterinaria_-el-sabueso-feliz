@@ -1,15 +1,10 @@
 {% comment %}
-  navbar.html — Menú lateral de "El Sabueso Feliz"
-  Requiere en base.html: Bootstrap 5 (CSS + bundle JS) y Bootstrap Icons.
-  El contenido principal debe ir en un elemento con la clase "app-main"
-  ubicado DESPUÉS de este include.
-
-  RUTAS: cada enlace intenta resolver el nombre de ruta indicado en {% url ... as ... %}.
-  Si el nombre no existe en tu urls.py, el enlace queda en "#" (no da error).
-  Si tus rutas están dentro de un namespace, usá 'app:nombre'.
+    Menú lateral de El Sabueso Feliz.
+    Cada enlace intenta usar el nombre de ruta indicado; si no existe
+    en tu urls.py, queda en "#" y no da error.
+    Si usás namespace, escribilo así: 'app:nombre'.
 {% endcomment %}
 
-{# ── Rutas (cambiá el nombre entre comillas si el tuyo es distinto) ── #}
 {% url 'home' as u_home %}
 {% url 'sucursales' as u_sucursales %}
 {% url 'veterinarios' as u_veterinarios %}
@@ -29,441 +24,194 @@
 {% url 'stock' as u_stock %}
 {% url 'alertas_stock' as u_alertas %}
 
-{# Restaura el estado antes de pintar, para evitar el "salto" al cargar #}
-<script>
-  (function () {
-    try {
-      if (localStorage.getItem('sabueso.sidebar') === 'collapsed') {
-        document.documentElement.classList.add('sb-collapsed');
-      }
-    } catch (e) {}
-  })();
-</script>
-
 <style>
-  :root {
-    --sb-w: 260px;
-    --sb-w-collapsed: 76px;
-    --sb-bg: #123b38;
-    --sb-bg-deep: #0e302d;
-    --sb-text: #c2d8d3;
-    --sb-text-strong: #ffffff;
-    --sb-hover: rgba(255, 255, 255, .07);
-    --sb-active: #2b5c56;
-    --sb-brand: #0b8a72;
-    --sb-focus: #7fe0c6;
-    --sb-alert: #f2b84b;
-    --sb-ease: .25s ease;
-  }
-
-  /* ── Contenedor ─────────────────────────────── */
-  .sb {
-    position: fixed;
-    inset: 0 auto 0 0;
-    width: var(--sb-w);
-    display: flex;
-    flex-direction: column;
-    background: var(--sb-bg);
-    color: var(--sb-text);
-    z-index: 1040;
-    transition: width var(--sb-ease), transform var(--sb-ease);
-  }
-
-  .sb-head {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    height: 64px;
-    padding: 0 1.1rem;
-    flex-shrink: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
-  }
-
-  .sb-brand {
-    display: flex;
-    align-items: center;
-    gap: .75rem;
-    min-width: 0;
-    color: var(--sb-text-strong);
-    text-decoration: none;
-  }
-
-  .sb-logo {
-    flex: 0 0 40px;
-    width: 40px;
-    height: 40px;
-    display: grid;
-    place-items: center;
-    border-radius: 12px;
-    background: var(--sb-brand);
-    font-size: 1.25rem;
-    color: #fff;
-  }
-
-  .sb-brand-text { line-height: 1.15; white-space: nowrap; }
-  .sb-brand-text strong { display: block; font-size: 1.05rem; }
-  .sb-brand-text small { color: var(--sb-focus); font-size: .75rem; }
-
-  /* Botón expandir/contraer (borde del menú, solo escritorio) */
-  .sb-toggle {
-    position: absolute;
-    top: 22px;
-    right: -14px;
-    width: 28px;
-    height: 28px;
-    display: grid;
-    place-items: center;
-    padding: 0;
-    border: 1px solid #d5e3e0;
-    border-radius: 50%;
-    background: #fff;
-    color: var(--sb-bg);
-    font-size: .8rem;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, .18);
-  }
-  .sb-toggle i { transition: transform var(--sb-ease); }
-  html.sb-collapsed .sb-toggle i { transform: rotate(180deg); }
-
-  /* Botón cerrar (solo móvil) */
-  .sb-close {
-    display: none;
-    margin-left: auto;
-    border: 0;
-    background: transparent;
-    color: var(--sb-text);
-    font-size: 1.4rem;
-    line-height: 1;
-  }
-
-  /* ── Navegación ─────────────────────────────── */
-  .sb-nav {
-    flex: 1;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: .9rem .75rem 1.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 255, 255, .2) transparent;
-  }
-  .sb-list { list-style: none; margin: 0; padding: 0; }
-  .sb-item + .sb-item { margin-top: .2rem; }
-
-  .sb-link {
-    display: flex;
-    align-items: center;
-    gap: .85rem;
-    padding: .65rem .85rem;
-    border-radius: .65rem;
-    color: var(--sb-text);
-    text-decoration: none;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background var(--sb-ease), color var(--sb-ease);
-  }
-  .sb-link:hover { background: var(--sb-hover); color: var(--sb-text-strong); }
-  .sb-link.is-active { background: var(--sb-active); color: var(--sb-text-strong); }
-  .sb-link:focus-visible,
-  .sb-toggle:focus-visible,
-  .sb-close:focus-visible,
-  .sb-burger:focus-visible { outline: 2px solid var(--sb-focus); outline-offset: 2px; }
-
-  .sb-icon { flex: 0 0 1.5rem; width: 1.5rem; text-align: center; font-size: 1.15rem; }
-  .sb-label { flex: 1; overflow: hidden; text-overflow: ellipsis; }
-  .sb-caret { font-size: .75rem; transition: transform var(--sb-ease); }
-  .sb-link[aria-expanded="true"] .sb-caret { transform: rotate(180deg); }
-
-  /* Submenús */
-  .sb-sub {
-    list-style: none;
-    margin: .2rem 0 .3rem 1.75rem;
-    padding: 0 0 0 .6rem;
-    border-left: 1px solid rgba(255, 255, 255, .14);
-  }
-  .sb-sub .sb-link {
-    padding: .45rem .75rem;
-    font-size: .9rem;
-    gap: .5rem;
-  }
-  .sb-sub .sb-link.is-active { background: rgba(255, 255, 255, .1); }
-
-  .sb-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--sb-alert);
-    flex: 0 0 8px;
-  }
-
-  /* ── Barra superior móvil y fondo oscuro ─────── */
-  .sb-mobilebar {
-    display: none;
-    position: fixed;
-    inset: 0 0 auto 0;
-    height: 56px;
-    align-items: center;
-    gap: .75rem;
-    padding: 0 .9rem;
-    background: var(--sb-bg);
-    color: var(--sb-text-strong);
-    z-index: 1030;
-  }
-  .sb-burger {
-    border: 0;
-    background: transparent;
-    color: inherit;
-    font-size: 1.6rem;
-    line-height: 1;
-    padding: .25rem;
-  }
-  .sb-mobilebar .sb-logo { flex-basis: 32px; width: 32px; height: 32px; font-size: 1rem; border-radius: 9px; }
-  .sb-mobilebar strong { font-size: 1rem; }
-
-  .sb-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(8, 28, 26, .55);
-    z-index: 1035;
-  }
-
-  /* ── Contenido principal (se acomoda al menú) ── */
-  .sb ~ .app-main {
-    margin-left: var(--sb-w);
-    min-height: 100vh;
-    transition: margin-left var(--sb-ease);
-  }
-
-  /* ── Escritorio: modo contraído ──────────────── */
-  @media (min-width: 992px) {
-    html.sb-collapsed .sb { width: var(--sb-w-collapsed); }
-    html.sb-collapsed .sb ~ .app-main { margin-left: var(--sb-w-collapsed); }
-
-    html.sb-collapsed .sb-brand-text,
-    html.sb-collapsed .sb-label,
-    html.sb-collapsed .sb-caret,
-    html.sb-collapsed .sb-sub { display: none; }
-
-    html.sb-collapsed .sb-head { justify-content: center; padding: 0; }
-    html.sb-collapsed .sb-link { justify-content: center; padding: .75rem 0; }
-  }
-
-  /* ── Celulares y tablets: menú deslizable ─────── */
-  @media (max-width: 991.98px) {
-    .sb {
-      width: min(280px, 86vw);
-      transform: translateX(-100%);
+    /* Menú lateral */
+    #menu {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 250px;
+        background-color: #123b38;
+        overflow-y: auto;
+        z-index: 1040;
+        transition: width .25s, transform .25s;
     }
-    html.sb-open .sb { transform: none; box-shadow: 8px 0 24px rgba(0, 0, 0, .3); }
-    html.sb-open { overflow: hidden; }
-    html.sb-open .sb-backdrop { display: block; }
 
-    .sb-toggle { display: none; }
-    .sb-close { display: block; }
-    .sb-mobilebar { display: flex; }
-
-    .sb ~ .app-main {
-      margin-left: 0;
-      padding-top: 56px;
+    #menu .nav-link {
+        display: flex;
+        align-items: center;
+        gap: .75rem;
+        color: #c2d8d3;
+        white-space: nowrap;
+        border-radius: .5rem;
     }
-  }
 
-  @media (prefers-reduced-motion: reduce) {
-    .sb, .sb ~ .app-main, .sb-link, .sb-caret, .sb-toggle i { transition: none; }
-  }
+    #menu .nav-link:hover {
+        background-color: rgba(255, 255, 255, .1);
+        color: #fff;
+    }
+
+    #menu .submenu {
+        margin-left: 1.9rem;
+        padding-left: .5rem;
+        border-left: 1px solid rgba(255, 255, 255, .2);
+    }
+
+    #menu .submenu .nav-link {
+        font-size: .9rem;
+        padding: .4rem .75rem;
+    }
+
+    /* El contenido se ubica a la derecha del menú */
+    #menu ~ .contenido {
+        margin-left: 250px;
+        transition: margin-left .25s;
+    }
+
+    /* Computadora: menú contraído (solo íconos) */
+    @media (min-width: 992px) {
+        body.menu-chico #menu { width: 70px; }
+        body.menu-chico #menu ~ .contenido { margin-left: 70px; }
+
+        body.menu-chico #menu .texto,
+        body.menu-chico #menu .marca,
+        body.menu-chico #menu .submenu { display: none; }
+
+        body.menu-chico #menu .nav-link { justify-content: center; }
+        body.menu-chico #menu .cabecera { justify-content: center !important; }
+    }
+
+    /* Celular: el menú se esconde y se abre con el botón */
+    @media (max-width: 991.98px) {
+        #menu { transform: translateX(-100%); }
+        body.menu-abierto #menu { transform: none; }
+        #menu ~ .contenido { margin-left: 0; }
+    }
 </style>
 
-{% with n=request.resolver_match.url_name %}
+<aside id="menu">
 
-{# Barra superior solo visible en celulares #}
-<header class="sb-mobilebar">
-  <button type="button" class="sb-burger" id="sbOpen" aria-label="Abrir menú" aria-controls="sbPanel">
-    <i class="bi bi-list"></i>
-  </button>
-  <span class="sb-logo" aria-hidden="true"><i class="bi bi-heart-pulse-fill"></i></span>
-  <strong>El Sabueso Feliz</strong>
-</header>
-
-<div class="sb-backdrop" id="sbBackdrop"></div>
-
-<aside class="sb" id="sbPanel" aria-label="Menú lateral">
-  <div class="sb-head">
-    <a class="sb-brand" href="{{ u_home|default:'#' }}">
-      <span class="sb-logo" aria-hidden="true"><i class="bi bi-heart-pulse-fill"></i></span>
-      <span class="sb-brand-text">
-        <strong>El Sabueso</strong>
-        <small>Feliz</small>
-      </span>
-    </a>
-    <button type="button" class="sb-close" id="sbClose" aria-label="Cerrar menú">
-      <i class="bi bi-x-lg"></i>
-    </button>
-  </div>
-
-  <button type="button" class="sb-toggle" id="sbToggle" aria-label="Contraer menú" aria-expanded="true">
-    <i class="bi bi-chevron-left"></i>
-  </button>
-
-  <nav class="sb-nav" id="sbNav" aria-label="Menú principal">
-    <ul class="sb-list">
-
-      {# Inicio #}
-      <li class="sb-item">
-        <a class="sb-link {% if n == 'home' %}is-active{% endif %}" href="{{ u_home|default:'#' }}" data-label="Inicio"
-           {% if n == 'home' %}aria-current="page"{% endif %}>
-          <i class="bi bi-house-door sb-icon"></i><span class="sb-label">Inicio</span>
+    <!-- Logo y botón para expandir / contraer -->
+    <div class="cabecera d-flex align-items-center justify-content-between p-3">
+        <a href="{{ u_home|default:'#' }}" class="marca text-white text-decoration-none fw-bold">
+            <i class="bi bi-heart-pulse-fill text-success"></i> El Sabueso Feliz
         </a>
-      </li>
+        <button class="btn btn-sm text-white fs-5" type="button" data-menu="alternar" aria-label="Expandir o contraer menú">
+            <i class="bi bi-list"></i>
+        </button>
+    </div>
 
-      {# Sucursales #}
-      <li class="sb-item">
-        <a class="sb-link {% if n == 'sucursales' or n == 'sucursal' %}is-active{% endif %}" href="{{ u_sucursales|default:'#' }}" data-label="Sucursales">
-          <i class="bi bi-shop sb-icon"></i><span class="sb-label">Sucursales</span>
-        </a>
-      </li>
+    <ul class="nav flex-column p-2 gap-1">
 
-      {# Empleados #}
-      <li class="sb-item">
-        <a class="sb-link {% if n in 'empleados empleado veterinarios veterinario estudiantes estudiante' %}is-active{% endif %}"
-           href="#sbEmpleados" data-bs-toggle="collapse" role="button" data-label="Empleados"
-           aria-expanded="{% if n in 'empleados empleado veterinarios veterinario estudiantes estudiante' %}true{% else %}false{% endif %}"
-           aria-controls="sbEmpleados">
-          <i class="bi bi-person-badge sb-icon"></i><span class="sb-label">Empleados</span><i class="bi bi-chevron-down sb-caret"></i>
-        </a>
-        <ul class="sb-sub collapse {% if n in 'empleados empleado veterinarios veterinario estudiantes estudiante' %}show{% endif %}" id="sbEmpleados" data-bs-parent="#sbNav">
-          <li><a class="sb-link {% if n == 'veterinarios' %}is-active{% endif %}" href="{{ u_veterinarios|default:'#' }}">Veterinarios</a></li>
-          <li><a class="sb-link {% if n == 'estudiantes' %}is-active{% endif %}" href="{{ u_estudiantes|default:'#' }}">Estudiantes</a></li>
-        </ul>
-      </li>
-
-      {# Pacientes #}
-      <li class="sb-item">
-        <a class="sb-link {% if n in 'pacientes paciente propietarios propietario razas raza' %}is-active{% endif %}"
-           href="#sbPacientes" data-bs-toggle="collapse" role="button" data-label="Pacientes"
-           aria-expanded="{% if n in 'pacientes paciente propietarios propietario razas raza' %}true{% else %}false{% endif %}"
-           aria-controls="sbPacientes">
-          <i class="bi bi-heart sb-icon"></i><span class="sb-label">Pacientes</span><i class="bi bi-chevron-down sb-caret"></i>
-        </a>
-        <ul class="sb-sub collapse {% if n in 'pacientes paciente propietarios propietario razas raza' %}show{% endif %}" id="sbPacientes" data-bs-parent="#sbNav">
-          <li><a class="sb-link {% if n == 'pacientes' or n == 'paciente' %}is-active{% endif %}" href="{{ u_pacientes|default:'#' }}">Perros</a></li>
-          <li><a class="sb-link {% if n == 'propietarios' %}is-active{% endif %}" href="{{ u_propietarios|default:'#' }}">Propietarios</a></li>
-          <li><a class="sb-link {% if n == 'razas' or n == 'raza' %}is-active{% endif %}" href="{{ u_razas|default:'#' }}">Razas</a></li>
-        </ul>
-      </li>
-
-      {# Atención médica #}
-      <li class="sb-item">
-        <a class="sb-link {% if n in 'consultas consulta internaciones calendario_vacunas vacunaciones vacunacion' %}is-active{% endif %}"
-           href="#sbAtencion" data-bs-toggle="collapse" role="button" data-label="Atención médica"
-           aria-expanded="{% if n in 'consultas consulta internaciones calendario_vacunas vacunaciones vacunacion' %}true{% else %}false{% endif %}"
-           aria-controls="sbAtencion">
-          <i class="bi bi-clipboard2-pulse sb-icon"></i><span class="sb-label">Atención médica</span><i class="bi bi-chevron-down sb-caret"></i>
-        </a>
-        <ul class="sb-sub collapse {% if n in 'consultas consulta internaciones calendario_vacunas vacunaciones vacunacion' %}show{% endif %}" id="sbAtencion" data-bs-parent="#sbNav">
-          <li><a class="sb-link {% if n == 'consultas' or n == 'consulta' %}is-active{% endif %}" href="{{ u_consultas|default:'#' }}">Consultas</a></li>
-          <li><a class="sb-link {% if n == 'internaciones' %}is-active{% endif %}" href="{{ u_internaciones|default:'#' }}">Internaciones</a></li>
-          <li><a class="sb-link {% if n == 'calendario_vacunas' %}is-active{% endif %}" href="{{ u_calendario|default:'#' }}">Calendario de vacunas</a></li>
-          <li><a class="sb-link {% if n == 'vacunaciones' or n == 'vacunacion' %}is-active{% endif %}" href="{{ u_vacunaciones|default:'#' }}">Vacunaciones realizadas</a></li>
-        </ul>
-      </li>
-
-      {# Catálogos #}
-      <li class="sb-item">
-        <a class="sb-link {% if n in 'vacunas sintomas diagnosticos medicamentos laboratorios' %}is-active{% endif %}"
-           href="#sbCatalogos" data-bs-toggle="collapse" role="button" data-label="Catálogos"
-           aria-expanded="{% if n in 'vacunas sintomas diagnosticos medicamentos laboratorios' %}true{% else %}false{% endif %}"
-           aria-controls="sbCatalogos">
-          <i class="bi bi-journal-medical sb-icon"></i><span class="sb-label">Catálogos</span><i class="bi bi-chevron-down sb-caret"></i>
-        </a>
-        <ul class="sb-sub collapse {% if n in 'vacunas sintomas diagnosticos medicamentos laboratorios' %}show{% endif %}" id="sbCatalogos" data-bs-parent="#sbNav">
-          <li><a class="sb-link {% if n == 'vacunas' %}is-active{% endif %}" href="{{ u_vacunas|default:'#' }}">Vacunas</a></li>
-          <li><a class="sb-link {% if n == 'sintomas' %}is-active{% endif %}" href="{{ u_sintomas|default:'#' }}">Síntomas</a></li>
-          <li><a class="sb-link {% if n == 'diagnosticos' %}is-active{% endif %}" href="{{ u_diagnosticos|default:'#' }}">Diagnósticos</a></li>
-          <li><a class="sb-link {% if n == 'medicamentos' %}is-active{% endif %}" href="{{ u_medicamentos|default:'#' }}">Medicamentos</a></li>
-          <li><a class="sb-link {% if n == 'laboratorios' %}is-active{% endif %}" href="{{ u_laboratorios|default:'#' }}">Laboratorios</a></li>
-        </ul>
-      </li>
-
-      {# Inventario #}
-      <li class="sb-item">
-        <a class="sb-link {% if n in 'stock alertas_stock' %}is-active{% endif %}"
-           href="#sbInventario" data-bs-toggle="collapse" role="button" data-label="Inventario"
-           aria-expanded="{% if n in 'stock alertas_stock' %}true{% else %}false{% endif %}"
-           aria-controls="sbInventario">
-          <i class="bi bi-box-seam sb-icon"></i><span class="sb-label">Inventario</span><i class="bi bi-chevron-down sb-caret"></i>
-        </a>
-        <ul class="sb-sub collapse {% if n in 'stock alertas_stock' %}show{% endif %}" id="sbInventario" data-bs-parent="#sbNav">
-          <li><a class="sb-link {% if n == 'stock' %}is-active{% endif %}" href="{{ u_stock|default:'#' }}">Stock por sucursal</a></li>
-          <li>
-            <a class="sb-link {% if n == 'alertas_stock' %}is-active{% endif %}" href="{{ u_alertas|default:'#' }}">
-              <span class="sb-label">Alertas de stock mínimo</span><span class="sb-dot" aria-hidden="true"></span>
+        <!-- Inicio -->
+        <li>
+            <a class="nav-link" href="{{ u_home|default:'#' }}">
+                <i class="bi bi-house-door"></i>
+                <span class="texto">Inicio</span>
             </a>
-          </li>
-        </ul>
-      </li>
+        </li>
+
+        <!-- Sucursales -->
+        <li>
+            <a class="nav-link" href="{{ u_sucursales|default:'#' }}">
+                <i class="bi bi-shop"></i>
+                <span class="texto">Sucursales</span>
+            </a>
+        </li>
+
+        <!-- Empleados -->
+        <li>
+            <a class="nav-link" data-bs-toggle="collapse" href="#sub-empleados" role="button">
+                <i class="bi bi-person-badge"></i>
+                <span class="texto">Empleados</span>
+                <i class="bi bi-chevron-down texto ms-auto"></i>
+            </a>
+            <ul class="nav flex-column collapse submenu" id="sub-empleados">
+                <li><a class="nav-link" href="{{ u_veterinarios|default:'#' }}">Veterinarios</a></li>
+                <li><a class="nav-link" href="{{ u_estudiantes|default:'#' }}">Estudiantes</a></li>
+            </ul>
+        </li>
+
+        <!-- Pacientes -->
+        <li>
+            <a class="nav-link" data-bs-toggle="collapse" href="#sub-pacientes" role="button">
+                <i class="bi bi-heart"></i>
+                <span class="texto">Pacientes</span>
+                <i class="bi bi-chevron-down texto ms-auto"></i>
+            </a>
+            <ul class="nav flex-column collapse submenu" id="sub-pacientes">
+                <li><a class="nav-link" href="{{ u_pacientes|default:'#' }}">Perros</a></li>
+                <li><a class="nav-link" href="{{ u_propietarios|default:'#' }}">Propietarios</a></li>
+                <li><a class="nav-link" href="{{ u_razas|default:'#' }}">Razas</a></li>
+            </ul>
+        </li>
+
+        <!-- Atención médica -->
+        <li>
+            <a class="nav-link" data-bs-toggle="collapse" href="#sub-atencion" role="button">
+                <i class="bi bi-clipboard2-pulse"></i>
+                <span class="texto">Atención médica</span>
+                <i class="bi bi-chevron-down texto ms-auto"></i>
+            </a>
+            <ul class="nav flex-column collapse submenu" id="sub-atencion">
+                <li><a class="nav-link" href="{{ u_consultas|default:'#' }}">Consultas</a></li>
+                <li><a class="nav-link" href="{{ u_internaciones|default:'#' }}">Internaciones</a></li>
+                <li><a class="nav-link" href="{{ u_calendario|default:'#' }}">Calendario de vacunas</a></li>
+                <li><a class="nav-link" href="{{ u_vacunaciones|default:'#' }}">Vacunaciones realizadas</a></li>
+            </ul>
+        </li>
+
+        <!-- Catálogos -->
+        <li>
+            <a class="nav-link" data-bs-toggle="collapse" href="#sub-catalogos" role="button">
+                <i class="bi bi-journal-medical"></i>
+                <span class="texto">Catálogos</span>
+                <i class="bi bi-chevron-down texto ms-auto"></i>
+            </a>
+            <ul class="nav flex-column collapse submenu" id="sub-catalogos">
+                <li><a class="nav-link" href="{{ u_vacunas|default:'#' }}">Vacunas</a></li>
+                <li><a class="nav-link" href="{{ u_sintomas|default:'#' }}">Síntomas</a></li>
+                <li><a class="nav-link" href="{{ u_diagnosticos|default:'#' }}">Diagnósticos</a></li>
+                <li><a class="nav-link" href="{{ u_medicamentos|default:'#' }}">Medicamentos</a></li>
+                <li><a class="nav-link" href="{{ u_laboratorios|default:'#' }}">Laboratorios</a></li>
+            </ul>
+        </li>
+
+        <!-- Inventario -->
+        <li>
+            <a class="nav-link" data-bs-toggle="collapse" href="#sub-inventario" role="button">
+                <i class="bi bi-box-seam"></i>
+                <span class="texto">Inventario</span>
+                <i class="bi bi-chevron-down texto ms-auto"></i>
+            </a>
+            <ul class="nav flex-column collapse submenu" id="sub-inventario">
+                <li><a class="nav-link" href="{{ u_stock|default:'#' }}">Stock por sucursal</a></li>
+                <li>
+                    <a class="nav-link" href="{{ u_alertas|default:'#' }}">
+                        Alertas de stock mínimo
+                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                    </a>
+                </li>
+            </ul>
+        </li>
 
     </ul>
-  </nav>
 </aside>
 
-{% endwith %}
-
 <script>
-  (function () {
-    var root = document.documentElement;
-    var KEY = 'sabueso.sidebar';
-    var desktop = window.matchMedia('(min-width: 992px)');
-    var toggle = document.getElementById('sbToggle');
+    // Botón del menú: en computadora lo contrae, en celular lo abre/cierra
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('[data-menu="alternar"]')) return;
 
-    function isCollapsed() { return root.classList.contains('sb-collapsed'); }
-
-    // Cuando está contraído, cada ícono muestra su nombre como tooltip nativo
-    function refreshTitles() {
-      var show = isCollapsed() && desktop.matches;
-      document.querySelectorAll('#sbPanel .sb-nav > .sb-list > .sb-item > .sb-link').forEach(function (a) {
-        if (show) { a.setAttribute('title', a.dataset.label || ''); }
-        else { a.removeAttribute('title'); }
-      });
-    }
-
-    function setCollapsed(value) {
-      root.classList.toggle('sb-collapsed', value);
-      try { localStorage.setItem(KEY, value ? 'collapsed' : 'expanded'); } catch (e) {}
-      toggle.setAttribute('aria-expanded', String(!value));
-      toggle.setAttribute('aria-label', value ? 'Expandir menú' : 'Contraer menú');
-      refreshTitles();
-    }
-
-    function openMobile()  { root.classList.add('sb-open'); }
-    function closeMobile() { root.classList.remove('sb-open'); }
-
-    toggle.addEventListener('click', function () { setCollapsed(!isCollapsed()); });
-    document.getElementById('sbOpen').addEventListener('click', openMobile);
-    document.getElementById('sbClose').addEventListener('click', closeMobile);
-    document.getElementById('sbBackdrop').addEventListener('click', closeMobile);
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMobile(); });
-
-    // En móvil, al elegir una opción real se cierra el panel
-    document.querySelectorAll('#sbPanel a.sb-link:not([data-bs-toggle])').forEach(function (a) {
-      a.addEventListener('click', closeMobile);
+        var esCelular = window.innerWidth < 992;
+        document.body.classList.toggle(esCelular ? 'menu-abierto' : 'menu-chico');
     });
 
-    // Con el menú contraído, tocar un grupo lo expande y abre su submenú
-    document.querySelectorAll('#sbPanel [data-bs-toggle="collapse"]').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        if (desktop.matches && isCollapsed()) {
-          e.preventDefault();
-          e.stopPropagation();
-          setCollapsed(false);
-          var target = document.querySelector(btn.getAttribute('href'));
-          if (target && window.bootstrap) {
-            bootstrap.Collapse.getOrCreateInstance(target, { toggle: false }).show();
-          }
-        }
-      });
+    // Si el menú está contraído y se toca un grupo, se expande
+    document.querySelectorAll('#menu [data-bs-toggle="collapse"]').forEach(function (enlace) {
+        enlace.addEventListener('click', function () {
+            document.body.classList.remove('menu-chico');
+        });
     });
-
-    desktop.addEventListener('change', function () { closeMobile(); refreshTitles(); });
-
-    setCollapsed(isCollapsed()); // sincroniza aria/títulos con el estado inicial
-  })();
 </script>
