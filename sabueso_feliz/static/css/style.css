@@ -1,289 +1,113 @@
 /* ==========================================================
-   El Sabueso Feliz — style.css
-   Estilos del cuerpo (contenido principal). El menú lateral
-   mantiene su propio CSS dentro de navbar.html.
-   Ubicación sugerida: static/css/style.css
+   El Sabueso Feliz - estilos del contenido
+   (el menú lateral tiene su propio <style> en navbar.html)
    ========================================================== */
 
+/* ---------- Colores ---------- */
 :root {
-  --sv-bg: #f4f7f6;
-  --sv-surface: #ffffff;
-  --sv-border: #e0e9e6;
-  --sv-ink: #123b38;
-  --sv-muted: #6b8480;
-  --sv-brand: #0b7a66;
-  --sv-brand-dark: #096453;
-  --sv-brand-soft: #e1f3ee;
-  --sv-chip: #edf2f0;
-
-  --sv-warn: #a8650a;
-  --sv-warn-bg: #fff0cc;
-  --sv-info: #3f5f80;
-  --sv-info-bg: #e5edf6;
-  --sv-danger: #c0392b;
-  --sv-danger-bg: #fde7e4;
-
-  --sv-radius: 14px;
-  --sv-radius-sm: 10px;
+    --verde: #0b7a66;
+    --verde-oscuro: #096453;
+    --verde-claro: #e1f3ee;
+    --texto: #123b38;
+    --gris-texto: #6b8480;
+    --gris-claro: #edf2f0;
+    --borde: #e0e9e6;
 }
 
+/* ---------- General ---------- */
 body {
-  background: var(--sv-bg);
-  color: var(--sv-ink);
+    background-color: #f4f7f6;
+    color: var(--texto);
 }
 
-/* ── Barra superior ──────────────────────────────────────── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: .9rem 2rem;
-  background: var(--sv-surface);
-  border-bottom: 1px solid var(--sv-border);
+/* ---------- Botones ---------- */
+
+/* Verde sólido: "Nueva consulta" */
+.btn-sabueso {
+    background-color: var(--verde);
+    border: 0;
+    color: #fff;
+    font-weight: 700;
+}
+.btn-sabueso:hover {
+    background-color: var(--verde-oscuro);
+    color: #fff;
 }
 
-.topbar-search {
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  flex: 1;
-  max-width: 400px;
-  padding: .55rem .9rem;
-  background: var(--sv-chip);
-  border-radius: var(--sv-radius-sm);
-  color: var(--sv-muted);
-  cursor: text;
+/* Blanco con borde: "Registrar perro", "Aplicar vacuna"... */
+.btn-claro {
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    color: var(--texto);
+    font-weight: 700;
 }
-.topbar-search input {
-  flex: 1;
-  min-width: 0;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: var(--sv-ink);
-  font-size: .92rem;
-}
-.topbar-search input::placeholder { color: var(--sv-muted); }
-.topbar-search:focus-within { box-shadow: 0 0 0 2px var(--sv-brand); }
-
-.topbar-actions { display: flex; align-items: center; gap: 1rem; }
-
-.user-chip { display: flex; align-items: center; gap: .6rem; font-weight: 700; }
-.user-avatar {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--sv-brand-soft);
-  color: var(--sv-brand);
-  font-size: .8rem;
-  font-weight: 800;
+.btn-claro:hover {
+    background-color: var(--verde-claro);
+    border-color: var(--verde);
+    color: var(--verde-oscuro);
 }
 
-/* ── Contenido ───────────────────────────────────────────── */
-.page-content { padding: 1.9rem 2rem 3rem; }
-
-.page-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+/* Píldora gris: "Ver todo" */
+.btn-gris {
+    background-color: var(--gris-claro);
+    border-radius: 50rem;
+    color: var(--gris-texto);
+    font-weight: 700;
 }
-.page-title {
-  margin: 0;
-  font-size: 1.85rem;
-  font-weight: 800;
-  letter-spacing: -.01em;
-  color: var(--sv-ink);
-}
-.page-sub { margin: .25rem 0 0; color: var(--sv-muted); }
-
-/* ── Botones ─────────────────────────────────────────────── */
-/* Primario (verde) */
-.btn-sv {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .45rem;
-  padding: .65rem 1.15rem;
-  border: 0;
-  border-radius: var(--sv-radius-sm);
-  background: var(--sv-brand);
-  color: #fff;
-  font-weight: 700;
-  font-size: .95rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background .2s ease;
-}
-.btn-sv:hover { background: var(--sv-brand-dark); color: #fff; }
-
-/* Secundario con borde (acciones rápidas, selector de sucursal) */
-.btn-sv-outline {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .45rem;
-  padding: .65rem 1.1rem;
-  border: 1px solid var(--sv-border);
-  border-radius: var(--sv-radius-sm);
-  background: var(--sv-surface);
-  color: var(--sv-ink);
-  font-weight: 700;
-  font-size: .95rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color .2s ease, background .2s ease, color .2s ease;
-}
-.btn-sv-outline:hover {
-  border-color: var(--sv-brand);
-  background: var(--sv-brand-soft);
-  color: var(--sv-brand-dark);
+.btn-gris:hover {
+    background-color: var(--verde-claro);
+    color: var(--verde-oscuro);
 }
 
-/* Píldora gris (“Ver todo”) */
-.btn-sv-soft {
-  display: inline-flex;
-  align-items: center;
-  padding: .35rem .9rem;
-  border: 0;
-  border-radius: 999px;
-  background: var(--sv-chip);
-  color: var(--sv-muted);
-  font-weight: 700;
-  font-size: .82rem;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background .2s ease, color .2s ease;
-}
-.btn-sv-soft:hover { background: var(--sv-brand-soft); color: var(--sv-brand-dark); }
-
-.btn-sv-sm { padding: .5rem .9rem; font-size: .88rem; }
-.btn-block { display: flex; width: 100%; }
-
-.btn-sv:focus-visible,
-.btn-sv-outline:focus-visible,
-.btn-sv-soft:focus-visible,
-.link-brand:focus-visible {
-  outline: 2px solid var(--sv-brand);
-  outline-offset: 2px;
+/* ---------- Tarjetas ---------- */
+.tarjeta {
+    background-color: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 14px;
 }
 
-.link-brand {
-  color: var(--sv-brand);
-  font-weight: 700;
-  text-decoration: none;
-}
-.link-brand:hover { color: var(--sv-brand-dark); text-decoration: underline; }
-
-/* ── Indicadores ─────────────────────────────────────────── */
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.1rem;
-  margin-bottom: 1.4rem;
-}
-.stat-card {
-  display: flex;
-  flex-direction: column;
-  gap: .3rem;
-  padding: 1.1rem 1.2rem;
-  background: var(--sv-surface);
-  border: 1px solid var(--sv-border);
-  border-radius: var(--sv-radius);
-}
-.stat-label {
-  font-size: .72rem;
-  font-weight: 800;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  color: var(--sv-muted);
-}
-.stat-value { font-size: 2rem; font-weight: 800; line-height: 1.1; }
-.stat-note { font-size: .82rem; font-weight: 600; color: var(--sv-brand); }
-.stat-note.is-danger { color: var(--sv-danger); }
-
-/* ── Paneles ─────────────────────────────────────────────── */
-.panel-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 2.3fr) minmax(0, 1fr);
-  gap: 1.1rem;
-  align-items: start;
-}
-.side-stack { display: flex; flex-direction: column; gap: 1.1rem; }
-
-.panel {
-  padding: 1.3rem 1.4rem;
-  background: var(--sv-surface);
-  border: 1px solid var(--sv-border);
-  border-radius: var(--sv-radius);
-}
-.panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: .6rem;
-}
-.panel-title { margin: 0 0 .9rem; font-size: 1.2rem; font-weight: 800; }
-.panel-head .panel-title { margin: 0; }
-
-/* ── Lista de actividad ──────────────────────────────────── */
-.activity-list { list-style: none; margin: 0; padding: 0; }
-.activity-item {
-  display: grid;
-  grid-template-columns: 4.5rem 1fr auto;
-  align-items: center;
-  gap: .75rem;
-  padding: .95rem 0;
-  border-bottom: 1px solid var(--sv-border);
-}
-.activity-item:last-child { border-bottom: 0; }
-.activity-time { font-size: .88rem; font-weight: 700; color: var(--sv-muted); }
-.activity-body { display: flex; flex-direction: column; min-width: 0; }
-.activity-body strong { font-size: 1.02rem; }
-.activity-body span { font-size: .87rem; color: var(--sv-muted); }
-
-/* ── Etiquetas de estado ─────────────────────────────────── */
-.badge-sv {
-  display: inline-block;
-  padding: .32rem .95rem;
-  border-radius: 999px;
-  font-size: .8rem;
-  font-weight: 800;
-  white-space: nowrap;
-}
-.badge-sv.is-attending { background: var(--sv-warn-bg);   color: var(--sv-warn); }
-.badge-sv.is-scheduled { background: var(--sv-brand-soft); color: var(--sv-brand); }
-.badge-sv.is-pending   { background: var(--sv-info-bg);   color: var(--sv-info); }
-.badge-sv.is-alert     { background: var(--sv-danger-bg); color: var(--sv-danger); }
-
-/* ── Acciones rápidas y alertas ──────────────────────────── */
-.quick-actions { display: flex; flex-direction: column; gap: .7rem; }
-
-.alert-list { list-style: none; margin: 1rem 0; padding: 0; }
-.alert-list li { padding: .4rem 0; font-size: .95rem; }
-
-/* ── Responsive ──────────────────────────────────────────── */
-@media (max-width: 1199.98px) {
-  .stat-grid { grid-template-columns: repeat(2, 1fr); }
-  .panel-grid { grid-template-columns: 1fr; }
+.etiqueta {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--gris-texto);
 }
 
-@media (max-width: 575.98px) {
-  .topbar { padding: .7rem 1rem; }
-  .topbar-actions .btn-sv-outline { display: none; }
-  .page-content { padding: 1.25rem 1rem 2.5rem; }
-  .page-title { font-size: 1.5rem; }
-  .stat-grid { grid-template-columns: 1fr; }
-  .activity-item { grid-template-columns: 3.6rem 1fr; }
-  .activity-item .badge-sv { grid-column: 2; justify-self: start; }
+.numero {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.2;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .btn-sv, .btn-sv-outline, .btn-sv-soft { transition: none; }
+.hora {
+    width: 3.5rem;
+    font-weight: 700;
+    color: var(--gris-texto);
 }
+
+/* ---------- Estados (etiquetas de colores) ---------- */
+.estado-atencion   { background-color: #fff0cc; color: #a8650a; }
+.estado-programada { background-color: var(--verde-claro); color: var(--verde); }
+.estado-pendiente  { background-color: #e5edf6; color: #3f5f80; }
+.estado-alerta     { background-color: #fde7e4; color: #c0392b; }
+
+/* ---------- Barra superior ---------- */
+.buscador {
+    max-width: 380px;
+    background-color: var(--gris-claro);
+    border: 0;
+}
+
+.avatar {
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--verde-claro);
+    color: var(--verde);
+    font-size: .8rem;
+    font-weight: 800;
+} 
