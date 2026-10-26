@@ -8,7 +8,6 @@ urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     path('login/', LoginView.as_view(template_name='login.html'), name='login'),
 
-    # Sucursales
     path('sucursales/', views.SucursalesView.as_view(), name='sucursales'),
     path('sucursales/nueva/', views.SucursalCreateView.as_view(), name='sucursal_crear'),
     path('sucursales/<int:pk>/', views.SucursalView.as_view(), name='sucursal'),
