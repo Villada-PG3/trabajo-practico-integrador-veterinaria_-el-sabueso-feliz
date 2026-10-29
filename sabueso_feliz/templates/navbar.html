@@ -5,24 +5,18 @@
     Si usás namespace, escribilo así: 'app:nombre'.
 {% endcomment %}
 
-{% url 'home' as u_home %}
-{% url 'sucursales' as u_sucursales %}
-{% url 'veterinarios' as u_veterinarios %}
-{% url 'estudiantes' as u_estudiantes %}
-{% url 'pacientes' as u_pacientes %}
-{% url 'propietarios' as u_propietarios %}
-{% url 'razas' as u_razas %}
-{% url 'consultas' as u_consultas %}
-{% url 'internaciones' as u_internaciones %}
-{% url 'calendario_vacunas' as u_calendario %}
-{% url 'vacunaciones' as u_vacunaciones %}
-{% url 'vacunas' as u_vacunas %}
-{% url 'sintomas' as u_sintomas %}
-{% url 'diagnosticos' as u_diagnosticos %}
-{% url 'medicamentos' as u_medicamentos %}
-{% url 'laboratorios' as u_laboratorios %}
-{% url 'stock' as u_stock %}
-{% url 'alertas_stock' as u_alertas %}
+{% url 'sabueso_feliz:home' as u_home %}
+{% url 'sabueso_feliz:sucursales' as u_sucursales %}
+{% url 'sabueso_feliz:empleados' as u_empleados %}
+{% url 'sabueso_feliz:veterinario_crear' as u_veterinarios %}
+{% url 'sabueso_feliz:estudiante_crear' as u_estudiantes %}
+{% url 'sabueso_feliz:pacientes' as u_pacientes %}
+{% url 'sabueso_feliz:duenios' as u_propietarios %}
+{% url 'sabueso_feliz:razas' as u_razas %}
+{% url 'sabueso_feliz:consultas' as u_consultas %}
+{% url 'sabueso_feliz:vacunaciones' as u_vacunaciones %}
+{% url 'sabueso_feliz:medicamentos' as u_medicamentos %}
+{% url 'sabueso_feliz:compras' as u_stock %}
 
 <style>
     /* Menú lateral */

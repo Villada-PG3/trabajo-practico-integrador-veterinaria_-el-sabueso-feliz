@@ -4,12 +4,6 @@
 
 {% block content %}
 
-{# Si el nombre de la ruta no existe, el enlace queda en "#" #}
-{% url 'consultas' as u_consultas %}
-{% url 'pacientes' as u_pacientes %}
-{% url 'vacunaciones' as u_vacunaciones %}
-{% url 'compras' as u_compras %}
-{% url 'medicamentos' as u_medicamentos %}
 
 <!-- Encabezado -->
 <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
@@ -17,7 +11,7 @@
         <h1 class="h2 fw-bold mb-1">Buen día, administración</h1>
         <p class="text-muted mb-0">{% now "l j \d\e F" %} · Resumen de Sucursal Centro</p>
     </div>
-    <a href="{{ u_consultas|default:'#' }}" class="btn btn-sabueso">
+    <a href="{% url 'sabueso_feliz:consulta_crear' %}" class="btn btn-sabueso">
         <i class="bi bi-plus-lg"></i> Nueva consulta
     </a>
 </div>
@@ -67,7 +61,7 @@
 
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h2 class="h5 fw-bold mb-0">Actividad de hoy</h2>
-                <a href="{{ u_consultas|default:'#' }}" class="btn btn-gris btn-sm">Ver todo</a>
+                <a href="{% url 'sabueso_feliz:consultas' %}" class="btn btn-gris btn-sm">Ver todo</a>
             </div>
 
             <ul class="list-group list-group-flush">
@@ -129,13 +123,13 @@
         <div class="tarjeta p-4 mb-3">
             <h2 class="h5 fw-bold mb-3">Acciones rápidas</h2>
             <div class="d-grid gap-2">
-                <a href="{{ u_pacientes|default:'#' }}" class="btn btn-claro">
+                <a href="{% url 'sabueso_feliz:paciente_crear' %}" class="btn btn-claro">
                     <i class="bi bi-plus-lg"></i> Registrar perro
                 </a>
-                <a href="{{ u_vacunaciones|default:'#' }}" class="btn btn-claro">
+                <a href="{% url 'sabueso_feliz:vacunacion_crear' %}" class="btn btn-claro">
                     <i class="bi bi-plus-lg"></i> Aplicar vacuna
                 </a>
-                <a href="{{ u_compras|default:'#' }}" class="btn btn-claro">
+                <a href="{% url 'sabueso_feliz:compra_crear' %}" class="btn btn-claro">
                     <i class="bi bi-plus-lg"></i> Nueva compra
                 </a>
             </div>
@@ -151,7 +145,7 @@
                 <li class="py-1">Cefalexina · 2 / mínimo 6</li>
             </ul>
 
-            <a href="{{ u_medicamentos|default:'#' }}" class="fw-bold text-success text-decoration-none">
+            <a href="{% url 'sabueso_feliz:compras' %}" class="fw-bold text-success text-decoration-none">
                 Abrir depósito →
             </a>
         </div>
