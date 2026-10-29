@@ -8,63 +8,84 @@
 <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
     <div>
         <h1 class="h2 fw-bold mb-1">Sucursales</h1>
-        <p class="text-muted mb-0">Total: {{ object_list|length }}</p>
+        <p class="text-muted mb-0">Sedes activas, responsables y equipo</p>
     </div>
     <a href="{% url 'sabueso_feliz:sucursal_crear' %}" class="btn btn-sabueso">
         <i class="bi bi-plus-lg"></i> Nueva sucursal
     </a>
 </div>
 
-<!-- Tabla de sucursales -->
-<div class="tarjeta p-2 p-md-3">
-    <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
+<!-- Tarjetas de sucursales -->
+<div class="row g-4 mb-4">
+    {% for sucursal in object_list %}
+    <div class="col-12 col-xl-6">
+        <div class="suc-card">
 
-            <thead>
-                <tr class="small text-muted">
-                    <th>Nombre</th>
-                    <th>Dirección</th>
-                    <th>Teléfono</th>
-                    <th class="text-end">Acciones</th>
-                </tr>
-            </thead>
+            <!-- Nombre y dirección -->
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="suc-icono"><i class="bi bi-house-door"></i></div>
+                <h2 class="h4 fw-bold mb-0">{{ sucursal.nombre }}</h2>
+            </div>
+            <p class="text-muted small mt-2 mb-3">
+                {{ sucursal.direccion|default:"—" }}
+                {% if sucursal.telefono %}· Tel. {{ sucursal.telefono }}{% endif %}
+            </p>
 
-            <tbody>
-                {% for sucursal in object_list %}
-                <tr>
-                    <td class="fw-bold">
-                        <a href="{% url 'sabueso_feliz:sucursal' sucursal.pk %}" class="text-decoration-none text-reset">
-                            {{ sucursal.nombre|default:sucursal }}
-                        </a>
-                    </td>
-                    <td>{{ sucursal.direccion|default:"—" }}</td>
-                    <td>{{ sucursal.telefono|default:"—" }}</td>
-                    <td class="text-end text-nowrap">
-                        <a href="{% url 'sabueso_feliz:sucursal' sucursal.pk %}"
-                           class="btn btn-gris btn-sm" title="Ver detalle" aria-label="Ver detalle">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="{% url 'sabueso_feliz:sucursal_editar' sucursal.pk %}"
-                           class="btn btn-claro btn-sm" title="Editar" aria-label="Editar">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <a href="{% url 'sabueso_feliz:sucursal_eliminar' sucursal.pk %}"
-                           class="btn btn-outline-danger btn-sm" title="Eliminar" aria-label="Eliminar">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4" class="text-center text-muted py-5">
-                        Todavía no hay sucursales cargadas.
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+            <hr class="mt-0">
 
-        </table>
+            <!-- Supervisor y suplente -->
+            <div class="row mb-4">
+                <div class="col-6">
+                    <div class="suc-etiqueta">Supervisor</div>
+                    <p class="suc-persona">{{ sucursal.supervisor|default:"Sin asignar" }}</p>
+                </div>
+                <div class="col-6">
+                    <div class="suc-etiqueta">Suplente</div>
+                    <p class="suc-persona">{{ sucursal.supervisor_suplente|default:"Sin asignar" }}</p>
+                </div>
+            </div>
+
+            <!-- Contadores -->
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <span class="suc-pildora verde">
+                    {{ sucursal.total_empleados }} empleado{{ sucursal.total_empleados|pluralize }}
+                </span>
+                <span class="suc-pildora azul">
+                    {{ sucursal.total_pacientes }} paciente{{ sucursal.total_pacientes|pluralize }}
+                </span>
+            </div>
+
+            <!-- Acciones -->
+            <div class="d-flex gap-2 mt-auto">
+                <a href="{% url 'sabueso_feliz:sucursal' sucursal.pk %}" class="btn btn-sede flex-grow-1">
+                    Ver sede y equipo
+                </a>
+                <a href="{% url 'sabueso_feliz:sucursal_editar' sucursal.pk %}"
+                   class="btn btn-sede" title="Editar" aria-label="Editar">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a href="{% url 'sabueso_feliz:sucursal_eliminar' sucursal.pk %}"
+                   class="btn btn-outline-danger" title="Eliminar" aria-label="Eliminar">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+
+        </div>
     </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="suc-card text-center text-muted py-5">
+            Todavía no hay sucursales cargadas.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Nota informativa -->
+<div class="suc-card">
+    <h2 class="h5 fw-bold mb-2">Preparado para sumar nuevas sucursales</h2>
+    <p class="text-muted mb-2">Cada sede mantiene su propio personal, historias clínicas y existencias.</p>
+    <p class="fw-bold mb-0" style="color:#0f7a6b;">El número de historia puede repetirse entre sucursales.</p>
 </div>
 
 {% endblock %}

@@ -1,0 +1,693 @@
+/* =========================================================
+   El Sabueso Feliz - estilos globales
+   Archivo: static/css/style.css
+   Incluye los estilos de: menú, home, sucursales, pacientes,
+   ficha de paciente, razas y formulario de consulta.
+   ========================================================= */
+
+/* ---------- Variables ---------- */
+:root {
+    --sf-menu:        #123b38;
+    --sf-menu-texto:  #c2d8d3;
+    --sf-primario:    #0f7a6b;
+    --sf-primario-os: #0c655a;
+    --sf-primario-cl: #e3f3ef;
+    --sf-azul:        #2f5d7c;
+    --sf-azul-cl:     #e6eef5;
+    --sf-fondo:       #f5f8f7;
+    --sf-superficie:  #f3f8f6;
+    --sf-borde:       #e3ebe8;
+    --sf-titulo:      #123b38;
+    --sf-apagado:     #5b7a74;
+    --sf-alerta:      #b45309;
+    --sf-alerta-cl:   #fdf0dc;
+    --sf-peligro:     #b42318;
+    --sf-peligro-cl:  #fde8e6;
+
+    --bs-body-bg: var(--sf-fondo);
+    --bs-body-color: #26403c;
+    --bs-link-color: var(--sf-primario);
+    --bs-link-hover-color: var(--sf-primario-os);
+}
+
+/* ---------- Base ---------- */
+body {
+    background-color: var(--sf-fondo);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--sf-titulo);
+}
+
+.text-muted {
+    color: var(--sf-apagado) !important;
+}
+
+:focus-visible {
+    outline: 3px solid rgba(15, 122, 107, .45);
+    outline-offset: 2px;
+}
+
+/* =========================================================
+   Menú lateral
+   ========================================================= */
+#menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 250px;
+    background-color: var(--sf-menu);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1040;
+    transition: width .25s, transform .25s;
+}
+
+#menu .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: var(--sf-menu-texto);
+    white-space: nowrap;
+    border-radius: .5rem;
+    padding: .55rem .75rem;
+}
+
+#menu .nav-link i:first-child {
+    font-size: 1.1rem;
+    width: 1.25rem;
+    text-align: center;
+}
+
+#menu .nav-link:hover {
+    background-color: rgba(255, 255, 255, .1);
+    color: #fff;
+}
+
+/* Página activa */
+#menu .nav-link.activo {
+    background-color: rgba(255, 255, 255, .14);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* Chevron que gira al abrir el submenú */
+#menu .nav-link[data-bs-toggle="collapse"] .bi-chevron-down {
+    transition: transform .2s;
+    font-size: .8rem;
+}
+
+#menu .nav-link[data-bs-toggle="collapse"]:not(.collapsed) .bi-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Submenús */
+#menu .submenu {
+    margin-left: 1.9rem;
+    padding-left: .5rem;
+    border-left: 1px solid rgba(255, 255, 255, .2);
+}
+
+#menu .submenu .nav-link {
+    font-size: .9rem;
+    padding: .4rem .75rem;
+}
+
+#menu::-webkit-scrollbar { width: 6px; }
+#menu::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .2); border-radius: 3px; }
+
+/* =========================================================
+   Contenido principal
+   ========================================================= */
+.contenido {
+    margin-left: 250px;
+    min-height: 100vh;
+    transition: margin-left .25s;
+}
+
+.contenido > header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    border-color: var(--sf-borde) !important;
+}
+
+.buscador {
+    max-width: 420px;
+    background-color: #eef3f1;
+    border-color: transparent;
+}
+
+.buscador:focus {
+    background-color: #fff;
+    border-color: var(--sf-primario);
+    box-shadow: 0 0 0 .2rem rgba(15, 122, 107, .15);
+}
+
+/* Menú contraído (computadora) */
+@media (min-width: 992px) {
+    body.menu-chico #menu { width: 70px; }
+    body.menu-chico .contenido { margin-left: 70px; }
+
+    body.menu-chico #menu .texto,
+    body.menu-chico #menu .marca,
+    body.menu-chico #menu .submenu {
+        display: none;
+    }
+
+    body.menu-chico #menu .nav-link { justify-content: center; }
+    body.menu-chico #menu .cabecera { justify-content: center !important; }
+}
+
+/* Menú adaptable a celulares */
+@media (max-width: 991.98px) {
+    #menu { transform: translateX(-100%); }
+
+    body.menu-abierto #menu {
+        transform: translateX(0);
+        box-shadow: 0 0 40px rgba(0, 0, 0, .35);
+    }
+
+    .contenido { margin-left: 0; }
+}
+
+/* =========================================================
+   Componentes compartidos
+   ========================================================= */
+
+/* Tarjeta base */
+.tarjeta {
+    background: #fff;
+    border: 1px solid var(--sf-borde);
+    border-radius: 1rem;
+}
+
+/* Botones */
+.btn-sabueso {
+    background-color: var(--sf-primario);
+    border-color: var(--sf-primario);
+    color: #fff;
+    font-weight: 700;
+}
+
+.btn-sabueso:hover,
+.btn-sabueso:focus {
+    background-color: var(--sf-primario-os);
+    border-color: var(--sf-primario-os);
+    color: #fff;
+}
+
+.btn-claro {
+    background-color: var(--sf-primario-cl);
+    border-color: var(--sf-primario-cl);
+    color: var(--sf-primario);
+    font-weight: 600;
+}
+
+.btn-claro:hover {
+    background-color: #d3ebe5;
+    border-color: #d3ebe5;
+    color: var(--sf-primario-os);
+}
+
+.btn-gris {
+    background-color: #fff;
+    border: 1px solid #dfe8e5;
+    color: var(--sf-titulo);
+    font-weight: 600;
+}
+
+.btn-gris:hover {
+    background-color: #f1f6f4;
+    color: var(--sf-titulo);
+}
+
+/* Tablas */
+.table { --bs-table-hover-bg: var(--sf-superficie); }
+
+.table thead th {
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sf-apagado);
+    border-bottom: 1px solid var(--sf-borde);
+    white-space: nowrap;
+}
+
+.table > :not(caption) > * > * {
+    padding-top: .8rem;
+    padding-bottom: .8rem;
+}
+
+/* Etiquetas pequeñas (filtros, indicadores, campos de formulario) */
+.etiqueta,
+.filtro-etiqueta {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sf-apagado);
+    margin-bottom: .25rem;
+}
+
+.dato {
+    font-weight: 700;
+    color: var(--sf-titulo);
+    margin-bottom: 0;
+}
+
+/* Píldoras */
+.pildora {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .35rem .85rem;
+    border-radius: 999px;
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+}
+
+.pildora.azul     { background: var(--sf-azul-cl);    color: var(--sf-azul); }
+.pildora.alerta   { background: var(--sf-alerta-cl);  color: var(--sf-alerta); }
+.pildora.peligro  { background: var(--sf-peligro-cl); color: var(--sf-peligro); }
+
+/* Icono cuadrado */
+.icono-caja {
+    width: 48px;
+    height: 48px;
+    border-radius: .75rem;
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* Lista de datos (detalles) */
+.detalle dt {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--sf-apagado);
+}
+
+.detalle dd {
+    font-weight: 600;
+    color: var(--sf-titulo);
+    margin-bottom: 1rem;
+}
+
+/* =========================================================
+   Formularios
+   ========================================================= */
+form p { margin-bottom: 1rem; }
+
+form label {
+    display: block;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sf-apagado);
+    margin-bottom: .3rem;
+}
+
+form input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+form select,
+form textarea {
+    width: 100%;
+    padding: .55rem .75rem;
+    font-size: 1rem;
+    color: var(--bs-body-color);
+    background-color: #fff;
+    border: 1px solid #cfdcd8;
+    border-radius: .6rem;
+}
+
+form input:focus,
+form select:focus,
+form textarea:focus {
+    border-color: var(--sf-primario);
+    box-shadow: 0 0 0 .2rem rgba(15, 122, 107, .15);
+    outline: 0;
+}
+
+form input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: var(--sf-primario);
+    margin-right: .4rem;
+    vertical-align: middle;
+}
+
+form .helptext {
+    display: block;
+    font-size: .8rem;
+    color: var(--sf-apagado);
+    margin-top: .25rem;
+}
+
+form .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 .35rem;
+    font-size: .85rem;
+    color: var(--sf-peligro);
+}
+
+/* Casilla con etiqueta en texto normal (ej.: Internación) */
+.check-fila {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--sf-titulo);
+    cursor: pointer;
+}
+
+.check-fila input[type="checkbox"] { margin: 0; }
+
+/* Chips seleccionables (síntomas, diagnósticos) */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+.chip {
+    position: relative;
+    display: inline-block;
+    margin: 0;
+    letter-spacing: 0;
+    text-transform: none;
+    cursor: pointer;
+}
+
+.chip input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.chip span {
+    display: inline-block;
+    padding: .4rem .95rem;
+    border-radius: 999px;
+    background: #eef3f1;
+    color: var(--sf-apagado);
+    font-size: .8rem;
+    font-weight: 700;
+    transition: background-color .15s, color .15s;
+}
+
+.chip span::before { content: "+ "; }
+
+.chip:hover span { background: #e1ebe8; }
+
+.chip input:checked + span {
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+}
+
+.chip input:checked + span::before { content: "\2713  "; }
+
+.chip input:focus-visible + span {
+    outline: 3px solid rgba(15, 122, 107, .45);
+    outline-offset: 2px;
+}
+
+/* Pie del formulario con la acción principal */
+.form-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: 1rem 1.5rem;
+    background: var(--sf-superficie);
+    border-top: 1px solid var(--sf-borde);
+}
+
+/* =========================================================
+   Inicio (home.html)
+   ========================================================= */
+.kpi {
+    display: block;
+    height: 100%;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--sf-borde);
+    border-radius: 1rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.kpi:hover { border-color: #b9d6cf; }
+
+.kpi .numero {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--sf-titulo);
+    margin: .25rem 0 .4rem;
+}
+
+.kpi .nota { font-size: .8rem; color: var(--sf-primario); }
+.kpi .nota.mal { color: var(--sf-peligro); }
+
+.actividad-fila {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .85rem 0;
+}
+
+.actividad-fila + .actividad-fila { border-top: 1px solid var(--sf-borde); }
+
+.actividad-hora {
+    flex: 0 0 5.5rem;
+    font-size: .8rem;
+    font-weight: 700;
+    color: var(--sf-apagado);
+}
+
+/* =========================================================
+   Sucursales (sucursales.html)
+   ========================================================= */
+.suc-card {
+    background: #fff;
+    border: 1px solid var(--sf-borde);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.suc-icono {
+    width: 48px;
+    height: 48px;
+    border-radius: .75rem;
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.suc-etiqueta {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sf-apagado);
+    margin-bottom: .15rem;
+}
+
+.suc-persona {
+    font-weight: 700;
+    color: var(--sf-titulo);
+    margin-bottom: 0;
+}
+
+.suc-pildora {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .35rem .85rem;
+    border-radius: 999px;
+}
+
+.suc-pildora.verde { background: var(--sf-primario-cl); color: var(--sf-primario); }
+.suc-pildora.azul  { background: var(--sf-azul-cl);     color: var(--sf-azul); }
+
+.btn-sede {
+    background: #fff;
+    border: 1px solid #dfe8e5;
+    color: var(--sf-titulo);
+    font-weight: 700;
+}
+
+.btn-sede:hover {
+    background: #f1f6f4;
+    color: var(--sf-titulo);
+}
+
+/* =========================================================
+   Ficha de paciente (paciente.html)
+   ========================================================= */
+.ficha-icono {
+    width: 88px;
+    height: 88px;
+    border-radius: 1.25rem;
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    flex-shrink: 0;
+}
+
+.resumen {
+    display: block;
+    height: 100%;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid var(--sf-borde);
+    border-radius: 1rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.resumen:hover { border-color: #b9d6cf; }
+
+.resumen .valor {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--sf-titulo);
+    margin: .15rem 0 .5rem;
+}
+
+.resumen .ir {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--sf-primario);
+}
+
+.filtro-pildora {
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .4rem .9rem;
+    border-radius: 999px;
+    text-decoration: none;
+    background: #eef3f1;
+    color: var(--sf-apagado);
+}
+
+.filtro-pildora.activo {
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+}
+
+.evento { display: flex; gap: 1rem; padding: .9rem 0; }
+.evento + .evento { border-top: 1px solid var(--sf-borde); }
+
+.evento-fecha {
+    flex: 0 0 4.5rem;
+    height: fit-content;
+    text-align: center;
+    font-size: .75rem;
+    font-weight: 700;
+    padding: .35rem 0;
+    border-radius: 999px;
+    background: var(--sf-primario-cl);
+    color: var(--sf-primario);
+}
+
+.evento-fecha.vacuna {
+    background: var(--sf-azul-cl);
+    color: var(--sf-azul);
+}
+
+/* =========================================================
+   Razas (razas.html)
+   ========================================================= */
+.raza-sexo {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--sf-primario);
+    margin-bottom: .6rem;
+}
+
+.raza-dato {
+    background: var(--sf-superficie);
+    border-radius: .75rem;
+    padding: .8rem 1rem;
+    height: 100%;
+}
+
+.raza-dato .etiqueta {
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: .75rem;
+    margin-bottom: .35rem;
+}
+
+.raza-dato .valor {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--sf-titulo);
+    line-height: 1.1;
+}
+
+/* =========================================================
+   Listados: vacunación, inventario y consultas
+   ========================================================= */
+
+/* Fila resaltada (vacuna vencida, medicamento a reponer) */
+.table .fila-alerta {
+    --bs-table-bg: var(--sf-peligro-cl);
+    --bs-table-hover-bg: #fbdcd9;
+}
+
+/* Enlace de acción dentro de una tabla ("Aplicar →") */
+.enlace-accion {
+    font-weight: 600;
+    color: var(--sf-titulo);
+    text-decoration: none;
+}
+
+.enlace-accion:hover { color: var(--sf-primario); }
+
+/* Píldoras gris y enlaces con forma de píldora */
+.pildora.gris { background: #eef3f1; color: var(--sf-apagado); }
+
+a.pildora { text-decoration: none; }
+
+.pildora.sel { box-shadow: 0 0 0 2px currentColor; }
+
+/* =========================================================
+   Accesibilidad
+   ========================================================= */
+@media (prefers-reduced-motion: reduce) {
+    #menu,
+    .contenido,
+    #menu .bi-chevron-down,
+    .chip span {
+        transition: none;
+    }
+}

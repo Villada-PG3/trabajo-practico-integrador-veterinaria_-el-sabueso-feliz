@@ -4,150 +4,146 @@
 
 {% block content %}
 
-
 <!-- Encabezado -->
 <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
     <div>
-        <h1 class="h2 fw-bold mb-1">Buen día, administración</h1>
-        <p class="text-muted mb-0">{% now "l j \d\e F" %} · Resumen de Sucursal Centro</p>
+        <h1 class="h2 fw-bold mb-1">Buen día</h1>
+        <p class="text-muted mb-0">{% now "l j \d\e F" %} · Resumen general</p>
     </div>
     <a href="{% url 'sabueso_feliz:consulta_crear' %}" class="btn btn-sabueso">
         <i class="bi bi-plus-lg"></i> Nueva consulta
     </a>
 </div>
 
-<!-- Indicadores (datos de ejemplo: después se reemplazan por variables de la vista) -->
+<!-- Indicadores -->
 <div class="row g-3 mb-4">
-
     <div class="col-6 col-xl-3">
-        <div class="tarjeta p-3">
+        <a href="{% url 'sabueso_feliz:consultas' %}" class="kpi">
             <div class="etiqueta">Consultas hoy</div>
-            <div class="numero">07</div>
-            <small class="text-success fw-semibold">3 pendientes</small>
-        </div>
+            <div class="numero">{{ consultas_hoy|length }}</div>
+            <div class="nota">{{ internados_count }} internado{{ internados_count|pluralize }} actualmente</div>
+        </a>
     </div>
-
     <div class="col-6 col-xl-3">
-        <div class="tarjeta p-3">
+        <a href="{% url 'sabueso_feliz:vacunaciones' %}?estado=pendientes" class="kpi">
             <div class="etiqueta">Vacunas próximas</div>
-            <div class="numero">12</div>
-            <small class="text-success fw-semibold">4 esta semana</small>
-        </div>
+            <div class="numero">{{ vacunas_semana }}</div>
+            <div class="nota {% if vacunas_atrasadas_count %}mal{% endif %}">
+                {% if vacunas_atrasadas_count %}{{ vacunas_atrasadas_count }} atrasada{{ vacunas_atrasadas_count|pluralize }}
+                {% else %}Próximos 7 días{% endif %}
+            </div>
+        </a>
     </div>
-
     <div class="col-6 col-xl-3">
-        <div class="tarjeta p-3">
+        <a href="{% url 'sabueso_feliz:compras' %}?filtro=bajo" class="kpi">
             <div class="etiqueta">Stock bajo</div>
-            <div class="numero">04</div>
-            <small class="text-danger fw-semibold">Revisar depósito</small>
-        </div>
+            <div class="numero">{{ stock_bajo|length }}</div>
+            <div class="nota {% if stock_bajo %}mal{% endif %}">
+                {% if stock_bajo %}Revisar depósito{% else %}Todo en orden{% endif %}
+            </div>
+        </a>
     </div>
-
     <div class="col-6 col-xl-3">
-        <div class="tarjeta p-3">
+        <a href="{% url 'sabueso_feliz:pacientes' %}" class="kpi">
             <div class="etiqueta">Pacientes</div>
-            <div class="numero">76</div>
-            <small class="text-success fw-semibold">Sucursal Centro</small>
-        </div>
+            <div class="numero">{{ total_pacientes }}</div>
+            <div class="nota">En {{ total_sucursales }} sucursal{{ total_sucursales|pluralize:",es" }}</div>
+        </a>
     </div>
-
 </div>
 
 <div class="row g-3">
 
     <!-- Actividad de hoy -->
-    <div class="col-xl-8">
-        <div class="tarjeta p-4">
-
+    <div class="col-12 col-xl-8">
+        <div class="tarjeta p-3 p-md-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h2 class="h5 fw-bold mb-0">Actividad de hoy</h2>
                 <a href="{% url 'sabueso_feliz:consultas' %}" class="btn btn-gris btn-sm">Ver todo</a>
             </div>
 
-            <ul class="list-group list-group-flush">
+            {% for c in consultas_hoy %}
+            <div class="actividad-fila">
+                <div class="actividad-hora">Orden {{ c.nroOrden }}</div>
+                <div class="flex-grow-1">
+                    <a href="{% url 'sabueso_feliz:paciente' c.perro_id.pk %}" class="fw-bold text-decoration-none text-reset">
+                        {{ c.perro_id.nombre }}
+                    </a>
+                    <div class="small text-muted">Consulta · {{ c.empleado_id }}</div>
+                </div>
+                {% if c.internado and not c.fechaSalida %}
+                    <span class="pildora alerta">Internado</span>
+                {% elif c.fechaSalida %}
+                    <span class="pildora">Con alta</span>
+                {% else %}
+                    <span class="pildora alerta">En atención</span>
+                {% endif %}
+            </div>
+            {% endfor %}
 
-                {# Cuando tengas datos, repetí este <li> con un {% for %} #}
-                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
-                    <span class="hora">09:15</span>
-                    <div class="flex-grow-1">
-                        <strong>Toby</strong><br>
-                        <small class="text-muted">Consulta · Fiebre</small>
-                    </div>
-                    <span class="badge rounded-pill estado-atencion">En atención</span>
-                </li>
+            {% for v in vacunas_hoy %}
+            <div class="actividad-fila">
+                <div class="actividad-hora">Vacuna</div>
+                <div class="flex-grow-1">
+                    <a href="{% url 'sabueso_feliz:paciente' v.perro_id.pk %}" class="fw-bold text-decoration-none text-reset">
+                        {{ v.perro_id.nombre }}
+                    </a>
+                    <div class="small text-muted">{{ v.vacuna_id }} · dosis {{ v.dosis }}</div>
+                </div>
+                <span class="pildora azul">Programada</span>
+            </div>
+            {% endfor %}
 
-                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
-                    <span class="hora">10:30</span>
-                    <div class="flex-grow-1">
-                        <strong>Luna</strong><br>
-                        <small class="text-muted">Control y vacuna antirrábica</small>
-                    </div>
-                    <span class="badge rounded-pill estado-programada">Programada</span>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
-                    <span class="hora">11:10</span>
-                    <div class="flex-grow-1">
-                        <strong>Mora</strong><br>
-                        <small class="text-muted">Refuerzo parvovirus</small>
-                    </div>
-                    <span class="badge rounded-pill estado-pendiente">Pendiente</span>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
-                    <span class="hora">12:30</span>
-                    <div class="flex-grow-1">
-                        <strong>Rocco</strong><br>
-                        <small class="text-muted">Consulta clínica</small>
-                    </div>
-                    <span class="badge rounded-pill estado-programada">Programada</span>
-                </li>
-
-                <li class="list-group-item d-flex align-items-center gap-3 px-0 py-3">
-                    <span class="hora">15:00</span>
-                    <div class="flex-grow-1">
-                        <strong>Simón</strong><br>
-                        <small class="text-muted">Control postoperatorio</small>
-                    </div>
-                    <span class="badge rounded-pill estado-programada">Programada</span>
-                </li>
-
-            </ul>
+            {% if not consultas_hoy and not vacunas_hoy %}
+            <p class="text-muted text-center py-5 mb-0">No hay consultas ni vacunas programadas para hoy.</p>
+            {% endif %}
         </div>
     </div>
 
     <!-- Columna derecha -->
-    <div class="col-xl-4">
+    <div class="col-12 col-xl-4 d-flex flex-column gap-3">
 
-        <!-- Acciones rápidas -->
-        <div class="tarjeta p-4 mb-3">
+        <div class="tarjeta p-3 p-md-4">
             <h2 class="h5 fw-bold mb-3">Acciones rápidas</h2>
             <div class="d-grid gap-2">
-                <a href="{% url 'sabueso_feliz:paciente_crear' %}" class="btn btn-claro">
-                    <i class="bi bi-plus-lg"></i> Registrar perro
-                </a>
-                <a href="{% url 'sabueso_feliz:vacunacion_crear' %}" class="btn btn-claro">
-                    <i class="bi bi-plus-lg"></i> Aplicar vacuna
-                </a>
-                <a href="{% url 'sabueso_feliz:compra_crear' %}" class="btn btn-claro">
-                    <i class="bi bi-plus-lg"></i> Nueva compra
-                </a>
+                <a href="{% url 'sabueso_feliz:paciente_crear' %}" class="btn btn-gris"><i class="bi bi-plus-lg"></i> Registrar perro</a>
+                <a href="{% url 'sabueso_feliz:vacunacion_crear' %}" class="btn btn-gris"><i class="bi bi-plus-lg"></i> Aplicar vacuna</a>
+                <a href="{% url 'sabueso_feliz:compra_crear' %}" class="btn btn-gris"><i class="bi bi-plus-lg"></i> Nueva compra</a>
             </div>
         </div>
 
-        <!-- Atención necesaria -->
-        <div class="tarjeta p-4">
+        <div class="tarjeta p-3 p-md-4">
             <h2 class="h5 fw-bold mb-3">Atención necesaria</h2>
-            <span class="badge rounded-pill estado-alerta">4 medicamentos bajo mínimo</span>
 
-            <ul class="list-unstyled my-3">
-                <li class="py-1">Meloxicam · 4 / mínimo 8</li>
-                <li class="py-1">Cefalexina · 2 / mínimo 6</li>
-            </ul>
+            {% if stock_bajo %}
+                <span class="pildora peligro mb-3">
+                    {{ stock_bajo|length }} medicamento{{ stock_bajo|length|pluralize }} bajo mínimo
+                </span>
+                <ul class="list-unstyled mt-3 mb-3">
+                    {% for s in stock_bajo|slice:":4" %}
+                    <li class="mb-2">{{ s.medicamento_id.nombre }} · {{ s.cantidadExistente }} / mínimo {{ s.cantidadMinima }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
-            <a href="{% url 'sabueso_feliz:compras' %}" class="fw-bold text-success text-decoration-none">
-                Abrir depósito →
-            </a>
+            {% if vacunas_atrasadas_count %}
+                <span class="pildora alerta mb-3">
+                    {{ vacunas_atrasadas_count }} vacuna{{ vacunas_atrasadas_count|pluralize }} atrasada{{ vacunas_atrasadas_count|pluralize }}
+                </span>
+            {% endif %}
+
+            {% if not stock_bajo and not vacunas_atrasadas_count %}
+                <p class="text-muted mb-0">No hay nada pendiente por revisar.</p>
+            {% else %}
+                <div class="mt-2">
+                    {% if stock_bajo %}
+                    <a href="{% url 'sabueso_feliz:compras' %}?filtro=bajo" class="fw-bold text-decoration-none d-block">Abrir depósito →</a>
+                    {% endif %}
+                    {% if vacunas_atrasadas_count %}
+                    <a href="{% url 'sabueso_feliz:vacunaciones' %}?estado=pendientes" class="fw-bold text-decoration-none d-block mt-1">Ver vacunas pendientes →</a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
 
     </div>

@@ -1,13 +1,114 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Vacunaciones
-{% endblock %}
+{% block title %}Calendario de vacunación · El Sabueso Feliz{% endblock %}
 
 {% block content %}
 
-    <h1>Vacunaciones</h1>
+<!-- Encabezado -->
+<div class="mb-3">
+    <h1 class="h2 fw-bold mb-1">Calendario de vacunación</h1>
+    <p class="text-muted mb-0">Planificadas, vencidas y aplicadas</p>
+</div>
 
-    <p>Listado de vacunaciones.</p>
+<!-- Resumen por estado -->
+<div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="?estado=proximas" class="pildora {% if estado == 'proximas' %}sel{% endif %}">Próximas {{ proximas_count }}</a>
+    <a href="?estado=vencidas" class="pildora peligro {% if estado == 'vencidas' %}sel{% endif %}">Vencidas {{ vencidas_count }}</a>
+    <a href="?estado=aplicadas" class="pildora gris {% if estado == 'aplicadas' %}sel{% endif %}">Aplicadas {{ aplicadas_count }}</a>
+</div>
+
+<!-- Filtros -->
+<form method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-12 col-md-4 col-xl-4">
+        <label for="q" class="filtro-etiqueta">Buscar</label>
+        <input type="search" id="q" name="q" value="{{ q }}" placeholder="Paciente o vacuna">
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+        <label for="sucursal" class="filtro-etiqueta">Sucursal</label>
+        <select id="sucursal" name="sucursal" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for s in sucursales %}
+            <option value="{{ s.pk }}" {% if sucursal_sel == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+        <label for="estado" class="filtro-etiqueta">Estado</label>
+        <select id="estado" name="estado" onchange="this.form.submit()">
+            <option value="">Todos</option>
+            <option value="pendientes" {% if estado == 'pendientes' %}selected{% endif %}>Pendientes</option>
+            <option value="proximas" {% if estado == 'proximas' %}selected{% endif %}>Próximas</option>
+            <option value="vencidas" {% if estado == 'vencidas' %}selected{% endif %}>Vencidas</option>
+            <option value="aplicadas" {% if estado == 'aplicadas' %}selected{% endif %}>Aplicadas</option>
+        </select>
+    </div>
+    <div class="col-12 col-xl-2 text-xl-end">
+        <a href="{% url 'sabueso_feliz:vacunacion_crear' %}" class="btn btn-sabueso w-100">
+            <i class="bi bi-plus-lg"></i> Programar
+        </a>
+    </div>
+</form>
+
+<!-- Tabla -->
+<div class="tarjeta p-2 p-md-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Paciente</th>
+                    <th>Vacuna</th>
+                    <th>Fecha prevista</th>
+                    <th>Estado</th>
+                    <th>Sucursal</th>
+                    <th class="text-end">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for v in object_list %}
+                <tr class="{% if not v.fechaAplicacion and v.fechaProgramada < hoy %}fila-alerta{% endif %}">
+                    <td class="fw-bold">
+                        <a href="{% url 'sabueso_feliz:paciente' v.perro_id.pk %}" class="text-decoration-none text-reset">
+                            {{ v.perro_id.nombre }}
+                        </a>
+                    </td>
+                    <td>{{ v.vacuna_id }}</td>
+                    <td class="text-nowrap">{{ v.fechaProgramada|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if v.fechaAplicacion %}
+                            Aplicada <span class="text-muted small">{{ v.fechaAplicacion|date:"d/m/Y" }}</span>
+                        {% elif v.fechaProgramada < hoy %}
+                            <span class="fw-bold" style="color: var(--sf-peligro);">Vencida</span>
+                        {% else %}
+                            Próxima
+                        {% endif %}
+                    </td>
+                    <td>{{ v.perro_id.sucursal.nombre }}</td>
+                    <td class="text-end text-nowrap">
+                        {% if v.fechaAplicacion %}
+                            <a href="{% url 'sabueso_feliz:vacunacion' v.pk %}" class="enlace-accion">Ver →</a>
+                        {% else %}
+                            <a href="{% url 'sabueso_feliz:vacunacion_editar' v.pk %}" class="enlace-accion">Aplicar →</a>
+                        {% endif %}
+                        <a href="{% url 'sabueso_feliz:vacunacion_eliminar' v.pk %}"
+                           class="btn btn-outline-danger btn-sm ms-2" title="Eliminar" aria-label="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-5">
+                        {% if q or sucursal_sel or estado %}
+                            Ninguna vacuna coincide con los filtros.
+                        {% else %}
+                            Todavía no hay vacunas programadas.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 {% endblock %}

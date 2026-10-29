@@ -1,13 +1,112 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Consultas
-{% endblock %}
+{% block title %}Consultas · El Sabueso Feliz{% endblock %}
 
 {% block content %}
 
-    <h1>Consultas</h1>
+<!-- Encabezado -->
+<div class="mb-3">
+    <h1 class="h2 fw-bold mb-1">Consultas</h1>
+    <p class="text-muted mb-0">Atenciones registradas en las historias clínicas</p>
+</div>
 
-    <p>Listado de consultas.</p>
+<!-- Filtros -->
+<form method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-12 col-md-5 col-xl-4">
+        <label for="q" class="filtro-etiqueta">Buscar</label>
+        <input type="search" id="q" name="q" value="{{ q }}" placeholder="Paciente, historia u orden">
+    </div>
+    <div class="col-6 col-md-3 col-xl-3">
+        <label for="sucursal" class="filtro-etiqueta">Sucursal</label>
+        <select id="sucursal" name="sucursal" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for s in sucursales %}
+            <option value="{{ s.pk }}" {% if sucursal_sel == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-6 col-md-4 col-xl-3">
+        <label for="internado" class="filtro-etiqueta">Mostrar</label>
+        <select id="internado" name="internado" onchange="this.form.submit()">
+            <option value="">Todas las consultas</option>
+            <option value="1" {% if internado_sel == '1' %}selected{% endif %}>Internados actualmente</option>
+        </select>
+    </div>
+    <div class="col-12 col-xl-2 text-xl-end">
+        <a href="{% url 'sabueso_feliz:consulta_crear' %}" class="btn btn-sabueso w-100">
+            <i class="bi bi-plus-lg"></i> Nueva consulta
+        </a>
+    </div>
+</form>
+
+<!-- Tabla -->
+<div class="tarjeta p-2 p-md-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Orden</th>
+                    <th>Fecha</th>
+                    <th>Paciente</th>
+                    <th>Atendió</th>
+                    <th>Sucursal</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for c in object_list %}
+                <tr>
+                    <td class="fw-bold">
+                        <a href="{% url 'sabueso_feliz:consulta' c.pk %}" class="text-decoration-none text-reset">{{ c.nroOrden }}</a>
+                    </td>
+                    <td class="text-nowrap">{{ c.fechaEntrada|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'sabueso_feliz:paciente' c.perro_id.pk %}" class="fw-bold text-decoration-none text-reset">
+                            {{ c.perro_id.nombre }}
+                        </a>
+                        <div class="small text-muted">HC {{ c.perro_id.nroHistoriaClinica }}</div>
+                    </td>
+                    <td>{{ c.empleado_id }}</td>
+                    <td>{{ c.perro_id.sucursal.nombre }}</td>
+                    <td>
+                        {% if c.internado and not c.fechaSalida %}
+                            <span class="pildora alerta">Internado</span>
+                        {% elif c.internado %}
+                            <span class="pildora">Con alta {{ c.fechaSalida|date:"d/m" }}</span>
+                        {% else %}
+                            <span class="pildora gris">Ambulatoria</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <a href="{% url 'sabueso_feliz:consulta' c.pk %}"
+                           class="btn btn-gris btn-sm" title="Ver detalle" aria-label="Ver detalle">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{% url 'sabueso_feliz:consulta_editar' c.pk %}"
+                           class="btn btn-claro btn-sm" title="Editar" aria-label="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'sabueso_feliz:consulta_eliminar' c.pk %}"
+                           class="btn btn-outline-danger btn-sm" title="Eliminar" aria-label="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-5">
+                        {% if q or sucursal_sel or internado_sel %}
+                            Ninguna consulta coincide con los filtros.
+                        {% else %}
+                            Todavía no hay consultas registradas.
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 {% endblock %}

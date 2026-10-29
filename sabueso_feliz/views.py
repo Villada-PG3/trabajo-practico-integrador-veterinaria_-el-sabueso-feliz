@@ -1,5 +1,6 @@
-from django.db.models import Count, F
-from django.urls import reverse_lazy
+from datetime import timedelta
+from django.db.models import Count, F, Q
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
     TemplateView,
@@ -10,6 +11,7 @@ from django.views.generic import (
     DeleteView,
 )
 
+from .forms import EmpleadoForm, SucursalForm
 from .models import (
     Sucursal,
     Empleado,
@@ -23,7 +25,6 @@ from .models import (
     Medicamento,
     StockMedicamento,
 )
-from .forms import SucursalForm, EmpleadoForm
 
 # ------------------------------------------------------------ HOME
 
@@ -39,56 +40,34 @@ class HomeView(TemplateView):
         context['total_pacientes'] = Perro.objects.count()
         context['total_consultas'] = Consulta.objects.count()
 
-        # Pacientes por sucursal
-        context['sucursales'] = Sucursal.objects.annotate(
-            total=Count('perro')
+        # Actividad de hoy
+        context['consultas_hoy'] = (
+            Consulta.objects.filter(fechaEntrada=hoy)
+            .select_related('perro_id', 'empleado_id')
+        )
+        context['vacunas_hoy'] = (
+            CalendarioVacuna.objects
+            .filter(fechaProgramada=hoy, fechaAplicacion__isnull=True)
+            .select_related('perro_id', 'vacuna_id')
         )
 
-        # Perros internados actualmente
-        context['internados'] = Consulta.objects.filter(
-            internado=True,
-            fechaSalida__isnull=True,
-        )
-
-        # Últimas 5 consultas
-        context['ultimas_consultas'] = (
-            Consulta.objects.order_by('-fechaEntrada')[:5]
-        )
-
-        # Vacunas pendientes
-        context['vacunas_proximas'] = (
-            CalendarioVacuna.objects.filter(
-                fechaAplicacion__isnull=True,
-                fechaProgramada__gte=hoy,
-            )
-            .order_by('fechaProgramada')[:5]
-        )
-
-        context['vacunas_atrasadas'] = CalendarioVacuna.objects.filter(
+        # Indicadores
+        context['internados_count'] = Consulta.objects.filter(
+            internado=True, fechaSalida__isnull=True
+        ).count()
+        context['vacunas_semana'] = CalendarioVacuna.objects.filter(
             fechaAplicacion__isnull=True,
-            fechaProgramada__lt=hoy,
+            fechaProgramada__range=(hoy, hoy + timedelta(days=7)),
+        ).count()
+        context['vacunas_atrasadas_count'] = CalendarioVacuna.objects.filter(
+            fechaAplicacion__isnull=True, fechaProgramada__lt=hoy
+        ).count()
+        context['stock_bajo'] = (
+            StockMedicamento.objects
+            .filter(cantidadExistente__lt=F('cantidadMinima'))
+            .select_related('medicamento_id')
         )
-
-        # Medicamentos con stock por debajo del mínimo
-        context['stock_bajo'] = StockMedicamento.objects.filter(
-            cantidadExistente__lt=F('cantidadMinima')
-        )
-
         return context
-
-
-class SucursalCreateView(CreateView):
-    model = Sucursal
-    form_class = SucursalForm
-    template_name = 'form.html'
-    success_url = reverse_lazy('sabueso_feliz:sucursales')
-
-
-class SucursalUpdateView(UpdateView):
-    model = Sucursal
-    form_class = SucursalForm
-    template_name = 'form.html'
-    success_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
 # ------------------------------------------------------------ SUCURSAL
@@ -96,6 +75,16 @@ class SucursalUpdateView(UpdateView):
 class SucursalesView(ListView):
     model = Sucursal
     template_name = 'sucursales.html'
+
+    def get_queryset(self):
+        return (
+            Sucursal.objects
+            .select_related('supervisor', 'supervisor_suplente')
+            .annotate(
+                total_empleados=Count('empleado', distinct=True),
+                total_pacientes=Count('perro', distinct=True),
+            )
+        )
 
 
 class SucursalView(DetailView):
@@ -105,14 +94,14 @@ class SucursalView(DetailView):
 
 class SucursalCreateView(CreateView):
     model = Sucursal
-    fields = '__all__'
+    form_class = SucursalForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
 class SucursalUpdateView(UpdateView):
     model = Sucursal
-    fields = '__all__'
+    form_class = SucursalForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:sucursales')
 
@@ -128,6 +117,15 @@ class SucursalDeleteView(DeleteView):
 class EmpleadosView(ListView):
     model = Empleado
     template_name = 'empleados.html'
+
+    def get_queryset(self):
+        qs = Empleado.objects.select_related('sucursal')
+        tipo = self.request.GET.get('tipo')
+        if tipo == 'veterinarios':
+            qs = qs.filter(veterinario__isnull=False)
+        elif tipo == 'estudiantes':
+            qs = qs.filter(estudiantes__isnull=False)
+        return qs
 
 
 class EmpleadoView(DetailView):
@@ -176,6 +174,18 @@ class EstudianteCreateView(CreateView):
 class RazasView(ListView):
     model = Raza
     template_name = 'razas.html'
+
+    def get_queryset(self):
+        qs = Raza.objects.order_by('denominacion')
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(denominacion__icontains=q)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['q'] = self.request.GET.get('q', '')
+        return context
 
 
 class RazaView(DetailView):
@@ -241,10 +251,86 @@ class PacientesView(ListView):
     model = Perro
     template_name = 'pacientes.html'
 
+    def get_queryset(self):
+        qs = Perro.objects.select_related('raza', 'duenio', 'sucursal').order_by('nombre')
+
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(
+                Q(nombre__icontains=q)
+                | Q(nroHistoriaClinica__icontains=q)
+                | Q(duenio__nombre__icontains=q)
+                | Q(duenio__apellido__icontains=q)
+            )
+
+        sucursal = self.request.GET.get('sucursal')
+        if sucursal:
+            qs = qs.filter(sucursal_id=sucursal)
+
+        raza = self.request.GET.get('raza')
+        if raza:
+            qs = qs.filter(raza_id=raza)
+
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sucursales'] = Sucursal.objects.all()
+        context['razas'] = Raza.objects.all()
+        context['q'] = self.request.GET.get('q', '')
+        context['sucursal_sel'] = self.request.GET.get('sucursal', '')
+        context['raza_sel'] = self.request.GET.get('raza', '')
+        return context
+
 
 class PacienteView(DetailView):
     model = Perro
     template_name = 'paciente.html'
+    context_object_name = 'perro'
+
+    def get_queryset(self):
+        return Perro.objects.select_related('raza', 'duenio', 'sucursal')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        perro = self.object
+        hoy = timezone.localdate()
+        ver = self.request.GET.get('ver', '')
+
+        consultas = (
+            Consulta.objects.filter(perro_id=perro)
+            .select_related('empleado_id')
+            .prefetch_related(
+                'consultasintoma_set__sintoma_id',
+                'consultadiagnostico_set__diagnostico_id',
+                'recetamedicamento_set__medicamento_id',
+            )
+            .order_by('-fechaEntrada')
+        )
+        vacunas = (
+            CalendarioVacuna.objects.filter(perro_id=perro)
+            .select_related('vacuna_id', 'empleado_id')
+        )
+
+        eventos = []
+        if ver != 'vacunas':
+            eventos += [{'tipo': 'consulta', 'fecha': c.fechaEntrada, 'obj': c}
+                        for c in consultas]
+        if ver != 'consultas':
+            eventos += [{'tipo': 'vacuna',
+                         'fecha': v.fechaAplicacion or v.fechaProgramada, 'obj': v}
+                        for v in vacunas]
+        eventos.sort(key=lambda e: e['fecha'], reverse=True)
+
+        context['eventos'] = eventos
+        context['ver'] = ver
+        context['hoy'] = hoy
+        context['ultima_consulta'] = consultas.first()
+        context['proxima_vacuna'] = (
+            vacunas.filter(fechaAplicacion__isnull=True)
+            .order_by('fechaProgramada').first()
+        )
+        return context
 
 
 class PacienteCreateView(CreateView):
@@ -273,6 +359,37 @@ class ConsultasView(ListView):
     model = Consulta
     template_name = 'consultas.html'
 
+    def get_queryset(self):
+        qs = (
+            Consulta.objects
+            .select_related('perro_id__sucursal', 'empleado_id')
+            .order_by('-fechaEntrada', '-id')
+        )
+
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(
+                Q(perro_id__nombre__icontains=q)
+                | Q(perro_id__nroHistoriaClinica__icontains=q)
+                | Q(nroOrden__icontains=q)
+            )
+
+        sucursal = self.request.GET.get('sucursal')
+        if sucursal:
+            qs = qs.filter(perro_id__sucursal_id=sucursal)
+
+        if self.request.GET.get('internado') == '1':
+            qs = qs.filter(internado=True, fechaSalida__isnull=True)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sucursales'] = Sucursal.objects.all()
+        context['q'] = self.request.GET.get('q', '')
+        context['sucursal_sel'] = self.request.GET.get('sucursal', '')
+        context['internado_sel'] = self.request.GET.get('internado', '')
+        return context
+
 
 class ConsultaView(DetailView):
     model = Consulta
@@ -281,8 +398,7 @@ class ConsultaView(DetailView):
 
 class ConsultaCreateView(CreateView):
     model = Consulta
-    fields = '__all__'
-    template_name = 'form.html'
+    template_name = 'consulta_form.html'
     success_url = reverse_lazy('sabueso_feliz:consultas')
 
 
@@ -304,6 +420,59 @@ class ConsultaDeleteView(DeleteView):
 class VacunacionesView(ListView):
     model = CalendarioVacuna
     template_name = 'vacunaciones.html'
+
+    def get_estado(self):
+        estado = self.request.GET.get('estado', '')
+        # "realizadas" es el nombre que usa el menú lateral
+        return 'aplicadas' if estado == 'realizadas' else estado
+
+    def get_queryset(self):
+        hoy = timezone.localdate()
+        qs = CalendarioVacuna.objects.select_related(
+            'perro_id__sucursal', 'vacuna_id', 'empleado_id'
+        )
+
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(
+                Q(perro_id__nombre__icontains=q) | Q(vacuna_id__nombre__icontains=q)
+            )
+
+        sucursal = self.request.GET.get('sucursal')
+        if sucursal:
+            qs = qs.filter(perro_id__sucursal_id=sucursal)
+
+        estado = self.get_estado()
+        if estado == 'pendientes':
+            qs = qs.filter(fechaAplicacion__isnull=True)
+        elif estado == 'proximas':
+            qs = qs.filter(fechaAplicacion__isnull=True, fechaProgramada__gte=hoy)
+        elif estado == 'vencidas':
+            qs = qs.filter(fechaAplicacion__isnull=True, fechaProgramada__lt=hoy)
+        elif estado == 'aplicadas':
+            qs = qs.filter(fechaAplicacion__isnull=False)
+
+        if estado == 'aplicadas':
+            return qs.order_by('-fechaAplicacion')
+        # Pendientes primero, ordenadas por fecha prevista
+        return qs.order_by(F('fechaAplicacion').asc(nulls_first=True), 'fechaProgramada')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        hoy = timezone.localdate()
+        pendientes = CalendarioVacuna.objects.filter(fechaAplicacion__isnull=True)
+
+        context['hoy'] = hoy
+        context['estado'] = self.get_estado()
+        context['q'] = self.request.GET.get('q', '')
+        context['sucursal_sel'] = self.request.GET.get('sucursal', '')
+        context['sucursales'] = Sucursal.objects.all()
+        context['proximas_count'] = pendientes.filter(fechaProgramada__gte=hoy).count()
+        context['vencidas_count'] = pendientes.filter(fechaProgramada__lt=hoy).count()
+        context['aplicadas_count'] = CalendarioVacuna.objects.filter(
+            fechaAplicacion__isnull=False
+        ).count()
+        return context
 
 
 class VacunacionView(DetailView):
@@ -363,6 +532,33 @@ class MedicamentoDeleteView(DeleteView):
 class ComprasView(ListView):
     model = StockMedicamento
     template_name = 'compras.html'
+
+    def get_queryset(self):
+        qs = (
+            StockMedicamento.objects
+            .select_related('medicamento_id')
+            .order_by('medicamento_id__nombre')
+        )
+
+        q = self.request.GET.get('q', '').strip()
+        if q:
+            qs = qs.filter(
+                Q(medicamento_id__nombre__icontains=q)
+                | Q(medicamento_id__laboratorio__icontains=q)
+            )
+
+        if self.request.GET.get('filtro') == 'bajo':
+            qs = qs.filter(cantidadExistente__lt=F('cantidadMinima'))
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['q'] = self.request.GET.get('q', '')
+        context['filtro'] = self.request.GET.get('filtro', '')
+        context['bajo_count'] = StockMedicamento.objects.filter(
+            cantidadExistente__lt=F('cantidadMinima')
+        ).count()
+        return context
 
 
 class CompraCreateView(CreateView):

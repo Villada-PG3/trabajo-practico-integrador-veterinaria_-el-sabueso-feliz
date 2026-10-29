@@ -1,13 +1,148 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Paciente
-{% endblock %}
+{% block title %}{{ perro.nombre }} · HC {{ perro.nroHistoriaClinica }}{% endblock %}
 
 {% block content %}
 
-    <h1>Detalle de paciente</h1>
+<!-- Encabezado -->
+<div class="mb-3">
+    <h1 class="h2 fw-bold mb-1">{{ perro.nombre }} · HC {{ perro.nroHistoriaClinica }}</h1>
+    <p class="text-muted mb-0">
+        <a href="{% url 'sabueso_feliz:pacientes' %}" class="text-reset text-decoration-none">Pacientes</a> /
+        <a href="{% url 'sabueso_feliz:sucursal' perro.sucursal.pk %}" class="text-reset text-decoration-none">Sucursal {{ perro.sucursal.nombre }}</a> /
+        Ficha clínica
+    </p>
+</div>
 
-    <p>Acá vamos a mostrar un paciente.</p>
+<!-- Datos del paciente -->
+<div class="tarjeta p-3 p-md-4 mb-4">
+    <div class="d-flex flex-wrap gap-3 gap-md-4">
+        <div class="ficha-icono"><i class="bi bi-heart"></i></div>
+
+        <div class="flex-grow-1">
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                <h2 class="h3 fw-bold mb-0">{{ perro.nombre }}</h2>
+                <span class="pildora">{{ perro.raza.denominacion }}</span>
+            </div>
+            <p class="text-muted mb-2">
+                {{ perro.sexo }} · Nació {{ perro.fechaNacimiento|date:"d/m/Y" }}
+                · {{ perro.pesoActual }} kg · {{ perro.alturaActual }} cm
+            </p>
+            <p class="dato mb-0">
+                Dueño/a:
+                <a href="{% url 'sabueso_feliz:duenio' perro.duenio.pk %}" class="text-reset">{{ perro.duenio }}</a>
+                · {{ perro.duenio.telefono|default:"sin teléfono" }}
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 align-self-end">
+            <a href="{% url 'sabueso_feliz:paciente_editar' perro.pk %}" class="btn btn-claro">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'sabueso_feliz:paciente_eliminar' perro.pk %}" class="btn btn-outline-danger"
+               title="Eliminar" aria-label="Eliminar">
+                <i class="bi bi-trash"></i>
+            </a>
+            <a href="{% url 'sabueso_feliz:consulta_crear' %}" class="btn btn-sabueso">
+                <i class="bi bi-plus-lg"></i> Nueva consulta
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        {% if proxima_vacuna %}
+        <a href="{% url 'sabueso_feliz:vacunacion' proxima_vacuna.pk %}" class="resumen">
+            <div class="etiqueta">Próxima vacuna</div>
+            <div class="valor">{{ proxima_vacuna.vacuna_id }} · {{ proxima_vacuna.fechaProgramada|date:"d M" }}</div>
+            <span class="ir">Ver detalle →</span>
+        </a>
+        {% else %}
+        <div class="resumen">
+            <div class="etiqueta">Próxima vacuna</div>
+            <div class="valor text-muted">Sin pendientes</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-12 col-md-4">
+        {% if ultima_consulta %}
+        <a href="{% url 'sabueso_feliz:consulta' ultima_consulta.pk %}" class="resumen">
+            <div class="etiqueta">Última consulta</div>
+            <div class="valor">{{ ultima_consulta.fechaEntrada|date:"d M" }} · Orden {{ ultima_consulta.nroOrden }}</div>
+            <span class="ir">Ver detalle →</span>
+        </a>
+        {% else %}
+        <div class="resumen">
+            <div class="etiqueta">Última consulta</div>
+            <div class="valor text-muted">Sin consultas</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-12 col-md-4">
+        <a href="{% url 'sabueso_feliz:sucursal' perro.sucursal.pk %}" class="resumen">
+            <div class="etiqueta">Sucursal</div>
+            <div class="valor">{{ perro.sucursal.nombre }}</div>
+            <span class="ir">Ver detalle →</span>
+        </a>
+    </div>
+</div>
+
+<!-- Historia clínica -->
+<div class="tarjeta p-3 p-md-4">
+    <h2 class="h5 fw-bold mb-3">Historia clínica</h2>
+
+    <div class="d-flex flex-wrap gap-2 mb-2">
+        <a href="?" class="filtro-pildora {% if not ver %}activo{% endif %}">Todo</a>
+        <a href="?ver=consultas" class="filtro-pildora {% if ver == 'consultas' %}activo{% endif %}">Consultas</a>
+        <a href="?ver=vacunas" class="filtro-pildora {% if ver == 'vacunas' %}activo{% endif %}">Vacunas</a>
+    </div>
+
+    {% for e in eventos %}
+    <div class="evento">
+        <div class="evento-fecha {% if e.tipo == 'vacuna' %}vacuna{% endif %}">
+            {{ e.fecha|date:"d M"|upper }}
+        </div>
+
+        <div class="flex-grow-1">
+            {% if e.tipo == 'consulta' %}
+                {% with c=e.obj %}
+                <a href="{% url 'sabueso_feliz:consulta' c.pk %}" class="fw-bold text-decoration-none text-reset">
+                    Consulta {{ c.nroOrden }}
+                    {% if c.consultasintoma_set.all %}·
+                        {% for cs in c.consultasintoma_set.all %}{{ cs.sintoma_id }}{% if not forloop.last %} y {% endif %}{% endfor %}
+                    {% endif %}
+                </a>
+                <div class="small text-muted">
+                    {{ c.empleado_id }}
+                    {% if c.fechaSalida %}· Alta {{ c.fechaSalida|date:"d/m/Y" }}
+                    {% elif c.internado %}· <span class="pildora alerta">Internado</span>{% endif %}
+                    {% for r in c.recetamedicamento_set.all %}
+                        · {{ r.medicamento_id.nombre }} {{ r.dosis }} c/{{ r.periodisidad }}
+                    {% endfor %}
+                </div>
+                {% endwith %}
+            {% else %}
+                {% with v=e.obj %}
+                <a href="{% url 'sabueso_feliz:vacunacion' v.pk %}" class="fw-bold text-decoration-none text-reset">
+                    Vacuna {{ v.vacuna_id }} · dosis {{ v.dosis }}
+                </a>
+                <div class="small text-muted">
+                    {% if v.fechaAplicacion %}Aplicada por {{ v.empleado_id }}
+                    {% elif v.fechaProgramada < hoy %}<span class="pildora peligro">Atrasada</span>
+                    {% else %}<span class="pildora azul">Programada</span>{% endif %}
+                    {% if v.laboratorio %}· {{ v.laboratorio }}{% endif %}
+                </div>
+                {% endwith %}
+            {% endif %}
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted text-center py-4 mb-0">Este paciente todavía no tiene registros en su historia clínica.</p>
+    {% endfor %}
+</div>
 
 {% endblock %}
