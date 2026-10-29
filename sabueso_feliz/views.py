@@ -2,16 +2,31 @@ from django.db.models import Count, F
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
-    TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView,
+    TemplateView,
+    ListView,
+    DetailView,
+    CreateView,
+    UpdateView,
+    DeleteView,
 )
 
 from .models import (
-    Sucursal, Empleado, Veterinario, Estudiantes, Raza, Duenio, Perro,
-    Consulta, CalendarioVacuna, Medicamento, StockMedicamento,
+    Sucursal,
+    Empleado,
+    Veterinario,
+    Estudiantes,
+    Raza,
+    Duenio,
+    Perro,
+    Consulta,
+    CalendarioVacuna,
+    Medicamento,
+    StockMedicamento,
 )
-
+from .forms import SucursalForm, EmpleadoForm
 
 # ------------------------------------------------------------ HOME
+
 class HomeView(TemplateView):
     template_name = 'home.html'
 
@@ -25,32 +40,59 @@ class HomeView(TemplateView):
         context['total_consultas'] = Consulta.objects.count()
 
         # Pacientes por sucursal
-        context['sucursales'] = Sucursal.objects.annotate(total=Count('perro'))
+        context['sucursales'] = Sucursal.objects.annotate(
+            total=Count('perro')
+        )
 
         # Perros internados actualmente
         context['internados'] = Consulta.objects.filter(
-            internado=True, fechaSalida__isnull=True
+            internado=True,
+            fechaSalida__isnull=True,
         )
 
         # Últimas 5 consultas
-        context['ultimas_consultas'] = Consulta.objects.order_by('-fechaEntrada')[:5]
+        context['ultimas_consultas'] = (
+            Consulta.objects.order_by('-fechaEntrada')[:5]
+        )
 
         # Vacunas pendientes
-        context['vacunas_proximas'] = CalendarioVacuna.objects.filter(
-            fechaAplicacion__isnull=True, fechaProgramada__gte=hoy
-        ).order_by('fechaProgramada')[:5]
+        context['vacunas_proximas'] = (
+            CalendarioVacuna.objects.filter(
+                fechaAplicacion__isnull=True,
+                fechaProgramada__gte=hoy,
+            )
+            .order_by('fechaProgramada')[:5]
+        )
+
         context['vacunas_atrasadas'] = CalendarioVacuna.objects.filter(
-            fechaAplicacion__isnull=True, fechaProgramada__lt=hoy
+            fechaAplicacion__isnull=True,
+            fechaProgramada__lt=hoy,
         )
 
         # Medicamentos con stock por debajo del mínimo
         context['stock_bajo'] = StockMedicamento.objects.filter(
             cantidadExistente__lt=F('cantidadMinima')
         )
+
         return context
 
 
+class SucursalCreateView(CreateView):
+    model = Sucursal
+    form_class = SucursalForm
+    template_name = 'form.html'
+    success_url = reverse_lazy('sabueso_feliz:sucursales')
+
+
+class SucursalUpdateView(UpdateView):
+    model = Sucursal
+    form_class = SucursalForm
+    template_name = 'form.html'
+    success_url = reverse_lazy('sabueso_feliz:sucursales')
+
+
 # ------------------------------------------------------------ SUCURSAL
+
 class SucursalesView(ListView):
     model = Sucursal
     template_name = 'sucursales.html'
@@ -82,6 +124,7 @@ class SucursalDeleteView(DeleteView):
 
 
 # ------------------------------------------------------------ EMPLEADO
+
 class EmpleadosView(ListView):
     model = Empleado
     template_name = 'empleados.html'
@@ -94,14 +137,14 @@ class EmpleadoView(DetailView):
 
 class EmpleadoCreateView(CreateView):
     model = Empleado
-    fields = '__all__'
+    form_class = EmpleadoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
 
 
 class EmpleadoUpdateView(UpdateView):
     model = Empleado
-    fields = '__all__'
+    form_class = EmpleadoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
 
@@ -112,7 +155,8 @@ class EmpleadoDeleteView(DeleteView):
     success_url = reverse_lazy('sabueso_feliz:empleados')
 
 
-# Para dar de alta un veterinario o un estudiante (traen sus campos extra)
+# Alta de veterinarios y estudiantes con sus campos adicionales
+
 class VeterinarioCreateView(CreateView):
     model = Veterinario
     fields = '__all__'
@@ -128,6 +172,7 @@ class EstudianteCreateView(CreateView):
 
 
 # ------------------------------------------------------------ RAZA
+
 class RazasView(ListView):
     model = Raza
     template_name = 'razas.html'
@@ -159,6 +204,7 @@ class RazaDeleteView(DeleteView):
 
 
 # ------------------------------------------------------------ DUEÑO
+
 class DueniosView(ListView):
     model = Duenio
     template_name = 'duenios.html'
@@ -189,7 +235,8 @@ class DuenioDeleteView(DeleteView):
     success_url = reverse_lazy('sabueso_feliz:duenios')
 
 
-# ------------------------------------------------------------ PACIENTE (Perro)
+# ------------------------------------------------------------ PACIENTE
+
 class PacientesView(ListView):
     model = Perro
     template_name = 'pacientes.html'
@@ -221,6 +268,7 @@ class PacienteDeleteView(DeleteView):
 
 
 # ------------------------------------------------------------ CONSULTA
+
 class ConsultasView(ListView):
     model = Consulta
     template_name = 'consultas.html'
@@ -252,6 +300,7 @@ class ConsultaDeleteView(DeleteView):
 
 
 # ------------------------------------------------------------ VACUNACIÓN
+
 class VacunacionesView(ListView):
     model = CalendarioVacuna
     template_name = 'vacunaciones.html'
@@ -283,6 +332,7 @@ class VacunacionDeleteView(DeleteView):
 
 
 # ------------------------------------------------------------ MEDICAMENTO
+
 class MedicamentosView(ListView):
     model = Medicamento
     template_name = 'medicamentos.html'
@@ -308,7 +358,8 @@ class MedicamentoDeleteView(DeleteView):
     success_url = reverse_lazy('sabueso_feliz:medicamentos')
 
 
-# ------------------------------------------------------------ COMPRAS (Stock)
+# ------------------------------------------------------------ COMPRAS (STOCK)
+
 class ComprasView(ListView):
     model = StockMedicamento
     template_name = 'compras.html'
