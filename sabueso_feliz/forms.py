@@ -1,5 +1,5 @@
 from django import forms
-from .models import Sucursal
+from .models import Sucursal, Empleado, Veterinario, Estudiantes, Raza, Duenio, Perro, Consulta, CalendarioVacuna, Medicamento, StockMedicamento
 
 
 class SucursalForm(forms.ModelForm):
@@ -38,4 +38,25 @@ class SucursalForm(forms.ModelForm):
             'telefono': 'Teléfono',
             'supervisor': 'Supervisor',
             'supervisor_suplente': 'Supervisor suplente',
+        }
+
+class EmpleadoForm(forms.ModelForm):
+    class Meta:
+        model = Empleado
+        fields = '__all__'
+        widgets = {
+            'fechaNacimiento': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control',
+    },
+),
+            'fechaIngreso': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={
+                    'type': 'date',
+                    'class': 'form-control',
+                },
+            ),
         }

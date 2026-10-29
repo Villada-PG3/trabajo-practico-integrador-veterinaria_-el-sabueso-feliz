@@ -23,8 +23,7 @@ from .models import (
     Medicamento,
     StockMedicamento,
 )
-from .forms import SucursalForm
-
+from .forms import SucursalForm, EmpleadoForm
 
 # ------------------------------------------------------------ HOME
 
@@ -138,14 +137,14 @@ class EmpleadoView(DetailView):
 
 class EmpleadoCreateView(CreateView):
     model = Empleado
-    fields = '__all__'
+    form_class = EmpleadoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
 
 
 class EmpleadoUpdateView(UpdateView):
     model = Empleado
-    fields = '__all__'
+    form_class = EmpleadoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
 

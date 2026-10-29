@@ -1,10 +1,3 @@
-{% comment %}
-    Menú lateral de El Sabueso Feliz.
-    Cada enlace intenta usar el nombre de ruta indicado; si no existe
-    en tu urls.py, queda en "#" y no da error.
-    Si usás namespace, escribilo así: 'app:nombre'.
-{% endcomment %}
-
 {% url 'sabueso_feliz:home' as u_home %}
 {% url 'sabueso_feliz:sucursales' as u_sucursales %}
 {% url 'sabueso_feliz:empleados' as u_empleados %}
@@ -57,41 +50,68 @@
         padding: .4rem .75rem;
     }
 
-    /* El contenido se ubica a la derecha del menú */
+    /* Contenido a la derecha del menú */
     #menu ~ .contenido {
         margin-left: 250px;
         transition: margin-left .25s;
     }
 
-    /* Computadora: menú contraído (solo íconos) */
+    /* Computadora: menú contraído */
     @media (min-width: 992px) {
-        body.menu-chico #menu { width: 70px; }
-        body.menu-chico #menu ~ .contenido { margin-left: 70px; }
+        body.menu-chico #menu {
+            width: 70px;
+        }
+
+        body.menu-chico #menu ~ .contenido {
+            margin-left: 70px;
+        }
 
         body.menu-chico #menu .texto,
         body.menu-chico #menu .marca,
-        body.menu-chico #menu .submenu { display: none; }
+        body.menu-chico #menu .submenu {
+            display: none;
+        }
 
-        body.menu-chico #menu .nav-link { justify-content: center; }
-        body.menu-chico #menu .cabecera { justify-content: center !important; }
+        body.menu-chico #menu .nav-link {
+            justify-content: center;
+        }
+
+        body.menu-chico #menu .cabecera {
+            justify-content: center !important;
+        }
     }
 
-    /* Celular: el menú se esconde y se abre con el botón */
+    /* Celular */
     @media (max-width: 991.98px) {
-        #menu { transform: translateX(-100%); }
-        body.menu-abierto #menu { transform: none; }
-        #menu ~ .contenido { margin-left: 0; }
+        #menu {
+            transform: translateX(-100%);
+        }
+
+        body.menu-abierto #menu {
+            transform: none;
+        }
+
+        #menu ~ .contenido {
+            margin-left: 0;
+        }
     }
 </style>
 
 <aside id="menu">
 
-    <!-- Logo y botón para expandir / contraer -->
+    <!-- Logo y botón para expandir o contraer -->
     <div class="cabecera d-flex align-items-center justify-content-between p-3">
-        <a href="{{ u_home|default:'#' }}" class="marca text-white text-decoration-none fw-bold">
-            <i class="bi bi-heart-pulse-fill text-success"></i> El Sabueso Feliz
+        <a href="{{ u_home|default:'#' }}"
+           class="marca text-white text-decoration-none fw-bold">
+            <i class="bi bi-heart-pulse-fill text-success"></i>
+            El Sabueso Feliz
         </a>
-        <button class="btn btn-sm text-white fs-5" type="button" data-menu="alternar" aria-label="Expandir o contraer menú">
+
+        <button
+            class="btn btn-sm text-white fs-5"
+            type="button"
+            data-menu="alternar"
+            aria-label="Expandir o contraer menú">
             <i class="bi bi-list"></i>
         </button>
     </div>
@@ -116,77 +136,216 @@
 
         <!-- Empleados -->
         <li>
-            <a class="nav-link" data-bs-toggle="collapse" href="#sub-empleados" role="button">
+            <a class="nav-link"
+               data-bs-toggle="collapse"
+               href="#sub-empleados"
+               role="button"
+               aria-expanded="false"
+               aria-controls="sub-empleados">
                 <i class="bi bi-person-badge"></i>
                 <span class="texto">Empleados</span>
                 <i class="bi bi-chevron-down texto ms-auto"></i>
             </a>
-            <ul class="nav flex-column collapse submenu" id="sub-empleados">
-                <li><a class="nav-link" href="{{ u_veterinarios|default:'#' }}">Veterinarios</a></li>
-                <li><a class="nav-link" href="{{ u_estudiantes|default:'#' }}">Estudiantes</a></li>
+
+            <ul class="nav flex-column collapse submenu"
+                id="sub-empleados">
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_empleados|default:'#' }}">
+                        Ver todos los empleados
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_veterinarios|default:'#' }}">
+                        Nuevo veterinario
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_estudiantes|default:'#' }}">
+                        Nuevo estudiante
+                    </a>
+                </li>
+
             </ul>
         </li>
 
         <!-- Pacientes -->
         <li>
-            <a class="nav-link" data-bs-toggle="collapse" href="#sub-pacientes" role="button">
+            <a class="nav-link"
+               data-bs-toggle="collapse"
+               href="#sub-pacientes"
+               role="button"
+               aria-expanded="false"
+               aria-controls="sub-pacientes">
                 <i class="bi bi-heart"></i>
                 <span class="texto">Pacientes</span>
                 <i class="bi bi-chevron-down texto ms-auto"></i>
             </a>
-            <ul class="nav flex-column collapse submenu" id="sub-pacientes">
-                <li><a class="nav-link" href="{{ u_pacientes|default:'#' }}">Perros</a></li>
-                <li><a class="nav-link" href="{{ u_propietarios|default:'#' }}">Propietarios</a></li>
-                <li><a class="nav-link" href="{{ u_razas|default:'#' }}">Razas</a></li>
+
+            <ul class="nav flex-column collapse submenu"
+                id="sub-pacientes">
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_pacientes|default:'#' }}">
+                        Perros
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_propietarios|default:'#' }}">
+                        Propietarios
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_razas|default:'#' }}">
+                        Razas
+                    </a>
+                </li>
+
             </ul>
         </li>
 
         <!-- Atención médica -->
         <li>
-            <a class="nav-link" data-bs-toggle="collapse" href="#sub-atencion" role="button">
+            <a class="nav-link"
+               data-bs-toggle="collapse"
+               href="#sub-atencion"
+               role="button"
+               aria-expanded="false"
+               aria-controls="sub-atencion">
                 <i class="bi bi-clipboard2-pulse"></i>
                 <span class="texto">Atención médica</span>
                 <i class="bi bi-chevron-down texto ms-auto"></i>
             </a>
-            <ul class="nav flex-column collapse submenu" id="sub-atencion">
-                <li><a class="nav-link" href="{{ u_consultas|default:'#' }}">Consultas</a></li>
-                <li><a class="nav-link" href="{{ u_internaciones|default:'#' }}">Internaciones</a></li>
-                <li><a class="nav-link" href="{{ u_calendario|default:'#' }}">Calendario de vacunas</a></li>
-                <li><a class="nav-link" href="{{ u_vacunaciones|default:'#' }}">Vacunaciones realizadas</a></li>
+
+            <ul class="nav flex-column collapse submenu"
+                id="sub-atencion">
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_consultas|default:'#' }}">
+                        Consultas
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_internaciones|default:'#' }}">
+                        Internaciones
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_calendario|default:'#' }}">
+                        Calendario de vacunas
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_vacunaciones|default:'#' }}">
+                        Vacunaciones
+                    </a>
+                </li>
+
             </ul>
         </li>
 
         <!-- Catálogos -->
         <li>
-            <a class="nav-link" data-bs-toggle="collapse" href="#sub-catalogos" role="button">
+            <a class="nav-link"
+               data-bs-toggle="collapse"
+               href="#sub-catalogos"
+               role="button"
+               aria-expanded="false"
+               aria-controls="sub-catalogos">
                 <i class="bi bi-journal-medical"></i>
                 <span class="texto">Catálogos</span>
                 <i class="bi bi-chevron-down texto ms-auto"></i>
             </a>
-            <ul class="nav flex-column collapse submenu" id="sub-catalogos">
-                <li><a class="nav-link" href="{{ u_vacunas|default:'#' }}">Vacunas</a></li>
-                <li><a class="nav-link" href="{{ u_sintomas|default:'#' }}">Síntomas</a></li>
-                <li><a class="nav-link" href="{{ u_diagnosticos|default:'#' }}">Diagnósticos</a></li>
-                <li><a class="nav-link" href="{{ u_medicamentos|default:'#' }}">Medicamentos</a></li>
-                <li><a class="nav-link" href="{{ u_laboratorios|default:'#' }}">Laboratorios</a></li>
+
+            <ul class="nav flex-column collapse submenu"
+                id="sub-catalogos">
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_vacunas|default:'#' }}">
+                        Vacunas
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_sintomas|default:'#' }}">
+                        Síntomas
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_diagnosticos|default:'#' }}">
+                        Diagnósticos
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_medicamentos|default:'#' }}">
+                        Medicamentos
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_laboratorios|default:'#' }}">
+                        Laboratorios
+                    </a>
+                </li>
+
             </ul>
         </li>
 
         <!-- Inventario -->
         <li>
-            <a class="nav-link" data-bs-toggle="collapse" href="#sub-inventario" role="button">
+            <a class="nav-link"
+               data-bs-toggle="collapse"
+               href="#sub-inventario"
+               role="button"
+               aria-expanded="false"
+               aria-controls="sub-inventario">
                 <i class="bi bi-box-seam"></i>
                 <span class="texto">Inventario</span>
                 <i class="bi bi-chevron-down texto ms-auto"></i>
             </a>
-            <ul class="nav flex-column collapse submenu" id="sub-inventario">
-                <li><a class="nav-link" href="{{ u_stock|default:'#' }}">Stock por sucursal</a></li>
+
+            <ul class="nav flex-column collapse submenu"
+                id="sub-inventario">
+
                 <li>
-                    <a class="nav-link" href="{{ u_alertas|default:'#' }}">
+                    <a class="nav-link"
+                       href="{{ u_stock|default:'#' }}">
+                        Compras y stock
+                    </a>
+                </li>
+
+                <li>
+                    <a class="nav-link"
+                       href="{{ u_alertas|default:'#' }}">
                         Alertas de stock mínimo
                         <i class="bi bi-exclamation-triangle text-warning"></i>
                     </a>
                 </li>
+
             </ul>
         </li>
 
@@ -194,16 +353,23 @@
 </aside>
 
 <script>
-    // Botón del menú: en computadora lo contrae, en celular lo abre/cierra
+    // En computadora contrae el menú; en celular lo abre o cierra.
     document.addEventListener('click', function (e) {
-        if (!e.target.closest('[data-menu="alternar"]')) return;
+        if (!e.target.closest('[data-menu="alternar"]')) {
+            return;
+        }
 
         var esCelular = window.innerWidth < 992;
-        document.body.classList.toggle(esCelular ? 'menu-abierto' : 'menu-chico');
+
+        document.body.classList.toggle(
+            esCelular ? 'menu-abierto' : 'menu-chico'
+        );
     });
 
-    // Si el menú está contraído y se toca un grupo, se expande
-    document.querySelectorAll('#menu [data-bs-toggle="collapse"]').forEach(function (enlace) {
+    // Expande el menú si estaba contraído al tocar un grupo.
+    document.querySelectorAll(
+        '#menu [data-bs-toggle="collapse"]'
+    ).forEach(function (enlace) {
         enlace.addEventListener('click', function () {
             document.body.classList.remove('menu-chico');
         });
