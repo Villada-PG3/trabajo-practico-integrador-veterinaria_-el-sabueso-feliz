@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ empleado }} · El Sabueso Feliz{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+    <div>
+        <a href="{% url 'sabueso_feliz:empleados' %}" class="text-decoration-none text-muted small">
+            <i class="bi bi-arrow-left"></i> Volver a empleados
+        </a>
+        <h1 class="h2 fw-bold mb-0 mt-1">{{ empleado }}</h1>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sabueso_feliz:empleado_editar' empleado.pk %}" class="btn btn-sabueso">Editar</a>
+        <a href="{% url 'sabueso_feliz:empleado_eliminar' empleado.pk %}" class="btn btn-outline-danger">Eliminar</a>
+    </div>
+</div>
+
+<div class="tarjeta p-4">
+    <dl class="row mb-0">
+        <dt class="col-sm-3 text-muted">Documento</dt>
+        <dd class="col-sm-9">{{ empleado.tipoDocumento }} {{ empleado.nroDocumento }}</dd>
+        <dt class="col-sm-3 text-muted">Nacimiento</dt>
+        <dd class="col-sm-9">{{ empleado.fechaNacimiento|date:"d/m/Y" }}</dd>
+        <dt class="col-sm-3 text-muted">Ingreso</dt>
+        <dd class="col-sm-9">{{ empleado.fechaIngreso|date:"d/m/Y" }}</dd>
+        <dt class="col-sm-3 text-muted">Sucursal</dt>
+        <dd class="col-sm-9">
+            <a href="{% url 'sabueso_feliz:sucursal' empleado.sucursal.pk %}">{{ empleado.sucursal }}</a>
+        </dd>
+        {% if empleado.veterinario %}
+        <dt class="col-sm-3 text-muted">Matrícula</dt>
+        <dd class="col-sm-9 mb-0">{{ empleado.veterinario.matriculaHabilitante }}</dd>
+        {% endif %}
+        {% if empleado.estudiantes %}
+        <dt class="col-sm-3 text-muted">Legajo</dt>
+        <dd class="col-sm-9 mb-0">{{ empleado.estudiantes.legajo }}</dd>
+        {% endif %}
+    </dl>
+</div>
+
+{% endblock %}

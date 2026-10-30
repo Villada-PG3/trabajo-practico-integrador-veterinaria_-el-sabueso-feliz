@@ -1,4 +1,5 @@
-from django.db.models import Count, F
+from django.contrib import messages
+from django.db.models import Count, F, Q
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
@@ -23,7 +24,52 @@ from .models import (
     Medicamento,
     StockMedicamento,
 )
-from .forms import SucursalForm, EmpleadoForm
+from .forms import (
+    SucursalForm,
+    EmpleadoForm,
+    VeterinarioForm,
+    EstudianteForm,
+    RazaForm,
+    DuenioForm,
+    PacienteForm,
+    ConsultaForm,
+    VacunacionForm,
+    MedicamentoForm,
+    StockForm,
+)
+
+
+class FormularioVistaMixin:
+    titulo = ''
+    volver_url = None
+    mensaje_exito = 'Los datos se guardaron correctamente.'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = self.titulo
+        context['volver_url'] = self.volver_url
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, self.mensaje_exito)
+        return super().form_valid(form)
+
+
+class EliminarVistaMixin:
+    titulo = 'Eliminar registro'
+    volver_url = None
+    mensaje_exito = 'El registro se eliminó correctamente.'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = self.titulo
+        context['volver_url'] = self.volver_url
+        return context
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, self.mensaje_exito)
+        return super().delete(request, *args, **kwargs)
+
 
 # ------------------------------------------------------------ HOME
 
@@ -37,58 +83,42 @@ class HomeView(TemplateView):
         context['total_sucursales'] = Sucursal.objects.count()
         context['total_empleados'] = Empleado.objects.count()
         context['total_pacientes'] = Perro.objects.count()
-        context['total_consultas'] = Consulta.objects.count()
-
-        # Pacientes por sucursal
-        context['sucursales'] = Sucursal.objects.annotate(
-            total=Count('perro')
-        )
-
-        # Perros internados actualmente
+        context['consultas_hoy'] = Consulta.objects.filter(fechaEntrada=hoy).count()
         context['internados'] = Consulta.objects.filter(
             internado=True,
             fechaSalida__isnull=True,
-        )
+        ).select_related('perro_id')
 
-        # Últimas 5 consultas
+        context['sucursales'] = Sucursal.objects.annotate(total=Count('perro'))
+
         context['ultimas_consultas'] = (
-            Consulta.objects.order_by('-fechaEntrada')[:5]
+            Consulta.objects.select_related('perro_id', 'empleado_id')
+            .order_by('-fechaEntrada')[:5]
         )
 
-        # Vacunas pendientes
         context['vacunas_proximas'] = (
             CalendarioVacuna.objects.filter(
                 fechaAplicacion__isnull=True,
                 fechaProgramada__gte=hoy,
             )
+            .select_related('perro_id', 'vacuna_id')
             .order_by('fechaProgramada')[:5]
         )
+        context['total_vacunas_proximas'] = CalendarioVacuna.objects.filter(
+            fechaAplicacion__isnull=True,
+            fechaProgramada__gte=hoy,
+        ).count()
 
         context['vacunas_atrasadas'] = CalendarioVacuna.objects.filter(
             fechaAplicacion__isnull=True,
             fechaProgramada__lt=hoy,
-        )
+        ).select_related('perro_id', 'vacuna_id')
 
-        # Medicamentos con stock por debajo del mínimo
         context['stock_bajo'] = StockMedicamento.objects.filter(
             cantidadExistente__lt=F('cantidadMinima')
-        )
+        ).select_related('medicamento_id')
 
         return context
-
-
-class SucursalCreateView(CreateView):
-    model = Sucursal
-    form_class = SucursalForm
-    template_name = 'form.html'
-    success_url = reverse_lazy('sabueso_feliz:sucursales')
-
-
-class SucursalUpdateView(UpdateView):
-    model = Sucursal
-    form_class = SucursalForm
-    template_name = 'form.html'
-    success_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
 # ------------------------------------------------------------ SUCURSAL
@@ -96,31 +126,44 @@ class SucursalUpdateView(UpdateView):
 class SucursalesView(ListView):
     model = Sucursal
     template_name = 'sucursales.html'
+    queryset = Sucursal.objects.select_related('supervisor', 'supervisor_suplente')
 
 
 class SucursalView(DetailView):
     model = Sucursal
     template_name = 'sucursal.html'
+    context_object_name = 'sucursal'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['empleados'] = self.object.empleado_set.all()
+        context['pacientes'] = self.object.perro_set.select_related('raza', 'duenio')
+        return context
 
 
-class SucursalCreateView(CreateView):
+class SucursalCreateView(FormularioVistaMixin, CreateView):
     model = Sucursal
-    fields = '__all__'
+    form_class = SucursalForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:sucursales')
+    titulo = 'Nueva sucursal'
+    volver_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
-class SucursalUpdateView(UpdateView):
+class SucursalUpdateView(FormularioVistaMixin, UpdateView):
     model = Sucursal
-    fields = '__all__'
+    form_class = SucursalForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:sucursales')
+    titulo = 'Editar sucursal'
+    volver_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
-class SucursalDeleteView(DeleteView):
+class SucursalDeleteView(EliminarVistaMixin, DeleteView):
     model = Sucursal
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:sucursales')
+    volver_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
 # ------------------------------------------------------------ EMPLEADO
@@ -128,47 +171,56 @@ class SucursalDeleteView(DeleteView):
 class EmpleadosView(ListView):
     model = Empleado
     template_name = 'empleados.html'
+    queryset = Empleado.objects.select_related('sucursal')
 
 
 class EmpleadoView(DetailView):
     model = Empleado
     template_name = 'empleado.html'
+    context_object_name = 'empleado'
 
 
-class EmpleadoCreateView(CreateView):
+class EmpleadoCreateView(FormularioVistaMixin, CreateView):
     model = Empleado
     form_class = EmpleadoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
+    titulo = 'Nuevo empleado'
+    volver_url = reverse_lazy('sabueso_feliz:empleados')
 
 
-class EmpleadoUpdateView(UpdateView):
+class EmpleadoUpdateView(FormularioVistaMixin, UpdateView):
     model = Empleado
     form_class = EmpleadoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
+    titulo = 'Editar empleado'
+    volver_url = reverse_lazy('sabueso_feliz:empleados')
 
 
-class EmpleadoDeleteView(DeleteView):
+class EmpleadoDeleteView(EliminarVistaMixin, DeleteView):
     model = Empleado
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
+    volver_url = reverse_lazy('sabueso_feliz:empleados')
 
 
-# Alta de veterinarios y estudiantes con sus campos adicionales
-
-class VeterinarioCreateView(CreateView):
+class VeterinarioCreateView(FormularioVistaMixin, CreateView):
     model = Veterinario
-    fields = '__all__'
+    form_class = VeterinarioForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
+    titulo = 'Nuevo veterinario'
+    volver_url = reverse_lazy('sabueso_feliz:empleados')
 
 
-class EstudianteCreateView(CreateView):
+class EstudianteCreateView(FormularioVistaMixin, CreateView):
     model = Estudiantes
-    fields = '__all__'
+    form_class = EstudianteForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:empleados')
+    titulo = 'Nuevo estudiante'
+    volver_url = reverse_lazy('sabueso_feliz:empleados')
 
 
 # ------------------------------------------------------------ RAZA
@@ -181,26 +233,37 @@ class RazasView(ListView):
 class RazaView(DetailView):
     model = Raza
     template_name = 'raza.html'
+    context_object_name = 'raza'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pacientes'] = self.object.perro_set.select_related('duenio', 'sucursal')
+        return context
 
 
-class RazaCreateView(CreateView):
+class RazaCreateView(FormularioVistaMixin, CreateView):
     model = Raza
-    fields = '__all__'
+    form_class = RazaForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:razas')
+    titulo = 'Nueva raza'
+    volver_url = reverse_lazy('sabueso_feliz:razas')
 
 
-class RazaUpdateView(UpdateView):
+class RazaUpdateView(FormularioVistaMixin, UpdateView):
     model = Raza
-    fields = '__all__'
+    form_class = RazaForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:razas')
+    titulo = 'Editar raza'
+    volver_url = reverse_lazy('sabueso_feliz:razas')
 
 
-class RazaDeleteView(DeleteView):
+class RazaDeleteView(EliminarVistaMixin, DeleteView):
     model = Raza
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:razas')
+    volver_url = reverse_lazy('sabueso_feliz:razas')
 
 
 # ------------------------------------------------------------ DUEÑO
@@ -213,26 +276,37 @@ class DueniosView(ListView):
 class DuenioView(DetailView):
     model = Duenio
     template_name = 'duenio.html'
+    context_object_name = 'duenio'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pacientes'] = self.object.perro_set.select_related('raza', 'sucursal')
+        return context
 
 
-class DuenioCreateView(CreateView):
+class DuenioCreateView(FormularioVistaMixin, CreateView):
     model = Duenio
-    fields = '__all__'
+    form_class = DuenioForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:duenios')
+    titulo = 'Nuevo propietario'
+    volver_url = reverse_lazy('sabueso_feliz:duenios')
 
 
-class DuenioUpdateView(UpdateView):
+class DuenioUpdateView(FormularioVistaMixin, UpdateView):
     model = Duenio
-    fields = '__all__'
+    form_class = DuenioForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:duenios')
+    titulo = 'Editar propietario'
+    volver_url = reverse_lazy('sabueso_feliz:duenios')
 
 
-class DuenioDeleteView(DeleteView):
+class DuenioDeleteView(EliminarVistaMixin, DeleteView):
     model = Duenio
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:duenios')
+    volver_url = reverse_lazy('sabueso_feliz:duenios')
 
 
 # ------------------------------------------------------------ PACIENTE
@@ -241,30 +315,61 @@ class PacientesView(ListView):
     model = Perro
     template_name = 'pacientes.html'
 
+    def get_queryset(self):
+        qs = Perro.objects.select_related('raza', 'duenio', 'sucursal')
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(
+                Q(nombre__icontains=q)
+                | Q(nroHistoriaClinica__icontains=q)
+                | Q(duenio__nombre__icontains=q)
+                | Q(duenio__apellido__icontains=q)
+            )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['q'] = self.request.GET.get('q', '')
+        return context
+
 
 class PacienteView(DetailView):
     model = Perro
     template_name = 'paciente.html'
+    context_object_name = 'paciente'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['consultas'] = self.object.consulta_set.select_related('empleado_id')
+        context['vacunaciones'] = self.object.calendariovacuna_set.select_related(
+            'vacuna_id', 'empleado_id'
+        )
+        return context
 
 
-class PacienteCreateView(CreateView):
+class PacienteCreateView(FormularioVistaMixin, CreateView):
     model = Perro
-    fields = '__all__'
+    form_class = PacienteForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:pacientes')
+    titulo = 'Registrar perro'
+    volver_url = reverse_lazy('sabueso_feliz:pacientes')
 
 
-class PacienteUpdateView(UpdateView):
+class PacienteUpdateView(FormularioVistaMixin, UpdateView):
     model = Perro
-    fields = '__all__'
+    form_class = PacienteForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:pacientes')
+    titulo = 'Editar paciente'
+    volver_url = reverse_lazy('sabueso_feliz:pacientes')
 
 
-class PacienteDeleteView(DeleteView):
+class PacienteDeleteView(EliminarVistaMixin, DeleteView):
     model = Perro
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:pacientes')
+    volver_url = reverse_lazy('sabueso_feliz:pacientes')
 
 
 # ------------------------------------------------------------ CONSULTA
@@ -273,30 +378,53 @@ class ConsultasView(ListView):
     model = Consulta
     template_name = 'consultas.html'
 
+    def get_queryset(self):
+        qs = Consulta.objects.select_related('perro_id', 'empleado_id').order_by('-fechaEntrada')
+        if self.request.GET.get('internados'):
+            qs = qs.filter(internado=True, fechaSalida__isnull=True)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['solo_internados'] = bool(self.request.GET.get('internados'))
+        return context
+
 
 class ConsultaView(DetailView):
     model = Consulta
     template_name = 'consulta.html'
+    context_object_name = 'consulta'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sintomas'] = self.object.consultasintoma_set.select_related('sintoma_id')
+        context['recetas'] = self.object.recetamedicamento_set.select_related('medicamento_id')
+        return context
 
 
-class ConsultaCreateView(CreateView):
+class ConsultaCreateView(FormularioVistaMixin, CreateView):
     model = Consulta
-    fields = '__all__'
+    form_class = ConsultaForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:consultas')
+    titulo = 'Nueva consulta'
+    volver_url = reverse_lazy('sabueso_feliz:consultas')
 
 
-class ConsultaUpdateView(UpdateView):
+class ConsultaUpdateView(FormularioVistaMixin, UpdateView):
     model = Consulta
-    fields = '__all__'
+    form_class = ConsultaForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:consultas')
+    titulo = 'Editar consulta'
+    volver_url = reverse_lazy('sabueso_feliz:consultas')
 
 
-class ConsultaDeleteView(DeleteView):
+class ConsultaDeleteView(EliminarVistaMixin, DeleteView):
     model = Consulta
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:consultas')
+    volver_url = reverse_lazy('sabueso_feliz:consultas')
 
 
 # ------------------------------------------------------------ VACUNACIÓN
@@ -305,30 +433,48 @@ class VacunacionesView(ListView):
     model = CalendarioVacuna
     template_name = 'vacunaciones.html'
 
+    def get_queryset(self):
+        return (
+            CalendarioVacuna.objects
+            .select_related('perro_id', 'vacuna_id', 'empleado_id')
+            .order_by('fechaProgramada')
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['hoy'] = timezone.localdate()
+        return context
+
 
 class VacunacionView(DetailView):
     model = CalendarioVacuna
     template_name = 'vacunacion.html'
+    context_object_name = 'vacunacion'
 
 
-class VacunacionCreateView(CreateView):
+class VacunacionCreateView(FormularioVistaMixin, CreateView):
     model = CalendarioVacuna
-    fields = '__all__'
+    form_class = VacunacionForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:vacunaciones')
+    titulo = 'Nueva vacunación'
+    volver_url = reverse_lazy('sabueso_feliz:vacunaciones')
 
 
-class VacunacionUpdateView(UpdateView):
+class VacunacionUpdateView(FormularioVistaMixin, UpdateView):
     model = CalendarioVacuna
-    fields = '__all__'
+    form_class = VacunacionForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:vacunaciones')
+    titulo = 'Editar vacunación'
+    volver_url = reverse_lazy('sabueso_feliz:vacunaciones')
 
 
-class VacunacionDeleteView(DeleteView):
+class VacunacionDeleteView(EliminarVistaMixin, DeleteView):
     model = CalendarioVacuna
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:vacunaciones')
+    volver_url = reverse_lazy('sabueso_feliz:vacunaciones')
 
 
 # ------------------------------------------------------------ MEDICAMENTO
@@ -338,24 +484,29 @@ class MedicamentosView(ListView):
     template_name = 'medicamentos.html'
 
 
-class MedicamentoCreateView(CreateView):
+class MedicamentoCreateView(FormularioVistaMixin, CreateView):
     model = Medicamento
-    fields = '__all__'
+    form_class = MedicamentoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:medicamentos')
+    titulo = 'Nuevo medicamento'
+    volver_url = reverse_lazy('sabueso_feliz:medicamentos')
 
 
-class MedicamentoUpdateView(UpdateView):
+class MedicamentoUpdateView(FormularioVistaMixin, UpdateView):
     model = Medicamento
-    fields = '__all__'
+    form_class = MedicamentoForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:medicamentos')
+    titulo = 'Editar medicamento'
+    volver_url = reverse_lazy('sabueso_feliz:medicamentos')
 
 
-class MedicamentoDeleteView(DeleteView):
+class MedicamentoDeleteView(EliminarVistaMixin, DeleteView):
     model = Medicamento
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:medicamentos')
+    volver_url = reverse_lazy('sabueso_feliz:medicamentos')
 
 
 # ------------------------------------------------------------ COMPRAS (STOCK)
@@ -364,22 +515,38 @@ class ComprasView(ListView):
     model = StockMedicamento
     template_name = 'compras.html'
 
+    def get_queryset(self):
+        qs = StockMedicamento.objects.select_related('medicamento_id')
+        if self.request.GET.get('alerta'):
+            qs = qs.filter(cantidadExistente__lt=F('cantidadMinima'))
+        return qs
 
-class CompraCreateView(CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['solo_alertas'] = bool(self.request.GET.get('alerta'))
+        return context
+
+
+class CompraCreateView(FormularioVistaMixin, CreateView):
     model = StockMedicamento
-    fields = '__all__'
+    form_class = StockForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:compras')
+    titulo = 'Nueva compra / stock'
+    volver_url = reverse_lazy('sabueso_feliz:compras')
 
 
-class CompraUpdateView(UpdateView):
+class CompraUpdateView(FormularioVistaMixin, UpdateView):
     model = StockMedicamento
-    fields = '__all__'
+    form_class = StockForm
     template_name = 'form.html'
     success_url = reverse_lazy('sabueso_feliz:compras')
+    titulo = 'Editar stock'
+    volver_url = reverse_lazy('sabueso_feliz:compras')
 
 
-class CompraDeleteView(DeleteView):
+class CompraDeleteView(EliminarVistaMixin, DeleteView):
     model = StockMedicamento
     template_name = 'confirm_delete.html'
     success_url = reverse_lazy('sabueso_feliz:compras')
+    volver_url = reverse_lazy('sabueso_feliz:compras')

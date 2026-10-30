@@ -1,13 +1,62 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Consulta
-{% endblock %}
+{% block title %}Consulta {{ consulta.nroOrden }} · El Sabueso Feliz{% endblock %}
 
 {% block content %}
 
-    <h1>Detalle de consulta</h1>
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+    <div>
+        <a href="{% url 'sabueso_feliz:consultas' %}" class="text-decoration-none text-muted small">
+            <i class="bi bi-arrow-left"></i> Volver a consultas
+        </a>
+        <h1 class="h2 fw-bold mb-0 mt-1">Consulta {{ consulta.nroOrden }}</h1>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sabueso_feliz:consulta_editar' consulta.pk %}" class="btn btn-sabueso">Editar</a>
+        <a href="{% url 'sabueso_feliz:consulta_eliminar' consulta.pk %}" class="btn btn-outline-danger">Eliminar</a>
+    </div>
+</div>
 
-    <p>Acá vamos a mostrar una consulta.</p>
+<div class="tarjeta p-4 mb-4">
+    <dl class="row mb-0">
+        <dt class="col-sm-3 text-muted">Paciente</dt>
+        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:paciente' consulta.perro_id.pk %}">{{ consulta.perro_id }}</a></dd>
+        <dt class="col-sm-3 text-muted">Empleado</dt>
+        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:empleado' consulta.empleado_id.pk %}">{{ consulta.empleado_id }}</a></dd>
+        <dt class="col-sm-3 text-muted">Entrada</dt>
+        <dd class="col-sm-9">{{ consulta.fechaEntrada|date:"d/m/Y" }}</dd>
+        <dt class="col-sm-3 text-muted">Salida</dt>
+        <dd class="col-sm-9">{{ consulta.fechaSalida|date:"d/m/Y"|default:"—" }}</dd>
+        <dt class="col-sm-3 text-muted">Internado</dt>
+        <dd class="col-sm-9 mb-0">{% if consulta.internado %}Sí{% else %}No{% endif %}</dd>
+    </dl>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Síntomas</h2>
+            <ul class="list-unstyled mb-0">
+                {% for item in sintomas %}
+                <li class="py-1">{{ item.sintoma_id }}</li>
+                {% empty %}
+                <li class="text-muted">Sin síntomas cargados.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Recetas</h2>
+            <ul class="list-unstyled mb-0">
+                {% for receta in recetas %}
+                <li class="py-1">{{ receta.medicamento_id }} · {{ receta.dosis }} · {{ receta.periodisidad }}</li>
+                {% empty %}
+                <li class="text-muted">Sin recetas cargadas.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

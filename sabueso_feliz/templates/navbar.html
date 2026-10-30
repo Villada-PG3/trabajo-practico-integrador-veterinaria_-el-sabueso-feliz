@@ -11,367 +11,116 @@
 {% url 'sabueso_feliz:medicamentos' as u_medicamentos %}
 {% url 'sabueso_feliz:compras' as u_stock %}
 
-<style>
-    /* Menú lateral */
-    #menu {
-        position: fixed;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        width: 250px;
-        background-color: #123b38;
-        overflow-y: auto;
-        z-index: 1040;
-        transition: width .25s, transform .25s;
-    }
-
-    #menu .nav-link {
-        display: flex;
-        align-items: center;
-        gap: .75rem;
-        color: #c2d8d3;
-        white-space: nowrap;
-        border-radius: .5rem;
-    }
-
-    #menu .nav-link:hover {
-        background-color: rgba(255, 255, 255, .1);
-        color: #fff;
-    }
-
-    #menu .submenu {
-        margin-left: 1.9rem;
-        padding-left: .5rem;
-        border-left: 1px solid rgba(255, 255, 255, .2);
-    }
-
-    #menu .submenu .nav-link {
-        font-size: .9rem;
-        padding: .4rem .75rem;
-    }
-
-    /* Contenido a la derecha del menú */
-    #menu ~ .contenido {
-        margin-left: 250px;
-        transition: margin-left .25s;
-    }
-
-    /* Computadora: menú contraído */
-    @media (min-width: 992px) {
-        body.menu-chico #menu {
-            width: 70px;
-        }
-
-        body.menu-chico #menu ~ .contenido {
-            margin-left: 70px;
-        }
-
-        body.menu-chico #menu .texto,
-        body.menu-chico #menu .marca,
-        body.menu-chico #menu .submenu {
-            display: none;
-        }
-
-        body.menu-chico #menu .nav-link {
-            justify-content: center;
-        }
-
-        body.menu-chico #menu .cabecera {
-            justify-content: center !important;
-        }
-    }
-
-    /* Celular */
-    @media (max-width: 991.98px) {
-        #menu {
-            transform: translateX(-100%);
-        }
-
-        body.menu-abierto #menu {
-            transform: none;
-        }
-
-        #menu ~ .contenido {
-            margin-left: 0;
-        }
-    }
-</style>
+{% with nombre=request.resolver_match.url_name|default:'' %}
+<div class="menu-fondo" data-menu="cerrar"></div>
 
 <aside id="menu">
-
-    <!-- Logo y botón para expandir o contraer -->
     <div class="cabecera d-flex align-items-center justify-content-between p-3">
-        <a href="{{ u_home|default:'#' }}"
-           class="marca text-white text-decoration-none fw-bold">
-            <i class="bi bi-heart-pulse-fill text-success"></i>
-            El Sabueso Feliz
+        <a href="{{ u_home }}" class="marca text-white text-decoration-none fw-bold">
+            <span class="marca-icono"><i class="bi bi-heart-pulse-fill"></i></span>
+            <span class="marca-texto">El Sabueso Feliz</span>
         </a>
 
-        <button
-            class="btn btn-sm text-white fs-5"
-            type="button"
-            data-menu="alternar"
-            aria-label="Expandir o contraer menú">
-            <i class="bi bi-list"></i>
+        <button class="btn btn-sm text-white fs-5 d-none d-lg-inline-flex" type="button" data-menu="alternar" aria-label="Contraer menú">
+            <i class="bi bi-layout-sidebar-inset"></i>
         </button>
     </div>
 
     <ul class="nav flex-column p-2 gap-1">
-
-        <!-- Inicio -->
         <li>
-            <a class="nav-link" href="{{ u_home|default:'#' }}">
+            <a class="nav-link {% if nombre == 'home' %}activo{% endif %}" href="{{ u_home }}">
                 <i class="bi bi-house-door"></i>
                 <span class="texto">Inicio</span>
             </a>
         </li>
 
-        <!-- Sucursales -->
         <li>
-            <a class="nav-link" href="{{ u_sucursales|default:'#' }}">
+            <a class="nav-link {% if 'sucursal' in nombre %}activo{% endif %}" href="{{ u_sucursales }}">
                 <i class="bi bi-shop"></i>
                 <span class="texto">Sucursales</span>
             </a>
         </li>
 
-        <!-- Empleados -->
         <li>
-            <a class="nav-link"
-               data-bs-toggle="collapse"
-               href="#sub-empleados"
-               role="button"
-               aria-expanded="false"
-               aria-controls="sub-empleados">
+            <button
+                class="nav-link w-100 {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}activo{% endif %}"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sub-empleados"
+                aria-expanded="{% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}true{% else %}false{% endif %}"
+            >
                 <i class="bi bi-person-badge"></i>
                 <span class="texto">Empleados</span>
-                <i class="bi bi-chevron-down texto ms-auto"></i>
-            </a>
-
-            <ul class="nav flex-column collapse submenu"
-                id="sub-empleados">
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_empleados|default:'#' }}">
-                        Ver todos los empleados
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_veterinarios|default:'#' }}">
-                        Nuevo veterinario
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_estudiantes|default:'#' }}">
-                        Nuevo estudiante
-                    </a>
-                </li>
-
+                <i class="bi bi-chevron-down texto chevron"></i>
+            </button>
+            <ul class="list-unstyled collapse submenu {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}show{% endif %}" id="sub-empleados">
+                <li><a class="nav-link {% if nombre == 'empleados' %}activo{% endif %}" href="{{ u_empleados }}">Ver todos</a></li>
+                <li><a class="nav-link {% if nombre == 'veterinario_crear' %}activo{% endif %}" href="{{ u_veterinarios }}">Nuevo veterinario</a></li>
+                <li><a class="nav-link {% if nombre == 'estudiante_crear' %}activo{% endif %}" href="{{ u_estudiantes }}">Nuevo estudiante</a></li>
             </ul>
         </li>
 
-        <!-- Pacientes -->
         <li>
-            <a class="nav-link"
-               data-bs-toggle="collapse"
-               href="#sub-pacientes"
-               role="button"
-               aria-expanded="false"
-               aria-controls="sub-pacientes">
+            <button
+                class="nav-link w-100 {% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}activo{% endif %}"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sub-pacientes"
+                aria-expanded="{% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}true{% else %}false{% endif %}"
+            >
                 <i class="bi bi-heart"></i>
                 <span class="texto">Pacientes</span>
-                <i class="bi bi-chevron-down texto ms-auto"></i>
-            </a>
-
-            <ul class="nav flex-column collapse submenu"
-                id="sub-pacientes">
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_pacientes|default:'#' }}">
-                        Perros
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_propietarios|default:'#' }}">
-                        Propietarios
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_razas|default:'#' }}">
-                        Razas
-                    </a>
-                </li>
-
+                <i class="bi bi-chevron-down texto chevron"></i>
+            </button>
+            <ul class="list-unstyled collapse submenu {% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}show{% endif %}" id="sub-pacientes">
+                <li><a class="nav-link {% if 'paciente' in nombre %}activo{% endif %}" href="{{ u_pacientes }}">Perros</a></li>
+                <li><a class="nav-link {% if 'duenio' in nombre %}activo{% endif %}" href="{{ u_propietarios }}">Propietarios</a></li>
+                <li><a class="nav-link {% if 'raza' in nombre %}activo{% endif %}" href="{{ u_razas }}">Razas</a></li>
             </ul>
         </li>
 
-        <!-- Atención médica -->
         <li>
-            <a class="nav-link"
-               data-bs-toggle="collapse"
-               href="#sub-atencion"
-               role="button"
-               aria-expanded="false"
-               aria-controls="sub-atencion">
+            <button
+                class="nav-link w-100 {% if 'consulta' in nombre or 'vacunacion' in nombre %}activo{% endif %}"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sub-atencion"
+                aria-expanded="{% if 'consulta' in nombre or 'vacunacion' in nombre %}true{% else %}false{% endif %}"
+            >
                 <i class="bi bi-clipboard2-pulse"></i>
                 <span class="texto">Atención médica</span>
-                <i class="bi bi-chevron-down texto ms-auto"></i>
-            </a>
-
-            <ul class="nav flex-column collapse submenu"
-                id="sub-atencion">
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_consultas|default:'#' }}">
-                        Consultas
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_internaciones|default:'#' }}">
-                        Internaciones
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_calendario|default:'#' }}">
-                        Calendario de vacunas
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_vacunaciones|default:'#' }}">
-                        Vacunaciones
-                    </a>
-                </li>
-
+                <i class="bi bi-chevron-down texto chevron"></i>
+            </button>
+            <ul class="list-unstyled collapse submenu {% if 'consulta' in nombre or 'vacunacion' in nombre %}show{% endif %}" id="sub-atencion">
+                <li><a class="nav-link {% if nombre == 'consultas' and not request.GET.internados %}activo{% endif %}" href="{{ u_consultas }}">Consultas</a></li>
+                <li><a class="nav-link {% if request.GET.internados %}activo{% endif %}" href="{{ u_consultas }}?internados=1">Internaciones</a></li>
+                <li><a class="nav-link {% if 'vacunacion' in nombre %}activo{% endif %}" href="{{ u_vacunaciones }}">Vacunaciones</a></li>
             </ul>
         </li>
 
-        <!-- Catálogos -->
         <li>
-            <a class="nav-link"
-               data-bs-toggle="collapse"
-               href="#sub-catalogos"
-               role="button"
-               aria-expanded="false"
-               aria-controls="sub-catalogos">
-                <i class="bi bi-journal-medical"></i>
-                <span class="texto">Catálogos</span>
-                <i class="bi bi-chevron-down texto ms-auto"></i>
-            </a>
-
-            <ul class="nav flex-column collapse submenu"
-                id="sub-catalogos">
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_vacunas|default:'#' }}">
-                        Vacunas
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_sintomas|default:'#' }}">
-                        Síntomas
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_diagnosticos|default:'#' }}">
-                        Diagnósticos
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_medicamentos|default:'#' }}">
-                        Medicamentos
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_laboratorios|default:'#' }}">
-                        Laboratorios
-                    </a>
-                </li>
-
-            </ul>
-        </li>
-
-        <!-- Inventario -->
-        <li>
-            <a class="nav-link"
-               data-bs-toggle="collapse"
-               href="#sub-inventario"
-               role="button"
-               aria-expanded="false"
-               aria-controls="sub-inventario">
+            <button
+                class="nav-link w-100 {% if 'medicamento' in nombre or 'compra' in nombre %}activo{% endif %}"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sub-inventario"
+                aria-expanded="{% if 'medicamento' in nombre or 'compra' in nombre %}true{% else %}false{% endif %}"
+            >
                 <i class="bi bi-box-seam"></i>
                 <span class="texto">Inventario</span>
-                <i class="bi bi-chevron-down texto ms-auto"></i>
-            </a>
-
-            <ul class="nav flex-column collapse submenu"
-                id="sub-inventario">
-
+                <i class="bi bi-chevron-down texto chevron"></i>
+            </button>
+            <ul class="list-unstyled collapse submenu {% if 'medicamento' in nombre or 'compra' in nombre %}show{% endif %}" id="sub-inventario">
+                <li><a class="nav-link {% if 'medicamento' in nombre %}activo{% endif %}" href="{{ u_medicamentos }}">Medicamentos</a></li>
+                <li><a class="nav-link {% if 'compra' in nombre and not request.GET.alerta %}activo{% endif %}" href="{{ u_stock }}">Compras y stock</a></li>
                 <li>
-                    <a class="nav-link"
-                       href="{{ u_stock|default:'#' }}">
-                        Compras y stock
-                    </a>
-                </li>
-
-                <li>
-                    <a class="nav-link"
-                       href="{{ u_alertas|default:'#' }}">
-                        Alertas de stock mínimo
+                    <a class="nav-link {% if request.GET.alerta %}activo{% endif %}" href="{{ u_stock }}?alerta=1">
+                        Alertas de stock
                         <i class="bi bi-exclamation-triangle text-warning"></i>
                     </a>
                 </li>
-
             </ul>
         </li>
-
     </ul>
 </aside>
-
-<script>
-    // En computadora contrae el menú; en celular lo abre o cierra.
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('[data-menu="alternar"]')) {
-            return;
-        }
-
-        var esCelular = window.innerWidth < 992;
-
-        document.body.classList.toggle(
-            esCelular ? 'menu-abierto' : 'menu-chico'
-        );
-    });
-
-    // Expande el menú si estaba contraído al tocar un grupo.
-    document.querySelectorAll(
-        '#menu [data-bs-toggle="collapse"]'
-    ).forEach(function (enlace) {
-        enlace.addEventListener('click', function () {
-            document.body.classList.remove('menu-chico');
-        });
-    });
-</script>
+{% endwith %}
