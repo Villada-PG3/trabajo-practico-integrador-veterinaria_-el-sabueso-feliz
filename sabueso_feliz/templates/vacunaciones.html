@@ -1,13 +1,62 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Vacunaciones
-{% endblock %}
+{% block title %}Vacunaciones · El Sabueso Feliz{% endblock %}
 
 {% block content %}
 
-    <h1>Vacunaciones</h1>
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+    <div>
+        <h1 class="h2 fw-bold mb-1">Vacunaciones</h1>
+        <p class="text-muted mb-0">Total: {{ object_list|length }}</p>
+    </div>
+    <a href="{% url 'sabueso_feliz:vacunacion_crear' %}" class="btn btn-sabueso">
+        <i class="bi bi-plus-lg"></i> Nueva vacunación
+    </a>
+</div>
 
-    <p>Listado de vacunaciones.</p>
+<div class="tarjeta p-2 p-md-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead>
+                <tr class="small text-muted">
+                    <th>Paciente</th>
+                    <th>Vacuna</th>
+                    <th>Programada</th>
+                    <th>Aplicada</th>
+                    <th>Estado</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vacunacion in object_list %}
+                <tr>
+                    <td class="fw-bold">{{ vacunacion.perro_id }}</td>
+                    <td>{{ vacunacion.vacuna_id }}</td>
+                    <td>{{ vacunacion.fechaProgramada|date:"d/m/Y" }}</td>
+                    <td>{{ vacunacion.fechaAplicacion|date:"d/m/Y"|default:"—" }}</td>
+                    <td>
+                        {% if vacunacion.fechaAplicacion %}
+                            <span class="badge rounded-pill estado-programada">Aplicada</span>
+                        {% elif vacunacion.fechaProgramada < hoy %}
+                            <span class="badge rounded-pill estado-alerta">Atrasada</span>
+                        {% else %}
+                            <span class="badge rounded-pill estado-pendiente">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end text-nowrap">
+                        <a href="{% url 'sabueso_feliz:vacunacion' vacunacion.pk %}" class="btn btn-gris btn-sm"><i class="bi bi-eye"></i></a>
+                        <a href="{% url 'sabueso_feliz:vacunacion_editar' vacunacion.pk %}" class="btn btn-claro btn-sm"><i class="bi bi-pencil"></i></a>
+                        <a href="{% url 'sabueso_feliz:vacunacion_eliminar' vacunacion.pk %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-5">Todavía no hay vacunaciones cargadas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 {% endblock %}

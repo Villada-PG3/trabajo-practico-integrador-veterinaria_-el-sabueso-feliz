@@ -39,7 +39,7 @@
 
         <!-- Barra superior -->
         {% block topbar %}
-        <header class="d-flex align-items-center gap-3 px-3 px-lg-4 py-3 bg-white border-bottom">
+        <header class="topbar d-flex align-items-center gap-3 px-3 px-lg-4 py-3">
 
             <!-- Botón para abrir el menú en celulares -->
             <button
@@ -51,15 +51,15 @@
                 <i class="bi bi-list"></i>
             </button>
 
-            <input
-                type="search"
-                class="form-control buscador"
-                placeholder="Buscar perro, dueño o historia..."
-            >
-
-            <span class="ms-auto d-none d-md-inline border rounded px-3 py-1 fw-bold small">
-                Sucursal: Centro
-            </span>
+            <form class="flex-grow-1" method="get" action="{% url 'sabueso_feliz:pacientes' %}" role="search">
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ request.GET.q }}"
+                    class="form-control buscador"
+                    placeholder="Buscar perro, dueño o historia..."
+                >
+            </form>
 
             <span class="d-flex align-items-center gap-2 fw-bold">
                 <span class="avatar">AD</span>
@@ -71,14 +71,64 @@
 
         <!-- Contenido de cada página -->
         <main class="p-3 p-lg-4">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags|default:'success' }} mb-3">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
             {% block content %}{% endblock %}
         </main>
 
     </div>
 
     <!-- JavaScript de Bootstrap -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function esCelular() {
+            return window.innerWidth < 992;
+        }
+
+        function cerrarMenuCelular() {
+            document.body.classList.remove('menu-abierto');
+        }
+
+        document.addEventListener('click', function (e) {
+            if (e.target.closest('[data-menu="cerrar"]')) {
+                cerrarMenuCelular();
+                return;
+            }
+
+            if (!e.target.closest('[data-menu="alternar"]')) {
+                return;
+            }
+
+            if (esCelular()) {
+                document.body.classList.toggle('menu-abierto');
+            } else {
+                document.body.classList.toggle('menu-chico');
+            }
+        });
+
+        document.querySelectorAll('#menu [data-bs-toggle="collapse"]').forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                if (!document.body.classList.contains('menu-chico') || esCelular()) {
+                    return;
+                }
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                document.body.classList.remove('menu-chico');
+                var destino = document.querySelector(boton.getAttribute('data-bs-target'));
+                bootstrap.Collapse.getOrCreateInstance(destino, {toggle: false}).show();
+            }, true);
+        });
+
+        window.addEventListener('resize', function () {
+            if (esCelular()) {
+                document.body.classList.remove('menu-chico');
+            } else {
+                cerrarMenuCelular();
+            }
+        });
     </script>
 
     {% block js %}{% endblock %}

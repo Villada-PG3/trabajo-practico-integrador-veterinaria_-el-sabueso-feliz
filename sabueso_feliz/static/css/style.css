@@ -1,102 +1,225 @@
-/* ==========================================================
-   El Sabueso Feliz - estilos del contenido
-   (el menú lateral tiene su propio <style> en navbar.html)
-   ========================================================== */
 
-/* ---------- Colores ---------- */
 :root {
+    /* Paleta principal */
     --verde: #0b7a66;
     --verde-oscuro: #096453;
     --verde-claro: #e1f3ee;
-    --texto: #123b38;
-    --gris-texto: #6b8480;
-    --gris-claro: #edf2f0;
-    --borde: #e0e9e6;
+
+    /* Textos */
+    --texto: #263b38;
+    --gris-texto: #71817e;
+
+    /* Superficies */
+    --fondo: #f5f7f6;
+    --blanco: #ffffff;
+    --gris-claro: #f0f3f2;
+
+    /* Bordes y detalles */
+    --borde: #dfe6e3;
+    --menu: #183b36;
+
+    /* Elevación */
+    --sombra: 0 2px 6px rgba(25, 50, 45, .04);
+
+    /* Bordes */
+    --radio: 8px;
 }
 
 /* ---------- General ---------- */
+
 body {
-    background-color: #f4f7f6;
+    background: var(--fondo);
     color: var(--texto);
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Arial, sans-serif;
+    font-size: 14px;
 }
 
-/* ---------- Botones ---------- */
+a {
+    color: var(--verde);
+    text-decoration: none;
+    transition: color .15s ease;
+}
 
-/* Verde sólido: "Nueva consulta" */
-.btn-sabueso {
-    background-color: var(--verde);
+a:hover {
+    color: var(--verde-oscuro);
+}
+
+/* ---------- Menú lateral ---------- */
+
+#menu {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 260px;
+    background: var(--menu);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1040;
+    transition: width .2s ease, transform .2s ease;
+    box-shadow: 1px 0 4px rgba(0, 0, 0, .08);
+}
+
+#menu .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    color: #c1d0cc;
+    white-space: nowrap;
     border: 0;
+    background: transparent;
+    border-radius: 6px;
+    padding: .65rem .8rem;
+    text-align: left;
+    transition: background .15s ease, color .15s ease;
+    font-weight: 500;
+}
+
+#menu .nav-link i:first-child {
+    width: 1.15rem;
+    text-align: center;
+}
+
+#menu .nav-link:hover {
+    background: rgba(255, 255, 255, .07);
     color: #fff;
-    font-weight: 700;
 }
-.btn-sabueso:hover {
-    background-color: var(--verde-oscuro);
+
+#menu .nav-link.activo {
+    background: rgba(255, 255, 255, .11);
     color: #fff;
+    box-shadow: inset 3px 0 0 #45b99a;
 }
 
-/* Blanco con borde: "Registrar perro", "Aplicar vacuna"... */
-.btn-claro {
-    background-color: #fff;
-    border: 1px solid var(--borde);
-    color: var(--texto);
-    font-weight: 700;
-}
-.btn-claro:hover {
-    background-color: var(--verde-claro);
-    border-color: var(--verde);
-    color: var(--verde-oscuro);
+#menu .submenu {
+    margin-left: 1.15rem;
+    padding-left: .4rem;
+    border-left: 1px solid rgba(255, 255, 255, .15);
 }
 
-/* Píldora gris: "Ver todo" */
-.btn-gris {
-    background-color: var(--gris-claro);
-    border-radius: 50rem;
-    color: var(--gris-texto);
-    font-weight: 700;
-}
-.btn-gris:hover {
-    background-color: var(--verde-claro);
-    color: var(--verde-oscuro);
+#menu .submenu .nav-link {
+    font-size: .88rem;
+    padding: .45rem .75rem;
 }
 
-/* ---------- Tarjetas ---------- */
-.tarjeta {
-    background-color: #fff;
-    border: 1px solid var(--borde);
-    border-radius: 14px;
+#menu .chevron {
+    margin-left: auto;
+    font-size: .75rem;
+    transition: transform .2s ease;
 }
 
-.etiqueta {
-    font-size: .72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    color: var(--gris-texto);
+#menu [aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
 }
 
-.numero {
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1.2;
+#menu .marca {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    min-width: 0;
 }
 
-.hora {
-    width: 3.5rem;
-    font-weight: 700;
-    color: var(--gris-texto);
+#menu .marca-icono {
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, .10);
+    color: #65c9aa;
+    flex-shrink: 0;
 }
 
-/* ---------- Estados (etiquetas de colores) ---------- */
-.estado-atencion   { background-color: #fff0cc; color: #a8650a; }
-.estado-programada { background-color: var(--verde-claro); color: var(--verde); }
-.estado-pendiente  { background-color: #e5edf6; color: #3f5f80; }
-.estado-alerta     { background-color: #fde7e4; color: #c0392b; }
+.contenido {
+    margin-left: 260px;
+    min-height: 100vh;
+    transition: margin-left .2s ease;
+}
+
+.menu-fondo {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .4);
+    z-index: 1035;
+}
+
+@media (min-width: 992px) {
+    body.menu-chico #menu {
+        width: 76px;
+    }
+
+    body.menu-chico .contenido {
+        margin-left: 76px;
+    }
+
+    body.menu-chico #menu .texto,
+    body.menu-chico #menu .marca-texto,
+    body.menu-chico #menu .submenu,
+    body.menu-chico #menu .chevron {
+        display: none;
+    }
+
+    body.menu-chico #menu .nav-link {
+        justify-content: center;
+        padding-inline: .55rem;
+    }
+
+    body.menu-chico #menu .cabecera {
+        justify-content: center !important;
+        padding-inline: .7rem !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    #menu {
+        transform: translateX(-105%);
+        box-shadow: none;
+    }
+
+    body.menu-abierto #menu {
+        transform: none;
+        box-shadow: 3px 0 12px rgba(0, 0, 0, .15);
+    }
+
+    .contenido {
+        margin-left: 0;
+    }
+
+    body.menu-abierto .menu-fondo {
+        display: block;
+    }
+
+    body.menu-abierto {
+        overflow: hidden;
+    }
+}
 
 /* ---------- Barra superior ---------- */
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    background: #fff;
+    border-bottom: 1px solid var(--borde);
+}
+
 .buscador {
-    max-width: 380px;
-    background-color: var(--gris-claro);
-    border: 0;
+    max-width: 420px;
+    background: #f6f8f7;
+    border: 1px solid var(--borde);
+    border-radius: 6px;
+    padding-left: 1rem;
+    transition: border-color .15s ease;
+}
+
+.buscador:focus {
+    background: #fff;
+    border-color: var(--verde);
+    box-shadow: 0 0 0 .15rem rgba(11, 122, 102, .10);
 }
 
 .avatar {
@@ -106,8 +229,235 @@ body {
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background-color: var(--verde-claro);
-    color: var(--verde);
+    background: var(--verde-claro);
+    color: var(--verde-oscuro);
     font-size: .8rem;
-    font-weight: 800;
-} 
+    font-weight: 700;
+}
+
+/* ---------- Botones ---------- */
+
+.btn {
+    transition: background .15s ease, border-color .15s ease;
+    font-size: .875rem;
+}
+
+.btn-sabueso {
+    background: var(--verde);
+    border: 1px solid var(--verde);
+    color: #fff;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-sabueso:hover {
+    background: var(--verde-oscuro);
+    border-color: var(--verde-oscuro);
+    color: #fff;
+}
+
+.btn-claro {
+    background: #fff;
+    border: 1px solid #ccd7d3;
+    color: var(--texto);
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.btn-claro:hover {
+    background: #f3f7f5;
+    border-color: #aabbb5;
+    color: var(--texto);
+}
+
+.btn-gris {
+    background: #edf1ef;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #596d67;
+    font-weight: 600;
+}
+
+.btn-gris:hover {
+    background: #e2ebe7;
+    color: var(--verde-oscuro);
+}
+
+/* ---------- Tarjetas ---------- */
+
+.tarjeta {
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    transition: border-color .15s ease;
+}
+
+.tarjeta:hover {
+    border-color: #ccd9d4;
+}
+
+/* ---------- Textos y estadísticas ---------- */
+
+.etiqueta {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--gris-texto);
+}
+
+.numero {
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--texto);
+}
+
+.hora {
+    width: 3.5rem;
+    font-weight: 600;
+    color: var(--gris-texto);
+}
+
+/* ---------- Tablas ---------- */
+
+.tarjeta .table {
+    --bs-table-bg: transparent;
+    margin-bottom: 0;
+}
+
+.tarjeta .table thead th {
+    background: #f7f9f8;
+    color: #647771;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .035em;
+    border-bottom: 1px solid var(--borde);
+    padding: .85rem 1rem;
+}
+
+.tarjeta .table tbody td {
+    padding: .85rem 1rem;
+    border-color: #edf1ef;
+    color: var(--texto);
+    vertical-align: middle;
+}
+
+.tarjeta .table tbody tr:hover {
+    background: #f8faf9;
+}
+
+.tarjeta .list-group-item {
+    border-color: #edf1ef;
+    transition: background .15s ease;
+}
+
+.tarjeta .list-group-item:hover {
+    background: #f7f9f8;
+}
+
+.tarjeta label,
+.tarjeta .form-label {
+    font-weight: 600;
+    color: #40534e;
+}
+
+/* ---------- Formularios ---------- */
+
+.form-control,
+.form-select {
+    border-radius: 6px;
+    border: 1px solid #d5dfdb;
+    font-size: .9rem;
+    color: var(--texto);
+    min-height: 38px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--verde);
+    box-shadow: 0 0 0 .15rem rgba(11, 122, 102, .12);
+}
+
+.form-control::placeholder {
+    color: #a0aeaa;
+}
+
+/* ---------- Alertas ---------- */
+
+.alert {
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font-size: .9rem;
+}
+
+.alert-success {
+    background: #eaf5ef;
+    border-color: #cde6d7;
+    color: #286344;
+}
+
+.alert-danger {
+    background: #fbeeee;
+    border-color: #f0d1d1;
+    color: #9b3535;
+}
+
+/* ---------- Estados ---------- */
+
+.estado-atencion,
+.estado-programada,
+.estado-pendiente,
+.estado-alerta {
+    display: inline-block;
+    font-size: .75rem;
+    font-weight: 600;
+    padding: .3rem .6rem;
+    border-radius: 4px;
+}
+
+.estado-atencion {
+    background: #fff3d9;
+    color: #91610d;
+}
+
+.estado-programada {
+    background: #e1f3ee;
+    color: #096453;
+}
+
+.estado-pendiente {
+    background: #eaf0f6;
+    color: #47627d;
+}
+
+.estado-alerta {
+    background: #fbeaea;
+    color: #a63b3b;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 575.98px) {
+    .numero {
+        font-size: 1.5rem;
+    }
+
+    .tarjeta .table thead th,
+    .tarjeta .table tbody td {
+        padding: .65rem;
+    }
+}
+
+/* ---------- Accesibilidad ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}

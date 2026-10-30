@@ -1,16 +1,15 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ sucursal.nombre|default:sucursal }} · El Sabueso Feliz{% endblock %}
+{% block title %}{{ sucursal.nombre }} · El Sabueso Feliz{% endblock %}
 
 {% block content %}
 
-<!-- Encabezado -->
 <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
     <div>
         <a href="{% url 'sabueso_feliz:sucursales' %}" class="text-decoration-none text-muted small">
             <i class="bi bi-arrow-left"></i> Volver a sucursales
         </a>
-        <h1 class="h2 fw-bold mb-0 mt-1">{{ sucursal.nombre|default:sucursal }}</h1>
+        <h1 class="h2 fw-bold mb-0 mt-1">{{ sucursal.nombre }}</h1>
     </div>
 
     <div class="d-flex gap-2">
@@ -23,20 +22,52 @@
     </div>
 </div>
 
-<!-- Datos de la sucursal -->
-<div class="tarjeta p-4">
+<div class="tarjeta p-4 mb-4">
     <h2 class="h5 fw-bold mb-3">Datos de la sucursal</h2>
-
     <dl class="row mb-0">
         <dt class="col-sm-3 text-muted">Nombre</dt>
-        <dd class="col-sm-9">{{ sucursal.nombre|default:"—" }}</dd>
-
+        <dd class="col-sm-9">{{ sucursal.nombre }}</dd>
         <dt class="col-sm-3 text-muted">Dirección</dt>
-        <dd class="col-sm-9">{{ sucursal.direccion|default:"—" }}</dd>
-
+        <dd class="col-sm-9">{{ sucursal.direccion }}</dd>
         <dt class="col-sm-3 text-muted">Teléfono</dt>
-        <dd class="col-sm-9 mb-0">{{ sucursal.telefono|default:"—" }}</dd>
+        <dd class="col-sm-9">{{ sucursal.telefono }}</dd>
+        <dt class="col-sm-3 text-muted">Supervisor</dt>
+        <dd class="col-sm-9">{{ sucursal.supervisor|default:"—" }}</dd>
+        <dt class="col-sm-3 text-muted">Supervisor suplente</dt>
+        <dd class="col-sm-9 mb-0">{{ sucursal.supervisor_suplente|default:"—" }}</dd>
     </dl>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Empleados</h2>
+            <ul class="list-unstyled mb-0">
+                {% for empleado in empleados %}
+                <li class="py-1">
+                    <a href="{% url 'sabueso_feliz:empleado' empleado.pk %}">{{ empleado }}</a>
+                </li>
+                {% empty %}
+                <li class="text-muted">No hay empleados en esta sucursal.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Pacientes</h2>
+            <ul class="list-unstyled mb-0">
+                {% for paciente in pacientes %}
+                <li class="py-1">
+                    <a href="{% url 'sabueso_feliz:paciente' paciente.pk %}">{{ paciente }}</a>
+                    <small class="text-muted">· {{ paciente.raza }}</small>
+                </li>
+                {% empty %}
+                <li class="text-muted">No hay pacientes en esta sucursal.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

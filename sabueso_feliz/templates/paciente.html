@@ -1,13 +1,71 @@
 {% extends 'base.html' %}
 
-{% block title %}
-    Paciente
-{% endblock %}
+{% block title %}{{ paciente.nombre }} · El Sabueso Feliz{% endblock %}
 
 {% block content %}
 
-    <h1>Detalle de paciente</h1>
+<div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
+    <div>
+        <a href="{% url 'sabueso_feliz:pacientes' %}" class="text-decoration-none text-muted small">
+            <i class="bi bi-arrow-left"></i> Volver a pacientes
+        </a>
+        <h1 class="h2 fw-bold mb-0 mt-1">{{ paciente.nombre }}</h1>
+        <p class="text-muted mb-0">Historia clínica {{ paciente.nroHistoriaClinica }}</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'sabueso_feliz:paciente_editar' paciente.pk %}" class="btn btn-sabueso">Editar</a>
+        <a href="{% url 'sabueso_feliz:paciente_eliminar' paciente.pk %}" class="btn btn-outline-danger">Eliminar</a>
+    </div>
+</div>
 
-    <p>Acá vamos a mostrar un paciente.</p>
+<div class="tarjeta p-4 mb-4">
+    <dl class="row mb-0">
+        <dt class="col-sm-3 text-muted">Sexo</dt>
+        <dd class="col-sm-9">{{ paciente.sexo }}</dd>
+        <dt class="col-sm-3 text-muted">Nacimiento</dt>
+        <dd class="col-sm-9">{{ paciente.fechaNacimiento|date:"d/m/Y" }}</dd>
+        <dt class="col-sm-3 text-muted">Raza</dt>
+        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:raza' paciente.raza.pk %}">{{ paciente.raza }}</a></dd>
+        <dt class="col-sm-3 text-muted">Dueño</dt>
+        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:duenio' paciente.duenio.pk %}">{{ paciente.duenio }}</a></dd>
+        <dt class="col-sm-3 text-muted">Sucursal</dt>
+        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:sucursal' paciente.sucursal.pk %}">{{ paciente.sucursal }}</a></dd>
+        <dt class="col-sm-3 text-muted">Peso / altura</dt>
+        <dd class="col-sm-9 mb-0">{{ paciente.pesoActual }} kg · {{ paciente.alturaActual }} cm</dd>
+    </dl>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Consultas</h2>
+            <ul class="list-unstyled mb-0">
+                {% for consulta in consultas %}
+                <li class="py-1">
+                    <a href="{% url 'sabueso_feliz:consulta' consulta.pk %}">{{ consulta.nroOrden }}</a>
+                    <small class="text-muted">· {{ consulta.fechaEntrada|date:"d/m/Y" }} · {{ consulta.empleado_id }}</small>
+                </li>
+                {% empty %}
+                <li class="text-muted">Sin consultas.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="tarjeta p-4">
+            <h2 class="h5 fw-bold mb-3">Vacunaciones</h2>
+            <ul class="list-unstyled mb-0">
+                {% for vacunacion in vacunaciones %}
+                <li class="py-1">
+                    <a href="{% url 'sabueso_feliz:vacunacion' vacunacion.pk %}">{{ vacunacion.vacuna_id }}</a>
+                    <small class="text-muted">· {{ vacunacion.fechaProgramada|date:"d/m/Y" }}</small>
+                </li>
+                {% empty %}
+                <li class="text-muted">Sin vacunaciones.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
