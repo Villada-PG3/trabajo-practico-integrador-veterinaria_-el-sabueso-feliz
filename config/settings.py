@@ -128,7 +128,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Configuración de Autenticación (Clase 16 y 17)
+# Autenticación
 LOGIN_URL = 'sabueso_feliz:login'
 LOGIN_REDIRECT_URL = 'sabueso_feliz:home'
 LOGOUT_REDIRECT_URL = 'sabueso_feliz:home'

@@ -23,7 +23,8 @@
             <span class="marca-texto">El Sabueso Feliz</span>
         </a>
 
-        <button class="btn btn-sm text-white fs-5 d-none d-lg-inline-flex" type="button" data-menu="alternar" aria-label="Contraer menú">
+        <button class="btn btn-sm text-white fs-5 d-none d-lg-inline-flex" type="button" data-menu="alternar"
+            aria-label="Contraer menú">
             <i class="bi bi-layout-sidebar-inset"></i>
         </button>
     </div>
@@ -38,25 +39,22 @@
 
         <!-- Sucursales (con menú dinámico alimentado por el context processor - Clase 11) -->
         <li>
-            <button
-                class="nav-link w-100 {% if 'sucursal' in nombre %}activo{% endif %}"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#sub-sucursales"
-                aria-expanded="{% if 'sucursal' in nombre %}true{% else %}false{% endif %}"
-            >
+            <button class="nav-link w-100 {% if 'sucursal' in nombre %}activo{% endif %}" type="button"
+                data-bs-toggle="collapse" data-bs-target="#sub-sucursales"
+                aria-expanded="{% if 'sucursal' in nombre %}true{% else %}false{% endif %}">
                 <i class="bi bi-shop"></i>
                 <span class="texto">Sucursales</span>
                 <i class="bi bi-chevron-down texto chevron"></i>
             </button>
             <ul class="list-unstyled collapse submenu {% if 'sucursal' in nombre %}show{% endif %}" id="sub-sucursales">
-                <li><a class="nav-link {% if nombre == 'sucursales' %}activo{% endif %}" href="{{ u_sucursales }}">Ver todas</a></li>
+                <li><a class="nav-link {% if nombre == 'sucursales' %}activo{% endif %}" href="{{ u_sucursales }}">Ver
+                        todas</a></li>
                 {% for suc in menu_sucursales %}
-                    <li>
-                        <a class="nav-link small py-1" href="{% url 'sabueso_feliz:sucursal' suc.pk %}">
-                            <i class="bi bi-geo-alt me-1"></i>{{ suc.nombre }}
-                        </a>
-                    </li>
+                <li>
+                    <a class="nav-link small py-1" href="{% url 'sabueso_feliz:sucursal' suc.pk %}">
+                        <i class="bi bi-geo-alt me-1"></i>{{ suc.nombre }}
+                    </a>
+                </li>
                 {% endfor %}
             </ul>
         </li>
@@ -65,22 +63,25 @@
         <li>
             <button
                 class="nav-link w-100 {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}activo{% endif %}"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#sub-empleados"
-                aria-expanded="{% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}true{% else %}false{% endif %}"
-            >
+                type="button" data-bs-toggle="collapse" data-bs-target="#sub-empleados"
+                aria-expanded="{% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}true{% else %}false{% endif %}">
                 <i class="bi bi-person-badge"></i>
                 <span class="texto">Empleados</span>
                 <i class="bi bi-chevron-down texto chevron"></i>
             </button>
-            <ul class="list-unstyled collapse submenu {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}show{% endif %}" id="sub-empleados">
-                <li><a class="nav-link {% if nombre == 'empleados' and not request.GET.tipo %}activo{% endif %}" href="{{ u_empleados }}">Todo el personal</a></li>
-                <li><a class="nav-link {% if request.GET.tipo == 'veterinario' %}activo{% endif %}" href="{{ u_empleados }}?tipo=veterinario"><i class="bi bi-award me-1"></i>Veterinarios</a></li>
-                <li><a class="nav-link {% if request.GET.tipo == 'estudiante' %}activo{% endif %}" href="{{ u_empleados }}?tipo=estudiante"><i class="bi bi-mortarboard me-1"></i>Estudiantes</a></li>
+            <ul class="list-unstyled collapse submenu {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}show{% endif %}"
+                id="sub-empleados">
+                <li><a class="nav-link {% if nombre == 'empleados' and not request.GET.tipo %}activo{% endif %}"
+                        href="{{ u_empleados }}">Todo el personal</a></li>
+                <li><a class="nav-link {% if request.GET.tipo == 'veterinario' %}activo{% endif %}"
+                        href="{{ u_empleados }}?tipo=veterinario"><i class="bi bi-award me-1"></i>Veterinarios</a></li>
+                <li><a class="nav-link {% if request.GET.tipo == 'estudiante' %}activo{% endif %}"
+                        href="{{ u_empleados }}?tipo=estudiante"><i class="bi bi-mortarboard me-1"></i>Estudiantes</a>
+                </li>
                 {% if user.is_authenticated %}
                 <li class="border-top my-1 pt-1">
-                    <a class="nav-link small {% if nombre == 'empleado_crear' %}activo{% endif %}" href="{% url 'sabueso_feliz:empleado_crear' %}">
+                    <a class="nav-link small {% if nombre == 'empleado_crear' %}activo{% endif %}"
+                        href="{% url 'sabueso_feliz:empleado_crear' %}">
                         <i class="bi bi-plus-circle me-1"></i>Nuevo empleado
                     </a>
                 </li>
@@ -92,63 +93,62 @@
         <li>
             <button
                 class="nav-link w-100 {% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}activo{% endif %}"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#sub-pacientes"
-                aria-expanded="{% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}true{% else %}false{% endif %}"
-            >
+                type="button" data-bs-toggle="collapse" data-bs-target="#sub-pacientes"
+                aria-expanded="{% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}true{% else %}false{% endif %}">
                 <i class="bi bi-heart"></i>
                 <span class="texto">Pacientes</span>
                 <i class="bi bi-chevron-down texto chevron"></i>
             </button>
-            <ul class="list-unstyled collapse submenu {% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}show{% endif %}" id="sub-pacientes">
-                <li><a class="nav-link {% if 'paciente' in nombre %}activo{% endif %}" href="{{ u_pacientes }}">Perros</a></li>
-                <li><a class="nav-link {% if 'duenio' in nombre %}activo{% endif %}" href="{{ u_propietarios }}">Propietarios</a></li>
+            <ul class="list-unstyled collapse submenu {% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}show{% endif %}"
+                id="sub-pacientes">
+                <li><a class="nav-link {% if 'paciente' in nombre %}activo{% endif %}"
+                        href="{{ u_pacientes }}">Perros</a></li>
+                <li><a class="nav-link {% if 'duenio' in nombre %}activo{% endif %}"
+                        href="{{ u_propietarios }}">Propietarios</a></li>
                 <li><a class="nav-link {% if 'raza' in nombre %}activo{% endif %}" href="{{ u_razas }}">Razas</a></li>
             </ul>
         </li>
 
         <!-- Atención Médica -->
         <li>
-            <button
-                class="nav-link w-100 {% if 'consulta' in nombre or 'vacunacion' in nombre %}activo{% endif %}"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#sub-atencion"
-                aria-expanded="{% if 'consulta' in nombre or 'vacunacion' in nombre %}true{% else %}false{% endif %}"
-            >
+            <button class="nav-link w-100 {% if 'consulta' in nombre or 'vacunacion' in nombre %}activo{% endif %}"
+                type="button" data-bs-toggle="collapse" data-bs-target="#sub-atencion"
+                aria-expanded="{% if 'consulta' in nombre or 'vacunacion' in nombre %}true{% else %}false{% endif %}">
                 <i class="bi bi-clipboard2-pulse"></i>
                 <span class="texto">Atención médica</span>
                 <i class="bi bi-chevron-down texto chevron"></i>
             </button>
-            <ul class="list-unstyled collapse submenu {% if 'consulta' in nombre or 'vacunacion' in nombre %}show{% endif %}" id="sub-atencion">
-                <li><a class="nav-link {% if nombre == 'consultas' and not request.GET.internados %}activo{% endif %}" href="{{ u_consultas }}">Consultas</a></li>
-                <li><a class="nav-link {% if request.GET.internados %}activo{% endif %}" href="{{ u_consultas }}?internados=1">Internaciones</a></li>
-                <li><a class="nav-link {% if 'vacunacion' in nombre %}activo{% endif %}" href="{{ u_vacunaciones }}">Vacunaciones</a></li>
+            <ul class="list-unstyled collapse submenu {% if 'consulta' in nombre or 'vacunacion' in nombre %}show{% endif %}"
+                id="sub-atencion">
+                <li><a class="nav-link {% if nombre == 'consultas' and not request.GET.internados %}activo{% endif %}"
+                        href="{{ u_consultas }}">Consultas</a></li>
+                <li><a class="nav-link {% if request.GET.internados %}activo{% endif %}"
+                        href="{{ u_consultas }}?internados=1">Internaciones</a></li>
+                <li><a class="nav-link {% if 'vacunacion' in nombre %}activo{% endif %}"
+                        href="{{ u_vacunaciones }}">Vacunaciones</a></li>
             </ul>
         </li>
 
         <!-- Inventario -->
         <li>
-            <button
-                class="nav-link w-100 {% if 'medicamento' in nombre or 'compra' in nombre %}activo{% endif %}"
-                type="button"
-                data-bs-toggle="collapse"
-                data-bs-target="#sub-inventario"
-                aria-expanded="{% if 'medicamento' in nombre or 'compra' in nombre %}true{% else %}false{% endif %}"
-            >
+            <button class="nav-link w-100 {% if 'medicamento' in nombre or 'compra' in nombre %}activo{% endif %}"
+                type="button" data-bs-toggle="collapse" data-bs-target="#sub-inventario"
+                aria-expanded="{% if 'medicamento' in nombre or 'compra' in nombre %}true{% else %}false{% endif %}">
                 <i class="bi bi-box-seam"></i>
                 <span class="texto">Inventario</span>
                 <i class="bi bi-chevron-down texto chevron"></i>
             </button>
-            <ul class="list-unstyled collapse submenu {% if 'medicamento' in nombre or 'compra' in nombre %}show{% endif %}" id="sub-inventario">
-                <li><a class="nav-link {% if 'medicamento' in nombre %}activo{% endif %}" href="{{ u_medicamentos }}">Medicamentos</a></li>
-                <li><a class="nav-link {% if 'compra' in nombre and not request.GET.alerta %}activo{% endif %}" href="{{ u_stock }}">Compras y stock</a></li>
+            <ul class="list-unstyled collapse submenu {% if 'medicamento' in nombre or 'compra' in nombre %}show{% endif %}"
+                id="sub-inventario">
+                <li><a class="nav-link {% if 'medicamento' in nombre %}activo{% endif %}"
+                        href="{{ u_medicamentos }}">Medicamentos</a></li>
+                <li><a class="nav-link {% if 'compra' in nombre and not request.GET.alerta %}activo{% endif %}"
+                        href="{{ u_stock }}">Compras y stock</a></li>
                 <li>
                     <a class="nav-link {% if request.GET.alerta %}activo{% endif %}" href="{{ u_stock }}?alerta=1">
                         Alertas de stock
                         {% if total_alertas_stock > 0 %}
-                            <span class="badge bg-warning text-dark ms-1">{{ total_alertas_stock }}</span>
+                        <span class="badge bg-warning text-dark ms-1">{{ total_alertas_stock }}</span>
                         {% endif %}
                     </a>
                 </li>

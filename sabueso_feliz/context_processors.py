@@ -4,15 +4,6 @@ from .models import Sucursal, Raza, StockMedicamento, Consulta, Perro, Empleado
 
 
 def sabueso_context(request):
-    """
-    Context processor global (Clase 11).
-    Proporciona variables accesibles en TODOS los templates del proyecto:
-    - Listado de sucursales para dropdowns de navegación
-    - Listado de razas
-    - Alertas de stock crítico
-    - Consultas programadas / realizadas hoy
-    - Métricas globales rápidas
-    """
     hoy = timezone.localdate()
     return {
         'menu_sucursales': Sucursal.objects.all(),

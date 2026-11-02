@@ -10,7 +10,7 @@ urlpatterns = [
     path('acerca-de/', views.AcercaDeView.as_view(), name='acerca_de'),
     path('contacto/', views.ContactoView.as_view(), name='contacto'),
 
-    # Autenticación y Registro (Clases 16 y 17)
+    # Autenticación y Registro
     path('login/', LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('registro/', views.RegistroView.as_view(), name='registro'),
