@@ -9,59 +9,129 @@
         <a href="{% url 'sabueso_feliz:pacientes' %}" class="text-decoration-none text-muted small">
             <i class="bi bi-arrow-left"></i> Volver a pacientes
         </a>
-        <h1 class="h2 fw-bold mb-0 mt-1">{{ paciente.nombre }}</h1>
+        <h1 class="h2 fw-bold mb-0 mt-1">
+            {{ paciente.nombre }}
+            {% if paciente.activo %}
+                <span class="badge bg-success-subtle text-success fs-6 align-middle ms-2">Activo</span>
+            {% else %}
+                <span class="badge bg-danger-subtle text-danger fs-6 align-middle ms-2">Inactivo</span>
+            {% endif %}
+        </h1>
         <p class="text-muted mb-0">Historia clínica {{ paciente.nroHistoriaClinica }}</p>
     </div>
+
+    {% if user.is_authenticated %}
     <div class="d-flex gap-2">
-        <a href="{% url 'sabueso_feliz:paciente_editar' paciente.pk %}" class="btn btn-sabueso">Editar</a>
-        <a href="{% url 'sabueso_feliz:paciente_eliminar' paciente.pk %}" class="btn btn-outline-danger">Eliminar</a>
+        <a href="{% url 'sabueso_feliz:paciente_editar' paciente.pk %}" class="btn btn-sabueso">
+            <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+        <a href="{% url 'sabueso_feliz:paciente_eliminar' paciente.pk %}" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i>Eliminar
+        </a>
     </div>
+    {% endif %}
 </div>
 
 <div class="tarjeta p-4 mb-4">
-    <dl class="row mb-0">
-        <dt class="col-sm-3 text-muted">Sexo</dt>
-        <dd class="col-sm-9">{{ paciente.sexo }}</dd>
-        <dt class="col-sm-3 text-muted">Nacimiento</dt>
-        <dd class="col-sm-9">{{ paciente.fechaNacimiento|date:"d/m/Y" }}</dd>
-        <dt class="col-sm-3 text-muted">Raza</dt>
-        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:raza' paciente.raza.pk %}">{{ paciente.raza }}</a></dd>
-        <dt class="col-sm-3 text-muted">Dueño</dt>
-        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:duenio' paciente.duenio.pk %}">{{ paciente.duenio }}</a></dd>
-        <dt class="col-sm-3 text-muted">Sucursal</dt>
-        <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:sucursal' paciente.sucursal.pk %}">{{ paciente.sucursal }}</a></dd>
-        <dt class="col-sm-3 text-muted">Peso / altura</dt>
-        <dd class="col-sm-9 mb-0">{{ paciente.pesoActual }} kg · {{ paciente.alturaActual }} cm</dd>
-    </dl>
+    <div class="row align-items-center">
+        {% if paciente.imagen %}
+        <div class="col-md-3 text-center mb-3 mb-md-0">
+            <img src="{{ paciente.imagen.url }}" alt="{{ paciente.nombre }}" class="img-fluid rounded-4 shadow-sm" style="max-height: 220px; object-fit: cover;">
+        </div>
+        <div class="col-md-9">
+        {% else %}
+        <div class="col-12">
+        {% endif %}
+            <dl class="row mb-0">
+                <dt class="col-sm-3 text-muted">Sexo</dt>
+                <dd class="col-sm-9">{{ paciente.sexo }}</dd>
+
+                <dt class="col-sm-3 text-muted">Nacimiento</dt>
+                <dd class="col-sm-9">{{ paciente.fechaNacimiento|date:"d/m/Y" }}</dd>
+
+                <dt class="col-sm-3 text-muted">Raza</dt>
+                <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:raza' paciente.raza.pk %}" class="fw-semibold">{{ paciente.raza }}</a></dd>
+
+                <dt class="col-sm-3 text-muted">Dueño</dt>
+                <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:duenio' paciente.duenio.pk %}" class="fw-semibold">{{ paciente.duenio }}</a></dd>
+
+                <dt class="col-sm-3 text-muted">Sucursal</dt>
+                <dd class="col-sm-9"><a href="{% url 'sabueso_feliz:sucursal' paciente.sucursal.pk %}" class="fw-semibold">{{ paciente.sucursal }}</a></dd>
+
+                <dt class="col-sm-3 text-muted">Peso / Altura</dt>
+                <dd class="col-sm-9">{{ paciente.pesoActual|floatformat:1 }} kg · {{ paciente.alturaActual|floatformat:1 }} cm</dd>
+
+                <dt class="col-sm-3 text-muted">Registrado por</dt>
+                <dd class="col-sm-9 mb-0 text-muted small">
+                    <i class="bi bi-person-check me-1"></i>{{ paciente.creado_por.username|default:"Administración / Sistema" }}
+                </dd>
+            </dl>
+        </div>
+    </div>
 </div>
 
 <div class="row g-3">
     <div class="col-lg-6">
         <div class="tarjeta p-4">
-            <h2 class="h5 fw-bold mb-3">Consultas</h2>
-            <ul class="list-unstyled mb-0">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 fw-bold mb-0"><i class="bi bi-journal-medical me-2"></i>Historial de Consultas</h2>
+                {% if user.is_authenticated %}
+                <a href="{% url 'sabueso_feliz:consulta_crear' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-lg"></i> Nueva consulta
+                </a>
+                {% endif %}
+            </div>
+            <ul class="list-group list-group-flush">
                 {% for consulta in consultas %}
-                <li class="py-1">
-                    <a href="{% url 'sabueso_feliz:consulta' consulta.pk %}">{{ consulta.nroOrden }}</a>
-                    <small class="text-muted">· {{ consulta.fechaEntrada|date:"d/m/Y" }} · {{ consulta.empleado_id }}</small>
+                <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'sabueso_feliz:consulta' consulta.pk %}" class="fw-bold text-decoration-none">
+                            Orden {{ consulta.nroOrden }}
+                        </a>
+                        <div class="small text-muted">
+                            {{ consulta.fechaEntrada|date:"d/m/Y" }} · Atendido por: {{ consulta.empleado_id }}
+                        </div>
+                    </div>
+                    {% if consulta.internado %}
+                        <span class="badge bg-warning text-dark">Internado</span>
+                    {% endif %}
                 </li>
                 {% empty %}
-                <li class="text-muted">Sin consultas.</li>
+                <li class="text-muted py-2">Sin consultas registradas.</li>
                 {% endfor %}
             </ul>
         </div>
     </div>
+
     <div class="col-lg-6">
         <div class="tarjeta p-4">
-            <h2 class="h5 fw-bold mb-3">Vacunaciones</h2>
-            <ul class="list-unstyled mb-0">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 fw-bold mb-0"><i class="bi bi-shield-plus me-2"></i>Calendario de Vacunación</h2>
+                {% if user.is_authenticated %}
+                <a href="{% url 'sabueso_feliz:vacunacion_crear' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-plus-lg"></i> Nueva vacuna
+                </a>
+                {% endif %}
+            </div>
+            <ul class="list-group list-group-flush">
                 {% for vacunacion in vacunaciones %}
-                <li class="py-1">
-                    <a href="{% url 'sabueso_feliz:vacunacion' vacunacion.pk %}">{{ vacunacion.vacuna_id }}</a>
-                    <small class="text-muted">· {{ vacunacion.fechaProgramada|date:"d/m/Y" }}</small>
+                <li class="list-group-item px-0 py-2 d-flex justify-content-between align-items-center">
+                    <div>
+                        <a href="{% url 'sabueso_feliz:vacunacion' vacunacion.pk %}" class="fw-bold text-decoration-none">
+                            {{ vacunacion.vacuna_id }}
+                        </a>
+                        <div class="small text-muted">
+                            Programada: {{ vacunacion.fechaProgramada|date:"d/m/Y" }}
+                        </div>
+                    </div>
+                    {% if vacunacion.fechaAplicacion %}
+                        <span class="badge bg-success">Aplicada ({{ vacunacion.fechaAplicacion|date:"d/m/Y" }})</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Pendiente</span>
+                    {% endif %}
                 </li>
                 {% empty %}
-                <li class="text-muted">Sin vacunaciones.</li>
+                <li class="text-muted py-2">Sin vacunas registradas en el calendario.</li>
                 {% endfor %}
             </ul>
         </div>

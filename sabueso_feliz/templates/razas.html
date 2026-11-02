@@ -6,22 +6,24 @@
 
 <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
     <div>
-        <h1 class="h2 fw-bold mb-1">Razas</h1>
-        <p class="text-muted mb-0">Total: {{ object_list|length }}</p>
+        <h1 class="h2 fw-bold mb-1">Catálogo de Razas Caninas</h1>
+        <p class="text-muted mb-0">Total registradas: {{ paginator.count|default:object_list|length }}</p>
     </div>
+    {% if user.is_authenticated %}
     <a href="{% url 'sabueso_feliz:raza_crear' %}" class="btn btn-sabueso">
         <i class="bi bi-plus-lg"></i> Nueva raza
     </a>
+    {% endif %}
 </div>
 
-<div class="tarjeta p-2 p-md-3">
+<div class="tarjeta p-3 p-md-4">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr class="small text-muted">
+            <thead class="table-light">
+                <tr>
                     <th>Denominación</th>
-                    <th>Peso macho</th>
-                    <th>Peso hembra</th>
+                    <th>Rango Peso Macho</th>
+                    <th>Rango Peso Hembra</th>
                     <th class="text-end">Acciones</th>
                 </tr>
             </thead>
@@ -29,24 +31,40 @@
                 {% for raza in object_list %}
                 <tr>
                     <td class="fw-bold">
-                        <a href="{% url 'sabueso_feliz:raza' raza.pk %}" class="text-decoration-none text-reset">{{ raza.denominacion }}</a>
+                        <a href="{% url 'sabueso_feliz:raza' raza.pk %}" class="text-decoration-none text-primary">
+                            {{ raza.denominacion }}
+                        </a>
                     </td>
-                    <td>{{ raza.pesoMinMacho }} – {{ raza.pesoMaxMacho }} kg</td>
-                    <td>{{ raza.pesoMinHembra }} – {{ raza.pesoMaxHembra }} kg</td>
+                    <td>{{ raza.pesoMinMacho|floatformat:1 }} – {{ raza.pesoMaxMacho|floatformat:1 }} kg</td>
+                    <td>{{ raza.pesoMinHembra|floatformat:1 }} – {{ raza.pesoMaxHembra|floatformat:1 }} kg</td>
                     <td class="text-end text-nowrap">
-                        <a href="{% url 'sabueso_feliz:raza' raza.pk %}" class="btn btn-gris btn-sm"><i class="bi bi-eye"></i></a>
-                        <a href="{% url 'sabueso_feliz:raza_editar' raza.pk %}" class="btn btn-claro btn-sm"><i class="bi bi-pencil"></i></a>
-                        <a href="{% url 'sabueso_feliz:raza_eliminar' raza.pk %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
+                        <a href="{% url 'sabueso_feliz:raza' raza.pk %}" class="btn btn-outline-secondary btn-sm" title="Ver ficha">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'sabueso_feliz:raza_editar' raza.pk %}" class="btn btn-outline-primary btn-sm" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'sabueso_feliz:raza_eliminar' raza.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center text-muted py-5">Todavía no hay razas cargadas.</td>
+                    <td colspan="4" class="text-center text-muted py-5">
+                        <i class="bi bi-tag display-6 d-block mb-2 text-secondary"></i>
+                        Todavía no hay razas cargadas.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación numerada (Clase 10) -->
+    {% include '_paginacion.html' %}
 </div>
 
 {% endblock %}

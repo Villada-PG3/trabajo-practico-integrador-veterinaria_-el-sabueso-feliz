@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro de Usuario · El Sabueso Feliz{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-3 mb-5">
+    <div class="col-12 col-md-8 col-lg-6">
+        <div class="tarjeta p-4 p-md-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-plus-fill text-primary display-4"></i>
+                <h1 class="h3 fw-bold mt-2">Crear Nueva Cuenta</h1>
+                <p class="text-muted small">Registrate para acceder a la gestión de pacientes y consultas.</p>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger small">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-text small text-muted">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in field.errors %}
+                                    <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-sabueso w-100 py-2 fw-semibold mt-2">
+                    <i class="bi bi-check2-circle me-1"></i> Registrarse e Iniciar Sesión
+                </button>
+            </form>
+
+            <hr class="my-4">
+
+            <div class="text-center">
+                <p class="small text-muted mb-2">¿Ya tenés una cuenta?</p>
+                <a href="{% url 'sabueso_feliz:login' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Ingresar a mi cuenta
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

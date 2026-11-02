@@ -1,0 +1,55 @@
+{% if is_paginated %}
+<nav aria-label="Navegación de páginas" class="mt-4">
+    <ul class="pagination justify-content-center flex-wrap gap-1">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if sucursal_actual %}&sucursal={{ sucursal_actual }}{% endif %}{% if raza_actual %}&raza={{ raza_actual }}{% endif %}{% if request.GET.internados %}&internados=1{% endif %}{% if request.GET.alerta %}&alerta=1{% endif %}">
+                    &laquo; Primera
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if sucursal_actual %}&sucursal={{ sucursal_actual }}{% endif %}{% if raza_actual %}&raza={{ raza_actual }}{% endif %}{% if request.GET.internados %}&internados=1{% endif %}{% if request.GET.alerta %}&alerta=1{% endif %}">
+                    Anterior
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">&laquo; Primera</span></li>
+            <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if sucursal_actual %}&sucursal={{ sucursal_actual }}{% endif %}{% if raza_actual %}&raza={{ raza_actual }}{% endif %}{% if request.GET.internados %}&internados=1{% endif %}{% if request.GET.alerta %}&alerta=1{% endif %}">
+                        {{ num }}
+                    </a>
+                </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if sucursal_actual %}&sucursal={{ sucursal_actual }}{% endif %}{% if raza_actual %}&raza={{ raza_actual }}{% endif %}{% if request.GET.internados %}&internados=1{% endif %}{% if request.GET.alerta %}&alerta=1{% endif %}">
+                    Siguiente
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if tipo_actual %}&tipo={{ tipo_actual }}{% endif %}{% if sucursal_actual %}&sucursal={{ sucursal_actual }}{% endif %}{% if raza_actual %}&raza={{ raza_actual }}{% endif %}{% if request.GET.internados %}&internados=1{% endif %}{% if request.GET.alerta %}&alerta=1{% endif %}">
+                    Última &raquo;
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+            <li class="page-item disabled"><span class="page-link">Última &raquo;</span></li>
+        {% endif %}
+    </ul>
+    <p class="text-center text-muted small mb-0">
+        Página {{ page_obj.number }} de {{ paginator.num_pages }} (Total: {{ paginator.count }} registros)
+    </p>
+</nav>
+{% endif %}
+

@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Contacto · El Sabueso Feliz{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h2 fw-bold mb-1">Contacto y Consultas</h1>
+    <p class="text-muted mb-0">Dejanos tu mensaje y nos pondremos en contacto contigo a la brevedad.</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="tarjeta p-4">
+            <h4 class="h5 fw-bold mb-3"><i class="bi bi-chat-dots me-2"></i>Envíanos un mensaje</h4>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                        {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in field.errors %}
+                                    <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-sabueso px-4 mt-2">
+                    <i class="bi bi-send me-1"></i>Enviar Mensaje
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="tarjeta p-4 mb-4">
+            <h4 class="h5 fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Nuestras Sucursales</h4>
+            {% if menu_sucursales %}
+                <ul class="list-unstyled mb-0">
+                    {% for suc in menu_sucursales %}
+                        <li class="mb-3 pb-3 border-bottom last-border-0">
+                            <strong>{{ suc.nombre }}</strong><br>
+                            <span class="text-muted small"><i class="bi bi-pin-map me-1"></i>{{ suc.direccion }}</span><br>
+                            <span class="text-muted small"><i class="bi bi-telephone me-1"></i>{{ suc.telefono }}</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">No hay sucursales cargadas.</p>
+            {% endif %}
+        </div>
+
+        <div class="tarjeta p-4 bg-light">
+            <h5 class="fw-bold"><i class="bi bi-clock me-2"></i>Horarios de Atención</h5>
+            <p class="mb-1 text-secondary">Lunes a Viernes: 8:00 a 20:00 hs</p>
+            <p class="mb-1 text-secondary">Sábados: 9:00 a 14:00 hs</p>
+            <p class="mb-0 text-secondary"><strong>Guardias de Urgencia:</strong> 24 hs en Sucursal Central.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

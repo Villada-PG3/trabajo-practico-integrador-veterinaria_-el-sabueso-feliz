@@ -6,20 +6,22 @@
 
 <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mb-4">
     <div>
-        <h1 class="h2 fw-bold mb-1">Propietarios</h1>
-        <p class="text-muted mb-0">Total: {{ object_list|length }}</p>
+        <h1 class="h2 fw-bold mb-1">Dueños de Pacientes</h1>
+        <p class="text-muted mb-0">Total: {{ paginator.count|default:object_list|length }}</p>
     </div>
+    {% if user.is_authenticated %}
     <a href="{% url 'sabueso_feliz:duenio_crear' %}" class="btn btn-sabueso">
         <i class="bi bi-plus-lg"></i> Nuevo propietario
     </a>
+    {% endif %}
 </div>
 
-<div class="tarjeta p-2 p-md-3">
+<div class="tarjeta p-3 p-md-4">
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-            <thead>
-                <tr class="small text-muted">
-                    <th>Nombre</th>
+            <thead class="table-light">
+                <tr>
+                    <th>Nombre Completo</th>
                     <th>Teléfono</th>
                     <th class="text-end">Acciones</th>
                 </tr>
@@ -28,23 +30,39 @@
                 {% for duenio in object_list %}
                 <tr>
                     <td class="fw-bold">
-                        <a href="{% url 'sabueso_feliz:duenio' duenio.pk %}" class="text-decoration-none text-reset">{{ duenio }}</a>
+                        <a href="{% url 'sabueso_feliz:duenio' duenio.pk %}" class="text-decoration-none text-primary">
+                            {{ duenio }}
+                        </a>
                     </td>
-                    <td>{{ duenio.telefono }}</td>
+                    <td><i class="bi bi-telephone text-muted me-1"></i>{{ duenio.telefono }}</td>
                     <td class="text-end text-nowrap">
-                        <a href="{% url 'sabueso_feliz:duenio' duenio.pk %}" class="btn btn-gris btn-sm"><i class="bi bi-eye"></i></a>
-                        <a href="{% url 'sabueso_feliz:duenio_editar' duenio.pk %}" class="btn btn-claro btn-sm"><i class="bi bi-pencil"></i></a>
-                        <a href="{% url 'sabueso_feliz:duenio_eliminar' duenio.pk %}" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i></a>
+                        <a href="{% url 'sabueso_feliz:duenio' duenio.pk %}" class="btn btn-outline-secondary btn-sm" title="Ver ficha">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'sabueso_feliz:duenio_editar' duenio.pk %}" class="btn btn-outline-primary btn-sm" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'sabueso_feliz:duenio_eliminar' duenio.pk %}" class="btn btn-outline-danger btn-sm" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="3" class="text-center text-muted py-5">Todavía no hay propietarios cargados.</td>
+                    <td colspan="3" class="text-center text-muted py-5">
+                        <i class="bi bi-person-x display-6 d-block mb-2 text-secondary"></i>
+                        Todavía no hay propietarios cargados.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación numerada (Clase 10) -->
+    {% include '_paginacion.html' %}
 </div>
 
 {% endblock %}

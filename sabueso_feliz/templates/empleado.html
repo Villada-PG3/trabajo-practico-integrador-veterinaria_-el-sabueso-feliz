@@ -9,34 +9,74 @@
         <a href="{% url 'sabueso_feliz:empleados' %}" class="text-decoration-none text-muted small">
             <i class="bi bi-arrow-left"></i> Volver a empleados
         </a>
-        <h1 class="h2 fw-bold mb-0 mt-1">{{ empleado }}</h1>
+        <h1 class="h2 fw-bold mb-0 mt-1">
+            {{ empleado }}
+            {% if empleado.es_veterinario %}
+                <span class="badge bg-success fs-6 align-middle ms-2">
+                    <i class="bi bi-award me-1"></i>Veterinario
+                </span>
+            {% elif empleado.es_estudiante %}
+                <span class="badge bg-info text-dark fs-6 align-middle ms-2">
+                    <i class="bi bi-mortarboard me-1"></i>Estudiante
+                </span>
+            {% else %}
+                <span class="badge bg-secondary fs-6 align-middle ms-2">
+                    <i class="bi bi-person me-1"></i>Empleado
+                </span>
+            {% endif %}
+        </h1>
     </div>
+
+    {% if user.is_authenticated %}
     <div class="d-flex gap-2">
-        <a href="{% url 'sabueso_feliz:empleado_editar' empleado.pk %}" class="btn btn-sabueso">Editar</a>
-        <a href="{% url 'sabueso_feliz:empleado_eliminar' empleado.pk %}" class="btn btn-outline-danger">Eliminar</a>
+        <a href="{% url 'sabueso_feliz:empleado_editar' empleado.pk %}" class="btn btn-sabueso">
+            <i class="bi bi-pencil me-1"></i>Editar
+        </a>
+        <a href="{% url 'sabueso_feliz:empleado_eliminar' empleado.pk %}" class="btn btn-outline-danger">
+            <i class="bi bi-trash me-1"></i>Eliminar
+        </a>
     </div>
+    {% endif %}
 </div>
 
 <div class="tarjeta p-4">
+    <h4 class="h5 fw-bold mb-3 border-bottom pb-2">Información del Empleado</h4>
     <dl class="row mb-0">
+        <dt class="col-sm-3 text-muted">Función / Rol</dt>
+        <dd class="col-sm-9 fw-bold">
+            {{ empleado.tipo_empleado }}
+        </dd>
+
+        {% if empleado.es_veterinario %}
+            <dt class="col-sm-3 text-muted">Matrícula Habilitante</dt>
+            <dd class="col-sm-9 text-success fw-bold">
+                {{ empleado.matricula|default:"En trámite" }}
+            </dd>
+        {% endif %}
+
+        {% if empleado.es_estudiante %}
+            <dt class="col-sm-3 text-muted">Legajo Universitario</dt>
+            <dd class="col-sm-9 text-info-emphasis fw-bold">
+                {{ empleado.legajo|default:"Sin asignar" }}
+            </dd>
+        {% endif %}
+
         <dt class="col-sm-3 text-muted">Documento</dt>
         <dd class="col-sm-9">{{ empleado.tipoDocumento }} {{ empleado.nroDocumento }}</dd>
-        <dt class="col-sm-3 text-muted">Nacimiento</dt>
+
+        <dt class="col-sm-3 text-muted">Fecha de Nacimiento</dt>
         <dd class="col-sm-9">{{ empleado.fechaNacimiento|date:"d/m/Y" }}</dd>
-        <dt class="col-sm-3 text-muted">Ingreso</dt>
+
+        <dt class="col-sm-3 text-muted">Fecha de Ingreso</dt>
         <dd class="col-sm-9">{{ empleado.fechaIngreso|date:"d/m/Y" }}</dd>
-        <dt class="col-sm-3 text-muted">Sucursal</dt>
-        <dd class="col-sm-9">
-            <a href="{% url 'sabueso_feliz:sucursal' empleado.sucursal.pk %}">{{ empleado.sucursal }}</a>
+
+        <dt class="col-sm-3 text-muted">Sucursal Asignada</dt>
+        <dd class="col-sm-9 mb-0">
+            <a href="{% url 'sabueso_feliz:sucursal' empleado.sucursal.pk %}" class="text-decoration-none fw-semibold">
+                <i class="bi bi-shop me-1"></i>{{ empleado.sucursal }}
+            </a>
+            <span class="text-muted small ms-2">({{ empleado.sucursal.direccion }})</span>
         </dd>
-        {% if empleado.veterinario %}
-        <dt class="col-sm-3 text-muted">Matrícula</dt>
-        <dd class="col-sm-9 mb-0">{{ empleado.veterinario.matriculaHabilitante }}</dd>
-        {% endif %}
-        {% if empleado.estudiantes %}
-        <dt class="col-sm-3 text-muted">Legajo</dt>
-        <dd class="col-sm-9 mb-0">{{ empleado.estudiantes.legajo }}</dd>
-        {% endif %}
     </dl>
 </div>
 
