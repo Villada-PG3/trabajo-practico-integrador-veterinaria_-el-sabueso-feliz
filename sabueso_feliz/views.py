@@ -44,12 +44,9 @@ from .forms import (
 )
 
 
-# ------------------------------------------------------------
 # MIXINS REUTILIZABLES
-# ------------------------------------------------------------
 
 class FormularioVistaMixin:
-    """Mixin para enriquecer vistas de formularios (Clase 14)."""
     titulo = ''
     volver_url = None
     mensaje_exito = 'Los datos se guardaron correctamente.'
@@ -66,7 +63,6 @@ class FormularioVistaMixin:
 
 
 class EliminarVistaMixin:
-    """Mixin para vistas de confirmación de eliminación (Clase 15)."""
     titulo = 'Eliminar registro'
     volver_url = None
     mensaje_exito = 'El registro se eliminó correctamente.'
@@ -82,12 +78,9 @@ class EliminarVistaMixin:
         return super().delete(request, *args, **kwargs)
 
 
-# ------------------------------------------------------------
 # HOME, ACERCA DE, CONTACTO, REGISTRO
-# ------------------------------------------------------------
 
 class HomeView(TemplateView):
-    """Vista principal con métricas e información del día (Clase 9)."""
     template_name = 'home.html'
 
     def get_context_data(self, **kwargs):
@@ -137,7 +130,6 @@ class HomeView(TemplateView):
 
 
 class AcercaDeView(TemplateView):
-    """Vista institucional y del equipo de desarrollo (Clase 2 & 18)."""
     template_name = 'acerca_de.html'
 
     def get_context_data(self, **kwargs):
@@ -148,7 +140,6 @@ class AcercaDeView(TemplateView):
 
 
 class ContactoView(FormView):
-    """Vista de formulario de contacto con forms.Form genérico (Clase 12)."""
     template_name = 'contacto.html'
     form_class = ContactoForm
     success_url = reverse_lazy('sabueso_feliz:contacto')
@@ -163,7 +154,6 @@ class ContactoView(FormView):
 
 
 class RegistroView(FormView):
-    """Registro de nuevos usuarios con login automático posterior (Clase 17)."""
     template_name = 'registration/registro.html'
     form_class = RegistroUsuarioForm
     success_url = reverse_lazy('sabueso_feliz:home')
@@ -178,9 +168,7 @@ class RegistroView(FormView):
         return super().form_valid(form)
 
 
-# ------------------------------------------------------------
 # SUCURSAL
-# ------------------------------------------------------------
 
 class SucursalesView(ListView):
     model = Sucursal
@@ -226,15 +214,9 @@ class SucursalDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:sucursales')
 
 
-# ------------------------------------------------------------
-# EMPLEADO (Con filtrado por Rol: Veterinario / Estudiante / General)
-# ------------------------------------------------------------
+# EMPLEADO
 
 class EmpleadosView(ListView):
-    """
-    Listado de empleados con filtro por tipo (Veterinario / Estudiante / General),
-    sucursal, buscador y paginación (Clases 10 y 11).
-    """
     model = Empleado
     template_name = 'empleados.html'
     paginate_by = 6
@@ -321,9 +303,7 @@ class EstudianteCreateView(EmpleadoCreateView):
     initial = {'tipo_empleado': 'estudiante'}
 
 
-# ------------------------------------------------------------
 # RAZA
-# ------------------------------------------------------------
 
 class RazasView(ListView):
     model = Raza
@@ -367,9 +347,7 @@ class RazaDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:razas')
 
 
-# ------------------------------------------------------------
 # DUEÑO
-# ------------------------------------------------------------
 
 class DueniosView(ListView):
     model = Duenio
@@ -413,9 +391,7 @@ class DuenioDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:duenios')
 
 
-# ------------------------------------------------------------
-# PACIENTE (Perro)
-# ------------------------------------------------------------
+# PACIENTE
 
 class PacientesView(ListView):
     model = Perro
@@ -475,7 +451,6 @@ class PacienteCreateView(LoginRequiredMixin, FormularioVistaMixin, CreateView):
     volver_url = reverse_lazy('sabueso_feliz:pacientes')
 
     def form_valid(self, form):
-        # Clase 17: Asignar usuario creador automáticamente
         if self.request.user.is_authenticated:
             form.instance.creado_por = self.request.user
         return super().form_valid(form)
@@ -497,9 +472,7 @@ class PacienteDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:pacientes')
 
 
-# ------------------------------------------------------------
 # CONSULTA
-# ------------------------------------------------------------
 
 class ConsultasView(ListView):
     model = Consulta
@@ -555,9 +528,7 @@ class ConsultaDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:consultas')
 
 
-# ------------------------------------------------------------
 # VACUNACIÓN
-# ------------------------------------------------------------
 
 class VacunacionesView(ListView):
     model = CalendarioVacuna
@@ -608,9 +579,7 @@ class VacunacionDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:vacunaciones')
 
 
-# ------------------------------------------------------------
 # MEDICAMENTO
-# ------------------------------------------------------------
 
 class MedicamentosView(ListView):
     model = Medicamento
@@ -643,9 +612,7 @@ class MedicamentoDeleteView(LoginRequiredMixin, EliminarVistaMixin, DeleteView):
     volver_url = reverse_lazy('sabueso_feliz:medicamentos')
 
 
-# ------------------------------------------------------------
 # COMPRAS (STOCK)
-# ------------------------------------------------------------
 
 class ComprasView(ListView):
     model = StockMedicamento

@@ -44,7 +44,6 @@ class Sucursal(models.Model):
 
 
 class EmpleadoQuerySet(models.QuerySet):
-    """QuerySet personalizado para filtrar empleados según su rol (Clase 5 y 11)."""
 
     def veterinarios(self):
         return self.filter(veterinario__isnull=False)
@@ -85,7 +84,6 @@ class Empleado(models.Model):
 
     @property
     def tipo_empleado(self):
-        """Devuelve el rol o tipo del empleado."""
         if hasattr(self, 'veterinario'):
             return 'Veterinario'
         if hasattr(self, 'estudiantes'):
@@ -114,10 +112,6 @@ class Empleado(models.Model):
 
 
 class Veterinario(models.Model):
-    """
-    Veterinario: posee relación 1 a 1 (FK / OneToOne) con Empleado.
-    Permite registrar la matrícula habilitante del profesional.
-    """
     empleado = models.OneToOneField(
         Empleado,
         on_delete=models.CASCADE,
@@ -157,10 +151,6 @@ class Veterinario(models.Model):
 
 
 class Estudiantes(models.Model):
-    """
-    Estudiante / Pasante: posee relación 1 a 1 (FK / OneToOne) con Empleado.
-    Permite registrar el legajo universitario.
-    """
     empleado = models.OneToOneField(
         Empleado,
         on_delete=models.CASCADE,

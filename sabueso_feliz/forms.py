@@ -18,7 +18,6 @@ from .models import (
 
 
 class FormularioBase(forms.ModelForm):
-    """Formulario base: aplica Bootstrap a cualquier ModelForm (Clase 13)."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -48,15 +47,7 @@ class FormularioBase(forms.ModelForm):
                 campo.input_formats = ['%Y-%m-%d', '%d/%m/%Y']
 
 
-# ------------------------------------------------------------
-# FORMULARIO BÁSICO (forms.Form - Clase 12)
-# ------------------------------------------------------------
-
 class ContactoForm(forms.Form):
-    """
-    Formulario genérico con forms.Form (Clase 12).
-    No está atado a ningún modelo. Valida campos en memoria.
-    """
     nombre = forms.CharField(
         max_length=100,
         label="Nombre completo",
@@ -69,7 +60,7 @@ class ContactoForm(forms.Form):
     telefono = forms.CharField(
         max_length=20,
         required=False,
-        label="Teléfono (opcional - Tarea Clase 12)",
+        label="Teléfono (opcional)",
         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ej: 351-5551234'})
     )
     asunto = forms.CharField(
@@ -89,13 +80,7 @@ class ContactoForm(forms.Form):
         return nombre
 
 
-# ------------------------------------------------------------
-# FORMULARIO DE REGISTRO DE USUARIOS (Clase 17)
-# ------------------------------------------------------------
-
 class RegistroUsuarioForm(UserCreationForm):
-    """Formulario de registro basado en UserCreationForm de Django (Clase 17)."""
-
     email = forms.EmailField(
         required=True,
         label="Correo electrónico",
@@ -125,11 +110,6 @@ class SucursalForm(FormularioBase):
 
 
 class EmpleadoForm(FormularioBase):
-    """
-    Formulario unificado e intuitivo para crear y editar empleados.
-    Permite seleccionar primero el rol (Personal General, Veterinario o Estudiante)
-    y gestiona automáticamente la relación FK / OneToOne con Veterinario o Estudiantes.
-    """
     TIPO_CHOICES = [
         ('general', 'Personal General'),
         ('veterinario', 'Veterinario'),
@@ -223,9 +203,7 @@ class EmpleadoForm(FormularioBase):
 
     @staticmethod
     def aplicar_rol(empleado, tipo, matricula, legajo):
-        """Asigna o actualiza la relación OneToOne con Veterinario o Estudiantes."""
         if tipo == 'veterinario':
-            # Si antes era estudiante, remover ese rol
             if hasattr(empleado, 'estudiantes'):
                 Estudiantes.objects.filter(pk=empleado.pk).delete()
 
@@ -257,7 +235,7 @@ class EmpleadoForm(FormularioBase):
                 Estudiantes.objects.filter(pk=empleado.pk).delete()
 
 
-# Formularios individuales mantenidos por compatibilidad
+# Formularios de modelos
 class VeterinarioForm(FormularioBase):
     class Meta:
         model = Veterinario
