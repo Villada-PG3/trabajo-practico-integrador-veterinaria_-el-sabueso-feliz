@@ -1,0 +1,215 @@
+/* ============================================================
+   CALENDARIO / DATEPICKER ELEGANTE - EL SABUESO FELIZ
+   Diseñado con la paleta de colores institucional
+   ============================================================ */
+
+.calendario-popover {
+    position: absolute;
+    z-index: 1060;
+    width: 310px;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--borde, #dfe6e3);
+    box-shadow: 0 12px 32px rgba(11, 122, 102, 0.16), 0 4px 12px rgba(0, 0, 0, 0.06);
+    padding: 16px;
+    font-family: inherit;
+    user-select: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    pointer-events: none;
+}
+
+.calendario-popover.abierto {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Encabezado del calendario */
+.cal-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.cal-btn-nav {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--borde, #dfe6e3);
+    background: #ffffff;
+    color: var(--verde, #0b7a66);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    padding: 0;
+    font-size: 14px;
+}
+
+.cal-btn-nav:hover {
+    background: var(--verde-claro, #e1f3ee);
+    border-color: var(--verde, #0b7a66);
+    color: var(--verde-oscuro, #096453);
+}
+
+.cal-selectores {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+}
+
+.cal-select-mes,
+.cal-select-anio {
+    border: 1px solid var(--borde, #dfe6e3);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--texto, #263b38);
+    background-color: #ffffff;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.cal-select-mes:focus,
+.cal-select-anio:focus {
+    border-color: var(--verde, #0b7a66);
+}
+
+/* Nombres de los días de la semana */
+.cal-dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gris-texto, #71817e);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+}
+
+/* Cuadrícula de días */
+.cal-grilla-dias {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.cal-dia {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--texto, #263b38);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.cal-dia:hover:not(.cal-dia-vacio) {
+    background: var(--verde-claro, #e1f3ee);
+    color: var(--verde-oscuro, #096453);
+    font-weight: 600;
+}
+
+.cal-dia.otro-mes {
+    color: #b5c2bf;
+}
+
+.cal-dia.hoy {
+    border: 1.5px solid var(--verde, #0b7a66);
+    color: var(--verde, #0b7a66);
+    font-weight: 700;
+}
+
+.cal-dia.seleccionado {
+    background: var(--verde, #0b7a66) !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(11, 122, 102, 0.35);
+}
+
+.cal-dia-vacio {
+    cursor: default;
+}
+
+/* Pie del calendario */
+.cal-pie {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--borde, #dfe6e3);
+}
+
+.cal-btn-accion {
+    border: none;
+    background: transparent;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.cal-btn-hoy {
+    color: var(--verde, #0b7a66);
+}
+
+.cal-btn-hoy:hover {
+    background: var(--verde-claro, #e1f3ee);
+}
+
+.cal-btn-limpiar {
+    color: #8c9b97;
+}
+
+.cal-btn-limpiar:hover {
+    color: #dc3545;
+    background: #fdf2f2;
+}
+
+/* Estilo para el input de fecha */
+.campo-fecha-contenedor {
+    position: relative;
+    cursor: pointer;
+}
+
+.campo-fecha {
+    cursor: pointer !important;
+    background-color: #ffffff !important;
+    padding-right: 38px;
+}
+
+.campo-fecha-icono {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--verde, #0b7a66);
+    pointer-events: none;
+    font-size: 1.05rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.campo-fecha:focus + .campo-fecha-icono,
+.campo-fecha-contenedor:hover .campo-fecha-icono {
+    color: var(--verde-oscuro, #096453);
+    transform: translateY(-50%) scale(1.1);
+}
+

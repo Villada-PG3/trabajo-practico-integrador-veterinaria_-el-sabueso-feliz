@@ -10,6 +10,8 @@
 {% url 'sabueso_feliz:vacunaciones' as u_vacunaciones %}
 {% url 'sabueso_feliz:medicamentos' as u_medicamentos %}
 {% url 'sabueso_feliz:compras' as u_stock %}
+{% url 'sabueso_feliz:contacto' as u_contacto %}
+{% url 'sabueso_feliz:acerca_de' as u_acerca_de %}
 
 {% with nombre=request.resolver_match.url_name|default:'' %}
 <div class="menu-fondo" data-menu="cerrar"></div>
@@ -34,13 +36,32 @@
             </a>
         </li>
 
+        <!-- Sucursales (con menú dinámico alimentado por el context processor - Clase 11) -->
         <li>
-            <a class="nav-link {% if 'sucursal' in nombre %}activo{% endif %}" href="{{ u_sucursales }}">
+            <button
+                class="nav-link w-100 {% if 'sucursal' in nombre %}activo{% endif %}"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#sub-sucursales"
+                aria-expanded="{% if 'sucursal' in nombre %}true{% else %}false{% endif %}"
+            >
                 <i class="bi bi-shop"></i>
                 <span class="texto">Sucursales</span>
-            </a>
+                <i class="bi bi-chevron-down texto chevron"></i>
+            </button>
+            <ul class="list-unstyled collapse submenu {% if 'sucursal' in nombre %}show{% endif %}" id="sub-sucursales">
+                <li><a class="nav-link {% if nombre == 'sucursales' %}activo{% endif %}" href="{{ u_sucursales }}">Ver todas</a></li>
+                {% for suc in menu_sucursales %}
+                    <li>
+                        <a class="nav-link small py-1" href="{% url 'sabueso_feliz:sucursal' suc.pk %}">
+                            <i class="bi bi-geo-alt me-1"></i>{{ suc.nombre }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
         </li>
 
+        <!-- Empleados (Con filtros directos para veterinarios y estudiantes) -->
         <li>
             <button
                 class="nav-link w-100 {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}activo{% endif %}"
@@ -54,12 +75,20 @@
                 <i class="bi bi-chevron-down texto chevron"></i>
             </button>
             <ul class="list-unstyled collapse submenu {% if 'empleado' in nombre or 'veterinario' in nombre or 'estudiante' in nombre %}show{% endif %}" id="sub-empleados">
-                <li><a class="nav-link {% if nombre == 'empleados' %}activo{% endif %}" href="{{ u_empleados }}">Ver todos</a></li>
-                <li><a class="nav-link {% if nombre == 'veterinario_crear' %}activo{% endif %}" href="{{ u_veterinarios }}">Nuevo veterinario</a></li>
-                <li><a class="nav-link {% if nombre == 'estudiante_crear' %}activo{% endif %}" href="{{ u_estudiantes }}">Nuevo estudiante</a></li>
+                <li><a class="nav-link {% if nombre == 'empleados' and not request.GET.tipo %}activo{% endif %}" href="{{ u_empleados }}">Todo el personal</a></li>
+                <li><a class="nav-link {% if request.GET.tipo == 'veterinario' %}activo{% endif %}" href="{{ u_empleados }}?tipo=veterinario"><i class="bi bi-award me-1"></i>Veterinarios</a></li>
+                <li><a class="nav-link {% if request.GET.tipo == 'estudiante' %}activo{% endif %}" href="{{ u_empleados }}?tipo=estudiante"><i class="bi bi-mortarboard me-1"></i>Estudiantes</a></li>
+                {% if user.is_authenticated %}
+                <li class="border-top my-1 pt-1">
+                    <a class="nav-link small {% if nombre == 'empleado_crear' %}activo{% endif %}" href="{% url 'sabueso_feliz:empleado_crear' %}">
+                        <i class="bi bi-plus-circle me-1"></i>Nuevo empleado
+                    </a>
+                </li>
+                {% endif %}
             </ul>
         </li>
 
+        <!-- Pacientes -->
         <li>
             <button
                 class="nav-link w-100 {% if 'paciente' in nombre or 'duenio' in nombre or 'raza' in nombre %}activo{% endif %}"
@@ -79,6 +108,7 @@
             </ul>
         </li>
 
+        <!-- Atención Médica -->
         <li>
             <button
                 class="nav-link w-100 {% if 'consulta' in nombre or 'vacunacion' in nombre %}activo{% endif %}"
@@ -98,6 +128,7 @@
             </ul>
         </li>
 
+        <!-- Inventario -->
         <li>
             <button
                 class="nav-link w-100 {% if 'medicamento' in nombre or 'compra' in nombre %}activo{% endif %}"
@@ -116,10 +147,30 @@
                 <li>
                     <a class="nav-link {% if request.GET.alerta %}activo{% endif %}" href="{{ u_stock }}?alerta=1">
                         Alertas de stock
-                        <i class="bi bi-exclamation-triangle text-warning"></i>
+                        {% if total_alertas_stock > 0 %}
+                            <span class="badge bg-warning text-dark ms-1">{{ total_alertas_stock }}</span>
+                        {% endif %}
                     </a>
                 </li>
             </ul>
+        </li>
+
+        <li class="border-top my-2 pt-2"></li>
+
+        <!-- Contacto (Clase 12) -->
+        <li>
+            <a class="nav-link {% if nombre == 'contacto' %}activo{% endif %}" href="{{ u_contacto }}">
+                <i class="bi bi-envelope"></i>
+                <span class="texto">Contacto</span>
+            </a>
+        </li>
+
+        <!-- Acerca de (Clase 2) -->
+        <li>
+            <a class="nav-link {% if nombre == 'acerca_de' %}activo{% endif %}" href="{{ u_acerca_de }}">
+                <i class="bi bi-info-circle"></i>
+                <span class="texto">Acerca de</span>
+            </a>
         </li>
     </ul>
 </aside>

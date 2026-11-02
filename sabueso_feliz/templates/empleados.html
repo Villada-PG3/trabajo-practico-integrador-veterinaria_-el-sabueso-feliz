@@ -6,57 +6,90 @@
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
     <div>
-        <h1 class="h2 fw-bold mb-1">Empleados</h1>
+        <h1 class="h2 fw-bold mb-1">Personal de la Veterinaria</h1>
         <p class="text-muted mb-0">
-            Total de empleados: {{ object_list|length }}
+            Total en nómina: {{ total_general }} empleados
         </p>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
-        <a href="{% url 'sabueso_feliz:empleado_crear' %}"
-           class="btn btn-sabueso">
-            <i class="bi bi-plus-lg"></i>
-            Nuevo empleado
-        </a>
-
-        <a href="{% url 'sabueso_feliz:veterinario_crear' %}"
-           class="btn btn-outline-primary">
-            Nuevo veterinario
-        </a>
-
-        <a href="{% url 'sabueso_feliz:estudiante_crear' %}"
-           class="btn btn-outline-primary">
-            Nuevo estudiante
+    {% if user.is_authenticated %}
+    <div>
+        <a href="{% url 'sabueso_feliz:empleado_crear' %}" class="btn btn-sabueso">
+            <i class="bi bi-person-plus-fill me-1"></i> Nuevo empleado
         </a>
     </div>
+    {% endif %}
 </div>
 
-<div class="tarjeta p-2 p-md-3">
+<!-- Filtros por Rol / Tipo de Empleado (Clases 5 y 11) -->
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <a href="{% url 'sabueso_feliz:empleados' %}{% if q %}?q={{ q }}{% endif %}"
+       class="btn btn-sm {% if not tipo_actual %}btn-dark{% else %}btn-outline-dark{% endif %}">
+        Todos <span class="badge bg-secondary ms-1">{{ total_general }}</span>
+    </a>
+    <a href="{% url 'sabueso_feliz:empleados' %}?tipo=veterinario{% if q %}&q={{ q }}{% endif %}"
+       class="btn btn-sm {% if tipo_actual == 'veterinario' %}btn-success{% else %}btn-outline-success{% endif %}">
+        <i class="bi bi-award me-1"></i>Veterinarios <span class="badge bg-light text-dark ms-1">{{ total_veterinarios }}</span>
+    </a>
+    <a href="{% url 'sabueso_feliz:empleados' %}?tipo=estudiante{% if q %}&q={{ q }}{% endif %}"
+       class="btn btn-sm {% if tipo_actual == 'estudiante' %}btn-info text-dark{% else %}btn-outline-info{% endif %}">
+        <i class="bi bi-mortarboard me-1"></i>Estudiantes / Pasantes <span class="badge bg-light text-dark ms-1">{{ total_estudiantes }}</span>
+    </a>
+    <a href="{% url 'sabueso_feliz:empleados' %}?tipo=general{% if q %}&q={{ q }}{% endif %}"
+       class="btn btn-sm {% if tipo_actual == 'general' %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
+        <i class="bi bi-person me-1"></i>Personal General <span class="badge bg-light text-dark ms-1">{{ total_otros }}</span>
+    </a>
+</div>
 
-    <div class="mb-3">
-        <label for="buscar-empleado" class="form-label">
-            Buscar empleado
-        </label>
+<div class="tarjeta p-3 p-md-4">
+    <!-- Formulario de Búsqueda y Filtrado (Clase 11) -->
+    <form method="get" class="row g-2 mb-4">
+        {% if tipo_actual %}
+            <input type="hidden" name="tipo" value="{{ tipo_actual }}">
+        {% endif %}
 
-        <input
-            type="search"
-            id="buscar-empleado"
-            class="form-control"
-            placeholder="Buscar por nombre, documento o sucursal..."
-        >
-    </div>
+        <div class="col-md-6 col-lg-7">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+                <input
+                    type="search"
+                    name="q"
+                    value="{{ q }}"
+                    class="form-control"
+                    placeholder="Buscar por nombre, apellido, DNI, matrícula o legajo..."
+                >
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-3">
+            <select name="sucursal" class="form-select">
+                <option value="">Todas las sucursales</option>
+                {% for suc in menu_sucursales %}
+                    <option value="{{ suc.id }}" {% if sucursal_actual == suc.id|stringformat:"s" %}selected{% endif %}>
+                        {{ suc.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2 col-lg-2 d-flex gap-2">
+            <button type="submit" class="btn btn-sabueso w-100">Filtrar</button>
+            {% if q or tipo_actual or sucursal_actual %}
+                <a href="{% url 'sabueso_feliz:empleados' %}" class="btn btn-outline-secondary" title="Limpiar filtros">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            {% endif %}
+        </div>
+    </form>
 
     <div class="table-responsive">
-        <table class="table table-striped table-hover align-middle mb-0">
+        <table class="table table-hover align-middle mb-0">
             <thead class="table-light">
                 <tr>
-                    <th>ID</th>
-                    <th>Apellido</th>
-                    <th>Nombre</th>
-                    <th>Tipo de documento</th>
-                    <th>Número de documento</th>
-                    <th>Nacimiento</th>
-                    <th>Ingreso</th>
+                    <th>Empleado</th>
+                    <th>Rol / Función</th>
+                    <th>Documento</th>
+                    <th>Fecha Ingreso</th>
                     <th>Sucursal</th>
                     <th class="text-end">Acciones</th>
                 </tr>
@@ -64,90 +97,80 @@
 
             <tbody>
                 {% for empleado in object_list %}
-                    <tr class="fila-empleado">
-                        <td>{{ empleado.pk }}</td>
-                        <td>{{ empleado.apellido }}</td>
-                        <td>{{ empleado.nombre }}</td>
-                        <td>{{ empleado.tipoDocumento }}</td>
-                        <td>{{ empleado.nroDocumento }}</td>
+                    <tr>
                         <td>
-                            {{ empleado.fechaNacimiento|date:"d/m/Y" }}
+                            <strong>{{ empleado.apellido }}, {{ empleado.nombre }}</strong>
+                            <div class="text-muted small">
+                                Nac: {{ empleado.fechaNacimiento|date:"d/m/Y"|default:"Sin dato" }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if empleado.es_veterinario %}
+                                <span class="badge bg-success">
+                                    <i class="bi bi-award me-1"></i>Veterinario
+                                </span>
+                                <div class="small text-secondary fw-semibold">
+                                    Matrícula: {{ empleado.matricula|default:"En trámite" }}
+                                </div>
+                            {% elif empleado.es_estudiante %}
+                                <span class="badge bg-info text-dark">
+                                    <i class="bi bi-mortarboard me-1"></i>Estudiante
+                                </span>
+                                <div class="small text-secondary fw-semibold">
+                                    Legajo: {{ empleado.legajo|default:"Sin legajo" }}
+                                </div>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-person me-1"></i>Empleado
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">
+                                {{ empleado.tipoDocumento }}
+                            </span>
+                            {{ empleado.nroDocumento }}
                         </td>
                         <td>
                             {{ empleado.fechaIngreso|date:"d/m/Y" }}
                         </td>
-                        <td>{{ empleado.sucursal }}</td>
-
+                        <td>
+                            <a href="{% url 'sabueso_feliz:sucursal' empleado.sucursal.pk %}" class="text-decoration-none">
+                                <i class="bi bi-shop me-1 text-muted"></i>{{ empleado.sucursal }}
+                            </a>
+                        </td>
                         <td class="text-end text-nowrap">
                             <a href="{% url 'sabueso_feliz:empleado' empleado.pk %}"
-                               class="btn btn-outline-secondary btn-sm">
-                                <i class="bi bi-eye"></i>
-                                Ver
+                               class="btn btn-outline-secondary btn-sm" title="Ver ficha">
+                                <i class="bi bi-eye"></i> Ver
                             </a>
 
+                            {% if user.is_authenticated %}
                             <a href="{% url 'sabueso_feliz:empleado_editar' empleado.pk %}"
-                               class="btn btn-outline-primary btn-sm">
+                               class="btn btn-outline-primary btn-sm" title="Editar">
                                 <i class="bi bi-pencil"></i>
-                                Editar
                             </a>
-
                             <a href="{% url 'sabueso_feliz:empleado_eliminar' empleado.pk %}"
-                               class="btn btn-outline-danger btn-sm">
+                               class="btn btn-outline-danger btn-sm" title="Eliminar">
                                 <i class="bi bi-trash"></i>
-                                Eliminar
                             </a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-5">
-                            Todavía no hay empleados cargados.
+                        <td colspan="6" class="text-center py-5 text-muted">
+                            <i class="bi bi-people display-6 d-block mb-2 text-secondary"></i>
+                            No se encontraron empleados con los criterios de búsqueda seleccionados.
                         </td>
                     </tr>
                 {% endfor %}
-
-                <tr id="sin-resultados" hidden>
-                    <td colspan="9" class="text-center text-muted py-4">
-                        No se encontraron empleados con esa búsqueda.
-                    </td>
-                </tr>
             </tbody>
         </table>
     </div>
+
+    <!-- Paginación numerada (Clase 10) -->
+    {% include '_paginacion.html' %}
 </div>
 
-{% endblock %}
-
-{% block js %}
-<script>
-    const buscador = document.getElementById('buscar-empleado');
-    const filas = document.querySelectorAll('.fila-empleado');
-    const sinResultados = document.getElementById('sin-resultados');
-
-    function normalizar(texto) {
-        return texto
-            .normalize('NFD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .toLowerCase();
-    }
-
-    buscador.addEventListener('input', function () {
-        const busqueda = normalizar(this.value.trim());
-        let visibles = 0;
-
-        filas.forEach(function (fila) {
-            const celdas = Array.from(fila.cells).slice(0, -1);
-            const texto = celdas.map(celda => celda.textContent).join(' ');
-            const coincide = normalizar(texto).includes(busqueda);
-
-            fila.hidden = !coincide;
-
-            if (coincide) {
-                visibles++;
-            }
-        });
-
-        sinResultados.hidden = filas.length === 0 || visibles > 0;
-    });
-</script>
 {% endblock %}

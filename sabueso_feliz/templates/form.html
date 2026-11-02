@@ -15,7 +15,7 @@
 </div>
 
 <div class="tarjeta p-4">
-    <form method="post" novalidate>
+    <form method="post" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
         {% if form.non_field_errors %}
@@ -23,29 +23,66 @@
         {% endif %}
 
         {% for field in form %}
-            <div class="mb-3">
+            <div class="mb-3 campo-contenedor campo-{{ field.name }}">
                 {% if field.field.widget.input_type == 'checkbox' %}
                     <div class="form-check">
                         {{ field }}
                         <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
                     </div>
                 {% else %}
-                    <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <label class="form-label fw-semibold" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                    </label>
                     {{ field }}
                 {% endif %}
 
+                {% if field.help_text %}
+                    <div class="form-text small text-muted">{{ field.help_text }}</div>
+                {% endif %}
+
                 {% if field.errors %}
-                    <div class="text-danger small mt-1">{{ field.errors }}</div>
+                    <div class="text-danger small mt-1">
+                        {% for error in field.errors %}
+                            <div><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>
+                        {% endfor %}
+                    </div>
                 {% endif %}
             </div>
         {% endfor %}
 
         <div class="d-flex flex-wrap gap-2 mt-4">
-            <button type="submit" class="btn btn-sabueso">Guardar</button>
+            <button type="submit" class="btn btn-sabueso px-4">
+                <i class="bi bi-save me-1"></i> Guardar
+            </button>
             {% if volver_url %}
             <a href="{{ volver_url }}" class="btn btn-claro">Cancelar</a>
             {% endif %}
         </div>
     </form>
 </div>
+
+<!-- Lógica dinámica para selección de rol de Empleado (Veterinario / Estudiante / General) -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tipoSelect = document.getElementById('id_tipo_empleado');
+    if (!tipoSelect) return;
+
+    const matriculaBox = document.querySelector('.campo-matriculaHabilitante');
+    const legajoBox = document.querySelector('.campo-legajo');
+
+    function actualizarVisibilidad() {
+        const valor = tipoSelect.value;
+        if (matriculaBox) {
+            matriculaBox.style.display = (valor === 'veterinario') ? 'block' : 'none';
+        }
+        if (legajoBox) {
+            legajoBox.style.display = (valor === 'estudiante') ? 'block' : 'none';
+        }
+    }
+
+    tipoSelect.addEventListener('change', actualizarVisibilidad);
+    actualizarVisibilidad();
+});
+</script>
 {% endblock %}
