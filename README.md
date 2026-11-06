@@ -149,7 +149,7 @@ trabajo-practico-integrador-veterinaria_-el-sabueso-feliz/
 │
 ├── media/                    # Archivos multimedia subidos a la aplicación
 │
-├── mi_app/                   # Aplicación principal de Django
+├── sabueso_feliz/                   # Aplicación principal de Django
 │
 ├── static/                   # Archivos estáticos del proyecto
 │                             # CSS, JavaScript, imágenes, etc.

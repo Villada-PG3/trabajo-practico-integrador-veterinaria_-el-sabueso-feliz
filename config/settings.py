@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -140,5 +141,78 @@ LOGOUT_REDIRECT_URL = 'sabueso_feliz:home'
 MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    },
+}
+
+# Configuración de Jazzmin para el panel de administración
+JAZZMIN_SETTINGS = {
+    'site_title': 'El Sabueso Feliz Admin',
+    'site_header': 'El Sabueso Feliz',
+    'site_brand': 'El Sabueso Feliz',
+    'welcome_sign': 'Panel de Administración - Veterinaria El Sabueso Feliz',
+    'copyright': 'Veterinaria El Sabueso Feliz',
+    'search_model': ['sabueso_feliz.Perro', 'sabueso_feliz.Empleado'],
+    'topmenu_links': [
+        {'name': 'Ver Sitio', 'url': 'sabueso_feliz:home'},
+        {'model': 'auth.User'},
+    ],
+    'show_sidebar': True,
+    'navigation_expanded': True,
+    'icons': {
+        'auth': 'fas fa-users-cog',
+        'auth.user': 'fas fa-user',
+        'auth.Group': 'fas fa-users',
+        'sabueso_feliz.Sucursal': 'fas fa-clinic-medical',
+        'sabueso_feliz.Empleado': 'fas fa-id-card',
+        'sabueso_feliz.Veterinario': 'fas fa-user-md',
+        'sabueso_feliz.Estudiantes': 'fas fa-user-graduate',
+        'sabueso_feliz.Perro': 'fas fa-dog',
+        'sabueso_feliz.Raza': 'fas fa-dna',
+        'sabueso_feliz.Duenio': 'fas fa-user-friends',
+        'sabueso_feliz.Consulta': 'fas fa-stethoscope',
+        'sabueso_feliz.CalendarioVacuna': 'fas fa-syringe',
+        'sabueso_feliz.Vacuna': 'fas fa-shield-virus',
+        'sabueso_feliz.Medicamento': 'fas fa-pills',
+        'sabueso_feliz.StockMedicamento': 'fas fa-boxes',
+        'sabueso_feliz.Sintoma': 'fas fa-thermometer-half',
+        'sabueso_feliz.ConsultaSintoma': 'fas fa-notes-medical',
+        'sabueso_feliz.Diagnostico': 'fas fa-file-medical-alt',
+        'sabueso_feliz.RecetaMedicamento': 'fas fa-prescription',
+    },
+    'default_icon_parents': 'fas fa-chevron-circle-right',
+    'default_icon_children': 'fas fa-circle',
+    'related_modal_active': True,
+    'custom_css': 'css/admin_jazzmin.css',
+}
+
+JAZZMIN_UI_TWEAKS = {
+    'navbar_small_text': False,
+    'footer_small_text': False,
+    'body_small_text': False,
+    'brand_small_text': False,
+    'brand_colour': 'navbar-teal',
+    'accent': 'accent-teal',
+    'navbar': 'navbar-dark navbar-teal',
+    'no_navbar_border': False,
+    'navbar_fixed': True,
+    'layout_boxed': False,
+    'footer_fixed': False,
+    'sidebar_fixed': True,
+    'sidebar': 'sidebar-dark-teal',
+    'sidebar_nav_small_text': False,
+    'sidebar_disable_expand': False,
+    'sidebar_nav_child_indent': True,
+    'sidebar_nav_compact_style': False,
+    'sidebar_nav_legacy_style': False,
+    'sidebar_nav_flat_style': False,
+    'theme': 'flatly',
+    'default_theme_mode': 'light',
+    'button_classes': {
+        'primary': 'btn-teal',
+        'secondary': 'btn-secondary',
+        'info': 'btn-info',
+        'warning': 'btn-warning',
+        'danger': 'btn-danger',
+        'success': 'btn-success',
     },
 }
