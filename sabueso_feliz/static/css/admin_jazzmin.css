@@ -1,0 +1,84 @@
+/* Estilos personalizados para Jazzmin - Veterinaria El Sabueso Feliz */
+
+:root {
+    --verde-admin: #0b7a66;
+    --verde-admin-dark: #096453;
+    --verde-admin-claro: #e1f3ee;
+    --menu-admin: #183b36;
+}
+
+/* Barra superior */
+.navbar-teal,
+.bg-teal,
+.brand-link.navbar-teal,
+.main-header.navbar-teal {
+    background-color: var(--verde-admin) !important;
+}
+
+/* Menú lateral activo */
+.sidebar-dark-teal .nav-sidebar > .nav-item > .nav-link.active,
+.sidebar-light-teal .nav-sidebar > .nav-item > .nav-link.active,
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    background-color: var(--verde-admin) !important;
+    color: #fff !important;
+}
+
+/* Sidebar fondo oscuro elegante */
+.main-sidebar,
+.sidebar-dark-teal {
+    background-color: var(--menu-admin) !important;
+}
+
+/* Botones principales */
+.btn-primary,
+.btn-teal,
+.btn-success {
+    background-color: var(--verde-admin) !important;
+    border-color: var(--verde-admin) !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-teal:hover,
+.btn-success:hover,
+.btn-primary:focus,
+.btn-teal:focus,
+.btn-success:focus {
+    background-color: var(--verde-admin-dark) !important;
+    border-color: var(--verde-admin-dark) !important;
+    color: #fff !important;
+}
+
+/* Enlaces y acentos */
+.accent-teal a:not(.btn):not(.brand-link) {
+    color: var(--verde-admin) !important;
+}
+
+.accent-teal a:not(.btn):not(.brand-link):hover {
+    color: var(--verde-admin-dark) !important;
+}
+
+/* Paginación en admin */
+.page-item.active .page-link {
+    background-color: var(--verde-admin) !important;
+    border-color: var(--verde-admin) !important;
+    color: #fff !important;
+}
+
+.page-link {
+    color: var(--verde-admin) !important;
+}
+
+.page-link:hover {
+    background-color: var(--verde-admin-claro) !important;
+    color: var(--verde-admin-dark) !important;
+}
+
+/* Inputs focuseados */
+.form-control:focus,
+.custom-select:focus {
+    border-color: var(--verde-admin) !important;
+    box-shadow: 0 0 0 0.2rem rgba(11, 122, 102, 0.25) !important;
+}
+
