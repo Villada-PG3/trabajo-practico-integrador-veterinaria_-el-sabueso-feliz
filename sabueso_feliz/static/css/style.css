@@ -5,19 +5,6 @@
     --verde-oscuro: #096453;
     --verde-claro: #e1f3ee;
 
-    /* Sobreescritura de Bootstrap 5 para armonizar con la paleta verde */
-    --bs-primary: #0b7a66;
-    --bs-primary-rgb: 11, 122, 102;
-    --bs-link-color: #0b7a66;
-    --bs-link-hover-color: #096453;
-    --bs-pagination-color: #0b7a66;
-    --bs-pagination-active-bg: #0b7a66;
-    --bs-pagination-active-border-color: #0b7a66;
-    --bs-pagination-hover-color: #096453;
-    --bs-pagination-hover-bg: #e1f3ee;
-    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(11, 122, 102, 0.25);
-    --bs-focus-ring-color: rgba(11, 122, 102, 0.25);
-
     /* Textos */
     --texto: #263b38;
     --gris-texto: #71817e;
@@ -183,6 +170,13 @@ a:hover {
     inset: 0;
     background: rgba(0, 0, 0, .4);
     z-index: 1035;
+}
+
+body.menu-chico #menu .cabecera {
+    flex-direction: column;
+    justify-content: center !important;
+    gap: .5rem;
+    padding: .75rem .5rem !important;
 }
 
 @media (min-width: 992px) {
@@ -475,126 +469,6 @@ a:hover {
 .estado-alerta {
     background: #fbeaea;
     color: #a63b3b;
-}
-
-/* ---------- Paginación en Paleta Verde ---------- */
-
-.pagination {
-    --bs-pagination-color: var(--verde);
-    --bs-pagination-bg: #ffffff;
-    --bs-pagination-border-color: var(--borde);
-    --bs-pagination-hover-color: var(--verde-oscuro);
-    --bs-pagination-hover-bg: var(--verde-claro);
-    --bs-pagination-hover-border-color: var(--verde);
-    --bs-pagination-focus-color: var(--verde-oscuro);
-    --bs-pagination-focus-bg: var(--verde-claro);
-    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(11, 122, 102, 0.2);
-    --bs-pagination-active-color: #ffffff;
-    --bs-pagination-active-bg: var(--verde);
-    --bs-pagination-active-border-color: var(--verde);
-    --bs-pagination-disabled-color: var(--gris-texto);
-    --bs-pagination-disabled-bg: #f8faf9;
-    --bs-pagination-disabled-border-color: var(--borde);
-}
-
-.page-link {
-    color: var(--verde) !important;
-    border-color: var(--borde) !important;
-    border-radius: 6px !important;
-    margin: 0 2px;
-    font-weight: 500;
-    transition: all .15s ease;
-}
-
-.page-link:hover {
-    color: var(--verde-oscuro) !important;
-    background-color: var(--verde-claro) !important;
-    border-color: var(--verde) !important;
-}
-
-.page-item.active .page-link {
-    background-color: var(--verde) !important;
-    border-color: var(--verde) !important;
-    color: #ffffff !important;
-    box-shadow: 0 2px 4px rgba(11, 122, 102, .25);
-}
-
-.page-item.disabled .page-link {
-    color: #a0adaa !important;
-    background-color: #f5f8f7 !important;
-    border-color: var(--borde) !important;
-}
-
-/* ---------- Botones y Acentos en Paleta Verde ---------- */
-
-.btn-primary {
-    background-color: var(--verde) !important;
-    border-color: var(--verde) !important;
-    color: #ffffff !important;
-}
-
-.btn-primary:hover,
-.btn-primary:focus,
-.btn-primary:active {
-    background-color: var(--verde-oscuro) !important;
-    border-color: var(--verde-oscuro) !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 0 0.25rem rgba(11, 122, 102, .25) !important;
-}
-
-.btn-outline-primary {
-    color: var(--verde) !important;
-    border-color: var(--verde) !important;
-}
-
-.btn-outline-primary:hover,
-.btn-outline-primary:focus,
-.btn-outline-primary:active {
-    background-color: var(--verde) !important;
-    border-color: var(--verde) !important;
-    color: #ffffff !important;
-    box-shadow: 0 0 0 0.25rem rgba(11, 122, 102, .25) !important;
-}
-
-.text-primary {
-    color: var(--verde) !important;
-}
-
-.bg-primary {
-    background-color: var(--verde) !important;
-}
-
-.border-primary {
-    border-color: var(--verde) !important;
-}
-
-.badge.bg-primary {
-    background-color: var(--verde) !important;
-    color: #ffffff !important;
-}
-
-.link-primary {
-    color: var(--verde) !important;
-}
-
-.link-primary:hover {
-    color: var(--verde-oscuro) !important;
-}
-
-.form-check-input:checked {
-    background-color: var(--verde) !important;
-    border-color: var(--verde) !important;
-}
-
-.form-check-input:focus {
-    border-color: var(--verde) !important;
-    box-shadow: 0 0 0 0.25rem rgba(11, 122, 102, .2) !important;
-}
-
-.form-control:focus,
-.form-select:focus {
-    border-color: var(--verde) !important;
-    box-shadow: 0 0 0 0.25rem rgba(11, 122, 102, .18) !important;
 }
 
 /* ---------- Responsive ---------- */
